@@ -34,53 +34,59 @@ export default function SignUpForm({ onToggleForm }: { onToggleForm: () => void 
           {error}
         </div>
       )}
-      <form onSubmit={handleSignUp} className="space-y-4">
-        <div>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-            required
-          />
+      {user ? (
+        <div className="text-center p-4 bg-green-100 dark:bg-green-900 rounded-lg">
+          <p className="text-lg">Welcome, {user.email}</p>
         </div>
-        <div>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm Password"
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Sign Up
-        </button>
-        <div className="text-center mt-4">
+      ) : (
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+              required
+            />
+          </div>
           <button
-            type="button"
-            onClick={onToggleForm}
-            className="text-blue-600 hover:underline dark:text-blue-400"
+            type="submit"
+            className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Already have an account? Log in
+            Sign Up
           </button>
-        </div>
-      </form>
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={onToggleForm}
+              className="text-blue-600 hover:underline dark:text-blue-400"
+            >
+              Already have an account? Log in
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 } 
