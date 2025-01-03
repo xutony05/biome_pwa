@@ -1,0 +1,18 @@
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
+}
+
+body {
+  padding: var(--sat) var(--sar) var(--sab) var(--sal);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background-color: #000000; /* This should match your theme color */
+}
+
+/* This ensures the app takes up the full height on iOS */
+html {
+  height: -webkit-fill-available;
+} 
