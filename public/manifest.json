@@ -1,6 +1,6 @@
 {
-  "name": "Biome PWA",
-  "short_name": "BiomePWA",
+  "name": "Biomë",
+  "short_name": "Biomë",
   "description": "A Progressive Web App built with Next.js",
   "start_url": "/",
   "display": "standalone",
@@ -8,6 +8,12 @@
   "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "apple touch icon any"
+    },
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
@@ -19,12 +25,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "apple touch icon"
     }
   ],
   "screenshots": [

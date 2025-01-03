@@ -13,18 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Biome PWA",
+  title: "Biomë",
   description: "A Progressive Web App built with Next.js",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Biome PWA",
+    title: "Biomë",
     startupImage: [
       {
         url: "/splash/apple-splash-2048-2732.jpg",
         media: "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
-      },
-      // Add more splash screen sizes as needed
+      }
     ]
   },
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
@@ -44,9 +43,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
         
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" href="/icons/apple-touch-icon.png" />
+        
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
