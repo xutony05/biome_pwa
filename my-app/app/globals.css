@@ -32,7 +32,6 @@ body {
   padding: var(--sat) var(--sar) var(--sab) var(--sal);
   min-height: 100vh;
   min-height: -webkit-fill-available;
-  background-color: #000000;
   /* Enable smooth scrolling */
   -webkit-overflow-scrolling: touch;
   /* Remove fixed position to allow scrolling */
