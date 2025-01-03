@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Prevent bounce but allow scrolling */
+html {
+  height: -webkit-fill-available;
+  overflow: hidden; /* Prevents bounce on iOS */
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  padding: var(--sat) var(--sar) var(--sab) var(--sal);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background-color: #000000;
+  /* Enable smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Remove fixed position to allow scrolling */
+  overflow-y: auto;
+  overscroll-behavior-y: none; /* Prevents pull-to-refresh */
+}
+
+/* Optional: If you want to hide the scrollbar but keep functionality */
+@media (max-width: 640px) {
+  body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+/* If you need scrolling content, wrap it in a div with this class */
+.scroll-container {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
