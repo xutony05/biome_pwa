@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { loginWithEmail, loginWithGoogle } from '../firebase/auth';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,65 +30,77 @@ export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }
     }
   };
 
+  if (user) {
+    return (
+      <div className="text-center p-4 bg-green-100 dark:bg-green-900 rounded-lg">
+        <p className="text-lg">Welcome, {user.email}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
           {error}
         </div>
       )}
-      {user ? (
-        <div className="text-center p-4 bg-green-100 dark:bg-green-900 rounded-lg">
-          <p className="text-lg">Welcome, {user.email}</p>
+
+      <Button 
+        size="lg"
+        className="w-full bg-blue-500 hover:bg-blue-600"
+        onClick={() => onToggleForm()}
+      >
+        Create Account
+      </Button>
+      
+      <Button 
+        variant="outline"
+        size="lg"
+        className="w-full bg-gray-50 hover:bg-gray-100"
+        onClick={handleEmailLogin}
+      >
+        <span className="material-icons mr-2"></span>
+        Sign in using email
+      </Button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300"></div>
         </div>
-      ) : (
-        <form onSubmit={handleEmailLogin} className="space-y-4">
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Login with Email
-            </button>
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
-            >
-              Login with Google
-            </button>
-          </div>
-          <div className="text-center mt-4">
-            <button
-              type="button"
-              onClick={onToggleForm}
-              className="text-blue-600 hover:underline dark:text-blue-400"
-            >
-              Need an account? Sign up
-            </button>
-          </div>
-        </form>
-      )}
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">OR</span>
+        </div>
+      </div>
+
+      <div className="flex justify-center space-x-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleGoogleLogin}
+          className="rounded-full"
+        >
+          <img src="/icons/google.svg" alt="Google" className="w-6 h-6" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full"
+        >
+          <img src="/icons/apple.svg" alt="Apple" className="w-6 h-6" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full"
+        >
+          <img src="/icons/facebook.svg" alt="Facebook" className="w-6 h-6" />
+        </Button>
+      </div>
+
+      <div className="text-center text-sm text-gray-500 mt-8">
+        By signing up, you agree to our Terms. See how we use your data in our Privacy Policy.
+      </div>
     </div>
   );
 } 
