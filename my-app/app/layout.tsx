@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { montreal } from './fonts'
 
-const inter = Inter({ subsets: ["latin"] });
+// Load Inter for non-Apple devices
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: '--font-inter',
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -29,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`h-full ${inter.variable}`}>
       <head>
         <meta name="application-name" content="Biome" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -41,7 +46,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${inter.className} h-full`}>
+      <body className="h-full">
         {children}
       </body>
     </html>

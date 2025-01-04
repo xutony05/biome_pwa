@@ -55,7 +55,21 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		fontFamily: {
+  			montreal: ['var(--font-montreal)'],
+  			sans: [
+  				'-apple-system',
+  				'SF Pro Display',
+  				'SF Pro Text',
+  				'system-ui',
+  				'var(--font-inter)',
+  				'BlinkMacSystemFont',
+  				'Helvetica Neue',
+  				'Arial',
+  				'sans-serif'
+  			],
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
