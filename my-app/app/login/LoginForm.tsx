@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { loginWithEmail, loginWithGoogle } from '../firebase/auth';
 import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
 
 export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const { user } = useAuth();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -54,15 +56,57 @@ export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }
         Create Account
       </Button>
       
-      <Button 
-        variant="outline"
-        size="lg"
-        className="w-full bg-gray-50 hover:bg-gray-100"
-        onClick={handleEmailLogin}
-      >
-        <span className="material-icons mr-2"></span>
-        Sign in using email
-      </Button>
+      {showEmailForm ? (
+        <form onSubmit={handleEmailLogin} className="space-y-4">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+            required
+          />
+          <Button 
+            type="submit"
+            variant="outline"
+            size="lg"
+            className="w-full bg-gray-50 hover:bg-gray-100"
+          >
+            <Image 
+              src="/icons/email.svg"
+              alt="Email"
+              width={24}
+              height={24}
+              className="mr-2"
+            />
+            Sign in
+          </Button>
+        </form>
+      ) : (
+        <Button 
+          variant="outline"
+          size="lg"
+          className="w-full bg-gray-50 hover:bg-gray-100"
+          onClick={() => setShowEmailForm(true)}
+        >
+          <Image 
+            src="/icons/email.svg"
+            alt="Email"
+            width={24}
+            height={24}
+            className="mr-2"
+          />
+          Sign in using email
+        </Button>
+      )}
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -80,26 +124,37 @@ export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }
           onClick={handleGoogleLogin}
           className="rounded-full"
         >
-          <img src="/icons/google.svg" alt="Google" className="w-6 h-6" />
+          <Image 
+            src="/icons/google.svg"
+            alt="Google"
+            width={24}
+            height={24}
+          />
         </Button>
         <Button
           variant="outline"
           size="icon"
           className="rounded-full"
         >
-          <img src="/icons/apple.svg" alt="Apple" className="w-6 h-6" />
+          <Image 
+            src="/icons/apple.svg"
+            alt="Apple"
+            width={24}
+            height={24}
+          />
         </Button>
         <Button
           variant="outline"
           size="icon"
           className="rounded-full"
         >
-          <img src="/icons/facebook.svg" alt="Facebook" className="w-6 h-6" />
+          <Image 
+            src="/icons/facebook.svg"
+            alt="Facebook"
+            width={24}
+            height={24}
+          />
         </Button>
-      </div>
-
-      <div className="text-center text-sm text-gray-500 mt-8">
-        By signing up, you agree to our Terms. See how we use your data in our Privacy Policy.
       </div>
     </div>
   );
