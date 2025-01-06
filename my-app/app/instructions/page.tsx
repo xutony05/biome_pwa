@@ -91,6 +91,10 @@ export default function InstructionsPage() {
     }
   };
 
+  const handleTabClick = (index: number) => {
+    setCurrentStep(index);
+  };
+
   return (
     <main className="min-h-screen p-4">
       {/* Header */}
@@ -106,14 +110,17 @@ export default function InstructionsPage() {
       {/* Progress Tabs */}
       <div className="flex justify-between mb-8 border-b">
         {stepsData.map((step, index) => (
-          <div 
+          <button 
             key={step.title}
-            className={`flex-1 text-center pb-2 text-sm ${
-              index === currentStep ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
+            onClick={() => handleTabClick(index)}
+            className={`flex-1 text-center pb-2 text-sm transition-colors ${
+              index === currentStep 
+                ? 'border-b-2 border-blue-500 text-blue-500' 
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             {step.title}
-          </div>
+          </button>
         ))}
       </div>
 
