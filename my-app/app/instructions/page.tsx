@@ -124,18 +124,20 @@ export default function InstructionsPage() {
         ))}
       </div>
 
-      {/* Content */}
-      <div className="space-y-6">
-        {stepsData[currentStep].instructions.map((instruction) => (
-          <div key={instruction.step} className="flex items-start space-x-3">
-            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-sm">
-              {instruction.step}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-4 pb-32 scrollbar-hide" style={{ height: 'calc(100vh - 200px)' }}>
+        <div className="space-y-6">
+          {stepsData[currentStep].instructions.map((instruction) => (
+            <div key={instruction.step} className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-sm">
+                {instruction.step}
+              </div>
+              <p className="text-gray-600 flex-1">
+                {instruction.content}
+              </p>
             </div>
-            <p className="text-gray-600 flex-1">
-              {instruction.content}
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Next Button */}
