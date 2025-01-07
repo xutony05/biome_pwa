@@ -113,49 +113,27 @@ export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }
           <div className="w-full border-t border-gray-300"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">OR</span>
+          <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">OR</span>
         </div>
       </div>
 
-      <div className="flex justify-center space-x-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleGoogleLogin}
-          className="rounded-full"
-        >
+      <Button
+        variant="outline"
+        size="lg"
+        onClick={handleGoogleLogin}
+        className="w-full bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+      >
+        <div className="flex items-center justify-center">
           <Image 
             src="/icons/google.svg"
             alt="Google"
-            width={24}
-            height={24}
+            width={20}
+            height={20}
+            className="mr-3"
           />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-        >
-          <Image 
-            src="/icons/apple.svg"
-            alt="Apple"
-            width={24}
-            height={24}
-          />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-        >
-          <Image 
-            src="/icons/facebook.svg"
-            alt="Facebook"
-            width={24}
-            height={24}
-          />
-        </Button>
-      </div>
+          <span className="text-gray-600 dark:text-gray-300">Continue with Google</span>
+        </div>
+      </Button>
     </div>
   );
 } 
