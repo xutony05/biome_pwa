@@ -32,6 +32,13 @@ The survey consists of three types of questions and a final completion page:
     - **Save & Exit Button:** Font size 16px (rem units), padding of 16px (left & right) and 8px (top & bottom).
   - On the final page, the header only has the "Exit" button.
 
+- **Image:**
+  - On every question page, there is an image(orb) on the top left side of the question.
+  - The orb should be 80x80, the margin between the orb and the question should be 16px.
+  - The orb is stored in the public/images/orb.png
+  - On the final page, the orb is centered and the margin between the orb and the text should be 16px.
+
+
 ## Technology Stack
 
 - **Framework:** Next.js (App Router)
@@ -142,3 +149,70 @@ src/
 │   ├── manifest.json                  # PWA manifest
 │   ├── robots.txt                     # Robots.txt for SEO
 │   └── sw.js                          # Service worker for PWA
+
+
+questions in json format:
+[
+  {
+    "id": "q1",
+    "type": "input",
+    "text": "First, what’s your test kit serial number?",
+    "placeholder": "e.g., RISDT8A03"
+  },
+  {
+    "id": "q2",
+    "type": "single",
+    "text": "How often do you exfoliate your skin?",
+    "options": ["Daily", "Weekly", "Monthly", "Never"]
+  },
+  {
+    "id": "q3",
+    "type": "single",
+    "text": "Do you experience breakouts?",
+    "options": ["Rarely", "Occasionally", "Frequently"]
+  },
+  {
+    "id": "q4",
+    "type": "multi",
+    "text": "Do you have any specific skin conditions we should know about?",
+    "options": [
+      "Acne",
+      "Seborrheic Dermatitis",
+      "Vitiligo",
+      "Contact Dermatitis",
+      "Rosacea",
+      "Psoriasis",
+      "None of the above"
+    ]
+  },
+  {
+    "id": "q5",
+    "type": "single",
+    "text": "What’s your primary skin concern?",
+    "options": [
+      "Acne",
+      "Dryness",
+      "Sensitivity",
+      "Oily Skin",
+      "Anti-Aging"
+    ]
+  },
+  {
+    "id": "q6",
+    "type": "single",
+    "text": "How long have you been using skincare products?",
+    "options": [
+      "Less than 6 months",
+      "6 months to 1 year",
+      "1 to 3 years",
+      "More than 3 years"
+    ]
+  },
+  {
+    "id": "q7",
+    "type": "final",
+    "text": "All done!",
+    "description": "We’ll use your answers to make your report even more tailored to you. Now, let’s get you ready for the swab.",
+    "buttonText": "View Instructions"
+  }
+]
