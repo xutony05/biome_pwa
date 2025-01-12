@@ -5,9 +5,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
 import { ChevronRight } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { getReportCount } from '../lib/supabase';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const [numberOfReports, setNumberOfReports] = useState(0);
+
+  useEffect(() => {
+    if (!loading && user) {
+      async function fetchReportCount() {
+        try {
+          const count = await getReportCount(user.email);
+          setNumberOfReports(count);
+        } catch (error) {
+          console.error('Error fetching report count:', error);
+        }
+      }
+      fetchReportCount();
+    }
+  }, [loading, user]);
+
+  if (loading || !user) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen p-4 space-y-6">
@@ -34,35 +55,19 @@ export default function ProfilePage() {
       <section>
         <h2 className="text-xl font-semibold mb-4">Past Reports</h2>
         <div className="space-y-3">
-          <Card>
-            <CardContent className="p-4">
-              <Link href="/reports/2" className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="text-blue-500">📄</span>
-                  <span>Report #2</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Nov. 16</span>
+          {[...Array(numberOfReports)].map((_, index) => (
+            <Card key={index}>
+              <CardContent className="p-4">
+                <Link href={`/reports/${numberOfReports - index}`} className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="text-blue-500">📄</span>
+                    <span>Report #{numberOfReports - index}</span>
+                  </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <Link href="/reports/1" className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="text-blue-500">📄</span>
-                  <span>Report #1</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Oct. 18</span>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Link>
-            </CardContent>
-          </Card>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
     </main>
