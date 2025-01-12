@@ -4,16 +4,19 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { useEffect, useState } from 'react';
 import { getReportCount } from '../lib/supabase';
+import { logout } from '../lib/auth';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [numberOfReports, setNumberOfReports] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user?.email) {
       async function fetchReportCount() {
         try {
           const count = await getReportCount(user.email);
@@ -24,14 +27,32 @@ export default function ProfilePage() {
       }
       fetchReportCount();
     }
-  }, [loading, user]);
+  }, [loading, user?.email]);
 
-  if (loading || !user) {
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
+
+  if (loading || !user?.email) {
     return null;
   }
 
   return (
     <main className="min-h-screen p-4 space-y-6">
+      {/* Logout Button */}
+      <div className="flex justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={handleLogout}
+          className="text-muted-foreground"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
+      </div>
+
       {/* Test Kit Section */}
       <Card className="relative overflow-hidden border-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50">
         <CardContent className="relative z-10 pt-6">
