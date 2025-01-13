@@ -19,8 +19,10 @@ export default function ProfilePage() {
     if (!loading && user?.email) {
       async function fetchReportCount() {
         try {
-          const count = await getReportCount(user.email);
-          setNumberOfReports(count);
+          if (user?.email) {
+            const count = await getReportCount(user.email);
+            setNumberOfReports(count);
+          }
         } catch (error) {
           console.error('Error fetching report count:', error);
         }
@@ -79,7 +81,10 @@ export default function ProfilePage() {
           {[...Array(numberOfReports)].map((_, index) => (
             <Card key={index}>
               <CardContent className="p-4">
-                <Link href={`/reports/${numberOfReports - index}`} className="flex justify-between items-center">
+                <Link 
+                  href={`/profile/${numberOfReports - index}`} 
+                  className="flex justify-between items-center"
+                >
                   <div className="flex items-center gap-3">
                     <span className="text-blue-500">📄</span>
                     <span>Report #{numberOfReports - index}</span>
