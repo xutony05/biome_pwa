@@ -20,7 +20,7 @@ export const loginWithGoogle = async () => {
         redirectTo: `${window.location.origin}/profile`,
       }
     });
-    return { data, error: null };
+    return { data, error};
   } catch (error) {
     return { data: null, error };
   }
