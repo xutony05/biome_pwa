@@ -17,6 +17,12 @@ export type Report = {
 
 export async function getReportCount(email: string): Promise<number> {
   try {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user || userData.user.email !== email) {
+      console.error('Unauthorized access attempt');
+      return 0;
+    }
+
     const { data, error } = await supabase
       .from('userToReports')
       .select('report_ids')
