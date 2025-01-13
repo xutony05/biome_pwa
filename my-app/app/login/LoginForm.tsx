@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { loginWithEmail, loginWithGoogle } from '../firebase/auth';
-import { useAuth } from '../context/AuthContext';
+import { loginWithEmail, loginWithGoogle } from '../lib/auth';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }) {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
-  const { user } = useAuth();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,25 +20,32 @@ export default function LoginForm({ onToggleForm }: { onToggleForm: () => void }
     if (error) {
       console.error('Login error:', error);
       setError('Failed to log in');
+    } else {
+      router.push('/profile');
     }
   };
 
   const handleGoogleLogin = async () => {
-    setError('');
-    const { error } = await loginWithGoogle();
-    if (error) {
-      console.error('Google login error:', error);
-      setError('Failed to log in with Google');
+    try {
+      setError('');
+      const { data, error } = await loginWithGoogle();
+      
+      if (error) {
+        console.error('Google login error:', error);
+        setError('Failed to log in with Google');
+        return;
+      }
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        setError('Authentication failed');
+      }
+    } catch (e) {
+      console.error('Login handler error:', e);
+      setError('An unexpected error occurred');
     }
   };
-
-  if (user) {
-    return (
-      <div className="text-center p-4 bg-green-100 dark:bg-green-900 rounded-lg">
-        <p className="text-lg">Welcome, {user.email}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full space-y-4">
