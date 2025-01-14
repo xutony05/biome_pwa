@@ -4,6 +4,10 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export default function ReportPage() {
   const params = useParams();
@@ -22,36 +26,49 @@ export default function ReportPage() {
 
   if (!report) return null;
 
+  const score = 20; // This should come from your report data
+
   return (
     <main className="min-h-screen p-4">
       <div className="flex items-center mb-6">
-        <button className="p-2" onClick={() => window.history.back()}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-        </button>
+        <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
         <h1 className="text-2xl font-semibold ml-2">Report #{params.slug}</h1>
       </div>
 
-      <div className="space-y-6">
-        <div className="p-4 bg-white rounded-lg shadow">
-          <h2 className="text-lg font-medium mb-4">Bacteria Levels</h2>
+      <Card>
+        <CardContent className="pt-6">
           <div className="space-y-4">
-            <div>
-              <p className="text-gray-600">B1 Level</p>
-              <p className="text-2xl font-semibold">{report.b1}%</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-medium">Microbiome Balance Score</h2>
+              <Button variant="ghost" className="text-sm text-blue-500 h-auto p-0">
+                EXPLAIN
+              </Button>
             </div>
-            <div>
-              <p className="text-gray-600">B2 Level</p>
-              <p className="text-2xl font-semibold">{report.b2}%</p>
+
+            <div className="text-2xl font-bold text-blue-500">
+              {score}
             </div>
-            <div>
-              <p className="text-gray-600">B3 Level</p>
-              <p className="text-2xl font-semibold">{report.b3}%</p>
+
+            <div className="space-y-2">
+              <div className="relative">
+                <Progress value={score} className="h-2" />
+                <div 
+                  className="absolute w-3 h-3 bg-blue-500 rounded-full -mt-2.5 transform -translate-x-1/2"
+                  style={{ left: `${score}%` }}
+                />
+              </div>
+              
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>OILY</span>
+                <span>BALANCED</span>
+                <span>DRY</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </main>
   );
 }
