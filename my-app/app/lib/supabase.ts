@@ -6,12 +6,22 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Report = {
-    reportid: number;  
-    email: string;    
-    created_at: string;
-    b1: number;        
-    b2: number;        
-    b3: number;
+  email: string;
+  report_id: number;
+  created_at: string;
+  'C.Acne': number;
+  'Other': number;
+  'C.Krop': number;
+  'C.Stri': number;
+  'S.Cap': number;
+  'S.Epi': number;
+  'C.Avi': number;
+  'C.gran': number;
+  'S.haem': number;
+  'S.Aur': number;
+  'C.Tub': number;
+  'S.hom': number;
+  env_score: number;
 }
 
 export async function getReportCount(email: string): Promise<number> {
