@@ -8,57 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import optimalRanges from '@/dataAssets/optimal.json';
-
-// Map database names to optimal.json names
-const bacteriaNameMap: { [key: string]: string } = {
-  'C.Acne': 'C. acnes',
-  'C.Stri': 'C. striatum',
-  'S.Cap': 'S. capitis',
-  'S.Epi': 'S. epidermidis',
-  'C.Avi': 'C. avidum',
-  'C.gran': 'C. granulosum',
-  'S.haem': 'S. haemolyticus',
-  'S.Aur': 'S. aureus',
-  'C.Tub': 'C. tuberculostearicum',
-  'S.hom': 'S. hominis',
-  'C.Krop': 'C. kroppenstedtii'
-};
-
-function calculateMicrobiomeScore(report: Report): number {
-  const bacteriaLevels = Object.fromEntries(
-    Object.entries(report).filter(([_, value]) => typeof value === 'number')
-  );
-
-  let totalPenalty = 0;
-  let diversityPenalty = 0;
-
-  Object.entries(bacteriaLevels).forEach(([bacteria, percentage]) => {
-    const value = percentage as number;
-    if (!value) return; // Skip null values
-    
-    // Check for diversity penalty (>70%)
-    if (value > 70) {
-      diversityPenalty += value - 70;
-    }
-
-    // Get optimal range if available
-    const optimalName = bacteriaNameMap[bacteria];
-    if (optimalName && optimalRanges[optimalName as keyof typeof optimalRanges]) {
-      const [min, max] = optimalRanges[optimalName as keyof typeof optimalRanges];
-      
-      if (value < min) {
-        totalPenalty += min - value;
-      } else if (value > max) {
-        totalPenalty += value - max;
-      }
-    }
-  });
-
-  // Calculate final score
-  const score = Math.max(0, Math.min(100, 100 - totalPenalty - diversityPenalty));
-  return Math.round(score);
-}
 
 export default function ReportPage() {
   const params = useParams();
@@ -77,7 +26,9 @@ export default function ReportPage() {
 
   if (!report) return null;
 
-  const score = calculateMicrobiomeScore(report);
+  console.log(report);
+
+  const score = report.microbiome_score || 0;
 
   return (
     <main className="min-h-screen p-4 space-y-4">

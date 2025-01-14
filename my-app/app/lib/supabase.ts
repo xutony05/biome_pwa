@@ -22,6 +22,7 @@ export type Report = {
   'C.Tub': number;
   'S.hom': number;
   env_score: number;
+  microbiome_score: number;
 }
 
 export async function getReportCount(email: string): Promise<number> {
