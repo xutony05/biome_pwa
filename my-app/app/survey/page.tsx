@@ -42,7 +42,7 @@ const questions: QuestionType[] = [
     id: "q1",
     type: "input",
     text: "First, what's your test kit serial number?",
-    placeholder: "e.g., RISDT8A03"
+    placeholder: "e.g., 634123"
   },
   {
     id: "q2",
@@ -118,16 +118,27 @@ export default function SurveyPage() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
   const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
-  const handleNext = (value: any) => {
-    setAnswers(prev => ({
-      ...prev,
+  const handleNext = async (value: any) => {
+    const newAnswers = {
+      ...answers,
       [currentQuestion.id]: value
-    }));
+    };
+    setAnswers(newAnswers);
+    console.log('newAnswers', newAnswers);
+    console.log(currentQuestionIndex);
     
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
+    } 
+    if (isLastQuestion && user?.email) {
+      console.log('Saving survey on last question');
+      // Save survey on last question
+      const { error } = await saveSurveyAnswers(user.email, newAnswers);
+      if (error) {
+        console.error('Failed to save survey:', error);
+      }
     }
   };
 
@@ -138,13 +149,6 @@ export default function SurveyPage() {
   };
 
   const handleViewInstructions = async () => {
-    if (user?.email) {
-      const { error } = await saveSurveyAnswers(user.email, answers);
-      if (error) {
-        console.error('Failed to save survey:', error);
-        // Optionally show error to user
-      }
-    }
     router.push('/instructions');
   };
 

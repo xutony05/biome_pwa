@@ -84,7 +84,7 @@ export async function saveSurveyAnswers(email: string, answers: Record<string, a
 
     return { error };
   } catch (e) {
-    console.error('Error saving survey:', e);
+    console.error('Error saving survey');
     return { error: e };
   }
 } 
