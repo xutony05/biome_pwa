@@ -9,6 +9,8 @@ import { SingleChoiceQuestion } from "./components/SingleChoiceQuestion";
 import { MultiChoiceQuestion } from "./components/MultiChoiceQuestion";
 import { FinalPage } from "./components/FinalPage";
 import { useRouter } from "next/navigation";
+import { useAuth } from '../context/AuthContext';
+import { saveSurveyAnswers } from '../lib/supabase';
 
 // Define question types for better type safety
 interface BaseQuestion {
@@ -111,6 +113,7 @@ const ProgressBar = ({ current, total }: { current: number; total: number }) => 
 
 export default function SurveyPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
@@ -134,7 +137,14 @@ export default function SurveyPage() {
     }
   };
 
-  const handleViewInstructions = () => {
+  const handleViewInstructions = async () => {
+    if (user?.email) {
+      const { error } = await saveSurveyAnswers(user.email, answers);
+      if (error) {
+        console.error('Failed to save survey:', error);
+        // Optionally show error to user
+      }
+    }
     router.push('/instructions');
   };
 
