@@ -1,0 +1,46 @@
+{
+    "S. capitis": [
+        3,
+        10
+    ],
+    "S. aureus": [
+        0.2,
+        10
+    ],
+    "S. epidermidis": [
+        10,
+        25
+    ],
+    "C. acnes": [
+        35,
+        55
+    ],
+    "C. striatum": [
+        1,
+        10
+    ],
+    "C. kroppenstedtii": [
+        10,
+        20
+    ],
+    "C. tuberculostearicum": [
+        0.5,
+        1
+    ],
+    "C. avidum": [
+        0.5,
+        4
+    ],
+    "C. granulosum": [
+        0.5,
+        3
+    ],
+    "S. haemolyticus": [
+        0.5,
+        5
+    ],
+    "S. hominis": [
+        5,
+        10
+    ]
+}
