@@ -21,13 +21,14 @@ const bacteriaNameMap: Record<string, string> = {
 };
 
 interface CollapsibleBacteriaProps {
+  bacteriaKey: string;
   bacteria: string;
   value: number;
 }
 
-export function CollapsibleBacteria({ bacteria, value }: CollapsibleBacteriaProps) {
+export function CollapsibleBacteria({ bacteriaKey, bacteria, value }: CollapsibleBacteriaProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const descriptionKey = bacteriaNameMap[bacteria];
+  const descriptionKey = bacteriaNameMap[bacteriaKey];
   const description = descriptionKey ? bacteriaDescriptions[descriptionKey as keyof typeof bacteriaDescriptions] : null;
 
   return (
