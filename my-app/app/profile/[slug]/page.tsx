@@ -148,14 +148,17 @@ export default function ReportPage() {
                       if (b[0] === 'Other') return -1;
                       return a[0].localeCompare(b[0]);
                     })
-                    .map(([bacteria, value]) => (
-                      <CollapsibleBacteria
-                        key={bacteria}
-                        bacteriaKey={bacteria}
-                        bacteria={bacteriaFullNames[bacteria] || bacteria}
-                        value={value as number}
-                      />
-                    ))}
+                    .map(([bacteria, value]) => {
+                      const isOutside = isOutsideOptimalRange(bacteria, value as number);
+                      return (
+                        <CollapsibleBacteria
+                          key={bacteria}
+                          bacteria={bacteriaFullNames[bacteria]}
+                          value={value as number}
+                          isOutsideRange={isOutside}
+                        />
+                      );
+                    })}
                 </div>
               </div>
             </CardContent>

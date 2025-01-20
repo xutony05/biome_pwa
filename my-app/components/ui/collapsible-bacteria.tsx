@@ -21,14 +21,14 @@ const bacteriaNameMap: Record<string, string> = {
 };
 
 interface CollapsibleBacteriaProps {
-  bacteriaKey: string;
   bacteria: string;
   value: number;
+  isOutsideRange: boolean;
 }
 
-export function CollapsibleBacteria({ bacteriaKey, bacteria, value }: CollapsibleBacteriaProps) {
+export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: CollapsibleBacteriaProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const descriptionKey = bacteriaNameMap[bacteriaKey];
+  const descriptionKey = bacteriaNameMap[bacteria];
   const description = descriptionKey ? bacteriaDescriptions[descriptionKey as keyof typeof bacteriaDescriptions] : null;
 
   return (
@@ -38,7 +38,10 @@ export function CollapsibleBacteria({ bacteriaKey, bacteria, value }: Collapsibl
         className="w-full flex items-center justify-between py-2 hover:bg-accent/50 rounded-lg transition-colors"
       >
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
+          <div className={cn(
+            "w-2 h-2 rounded-full",
+            isOutsideRange ? "bg-red-500" : "bg-green-500"
+          )} />
           <span>{bacteria}</span>
         </div>
         <div className="flex items-center gap-2">
