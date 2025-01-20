@@ -9,20 +9,58 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
+import recommendations from '@/dataAssets/recommendation.json';
+import optimalRanges from '@/dataAssets/optimal.json';
 
+// Define mapping at the top level
 const bacteriaFullNames: Record<string, string> = {
-  'C.Acne': 'Cutibacterium acnes',
-  'C.Stri': 'Corynebacterium striatum',
-  'S.Cap': 'Staphylococcus capitis',
-  'S.Epi': 'Staphylococcus epidermidis',
-  'C.Avi': 'Cutibacterium avidum',
-  'C.gran': 'Cutibacterium granulosum',
-  'S.haem': 'Staphylococcus haemolyticus',
-  'S.Aur': 'Staphylococcus aureus',
-  'C.Tub': 'Cutibacterium tuberculostearicum',
-  'S.hom': 'Staphylococcus hominis',
-  'C.Krop': 'Corynebacterium kroppenstedtii',
+  'C.Acne': 'C. acnes',
+  'C.Stri': 'C. striatum',
+  'S.Cap': 'S. capitis',
+  'S.Epi': 'S. epidermidis',
+  'C.Avi': 'C. avidum',
+  'C.gran': 'C. granulosum',
+  'S.haem': 'S. haemolyticus',
+  'S.Aur': 'S. aureus',
+  'C.Tub': 'C. tuberculostearicum',
+  'S.hom': 'S. hominis',
+  'C.Krop': 'C. kroppenstedtii',
   'Other': 'Other species'
+};
+
+// Helper function to check if bacteria level is outside its specific optimal range
+const isOutsideOptimalRange = (bacteria: string, value: number) => {
+  const bacteriaKey = bacteriaFullNames[bacteria];
+  const range = optimalRanges[bacteriaKey as keyof typeof optimalRanges];
+  if (!range) return false;
+  return value < range[0] || value > range[1];
+};
+
+// Helper function to get random recommendation
+const getRandomRecommendation = (bacteria: string) => {
+  const bacteriaKey = bacteriaFullNames[bacteria];
+  const recs = recommendations[bacteriaKey as keyof typeof recommendations];
+  
+  if (recs === 'GENERAL') {
+    const generalRecs = recommendations.GENERAL;
+    const keys = Object.keys(generalRecs);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return {
+      ingredient: randomKey,
+      description: generalRecs[randomKey as keyof typeof generalRecs]
+    };
+  }
+  
+  if (recs) {
+    const keys = Object.keys(recs);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return {
+      ingredient: randomKey,
+      description: recs[randomKey as keyof typeof recs]
+    };
+  }
+  
+  return null;
 };
 
 export default function ReportPage() {
@@ -41,8 +79,6 @@ export default function ReportPage() {
   }, [params.slug, user?.email]);
 
   if (!report) return null;
-
-  console.log(report);
 
   const score = report.microbiome_score || 0;
 
@@ -141,6 +177,54 @@ export default function ReportPage() {
                 <div className="text-3xl font-bold">
                   {report.env_score}
                   <span className="text-base font-normal text-muted-foreground ml-1">/10</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Recommendations</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 bg-accent rounded-lg">
+                    <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      {Object.entries(report)
+                        .filter(([key, value]) => {
+                          return (key.includes('.') || key === 'Other') && 
+                            value !== null && 
+                            isOutsideOptimalRange(key, value as number);
+                        })
+                        .map(([bacteria]) => {
+                          const recommendation = getRandomRecommendation(bacteria);
+                          return recommendation ? (
+                            <li key={bacteria} className="space-y-1">
+                              <span className="font-medium">{recommendation.ingredient}</span>
+                              <p className="ml-6 text-sm">{recommendation.description}</p>
+                            </li>
+                          ) : null;
+                        })}
+                    </ul>
+                  </div>
+
+                  <div className="p-4 bg-accent rounded-lg">
+                    <h3 className="font-medium mb-2">Lifestyle Tips</h3>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li>Stay hydrated</li>
+                      <li>Protect from UV exposure</li>
+                      <li>Maintain a balanced diet</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </CardContent>
