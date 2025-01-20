@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 
 export default function ReportPage() {
   const params = useParams();
@@ -85,19 +86,11 @@ export default function ReportPage() {
                   return a[0].localeCompare(b[0]);
                 })
                 .map(([bacteria, value]) => (
-                  <div 
+                  <CollapsibleBacteria
                     key={bacteria}
-                    className="flex items-center justify-between py-2"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span>{bacteria}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span>{(value as number).toFixed(1)}%</span>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
+                    bacteria={bacteria}
+                    value={value as number}
+                  />
                 ))}
             </div>
           </div>
