@@ -60,4 +60,31 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
     console.error('Failed to fetch report:', e);
     return null;
   }
+}
+
+export interface SurveyAnswers {
+  email: string;
+  kit_id: string;        // from q1
+  exfoliation: string;   // from q2
+  breakouts: string;     // from q3
+  skin_conditions: string[];  // from q4
+}
+
+export async function saveSurveyAnswers(email: string, answers: Record<string, any>): Promise<{ error: any }> {
+  try {
+    const { error } = await supabase
+      .from('surveys')
+      .insert({
+        email: email,
+        kit_id: answers.q1,
+        exfoliation: answers.q2,
+        breakouts: answers.q3,
+        skin_conditions: answers.q4,
+      });
+
+    return { error };
+  } catch (e) {
+    console.error('Error saving survey');
+    return { error: e };
+  }
 } 
