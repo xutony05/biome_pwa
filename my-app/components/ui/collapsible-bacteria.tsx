@@ -14,8 +14,23 @@ export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: Collaps
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    if (bacteria.toLowerCase().includes('c.acne')) {
-      router.push('/bacteria/acnes');
+    const bacteriaMap: Record<string, string> = {
+      'C.Acne': 'acnes',
+      'C.Stri': 'striatum',
+      'S.Cap': 'capitis',
+      'S.Epi': 'epidermidis',
+      'C.Avi': 'avidum',
+      'C.gran': 'granulosum',
+      'S.haem': 'haemolyticus',
+      'S.Aur': 'aureus',
+      'C.Tub': 'tuberculostearicum',
+      'S.hom': 'hominis',
+      'C.Krop': 'kroppenstedtii'
+    };
+
+    const path = bacteriaMap[bacteria];
+    if (path) {
+      router.push(`/bacteria/${path}`);
     } else {
       setIsOpen(!isOpen);
     }
