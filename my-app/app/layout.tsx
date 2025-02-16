@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthContextProvider } from './context/AuthContext';
+import { BacteriaProvider } from './context/BacteriaContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,7 +40,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthContextProvider>
-          {children}
+          <BacteriaProvider>
+            {children}
+          </BacteriaProvider>
         </AuthContextProvider>
       </body>
     </html>

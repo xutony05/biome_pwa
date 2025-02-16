@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { CollapsibleBacteria } from "../../../components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
+import { useBacteria } from '@/app/context/BacteriaContext';
 
 const isOutsideOptimalRange = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -35,16 +36,34 @@ export default function ReportPage() {
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
   const router = useRouter();
+  const { setValues } = useBacteria();
   
   useEffect(() => {
     async function fetchReport() {
       if (user?.email) {
         const reportData = await getReportByNumber(user.email, Number(params.slug));
         setReport(reportData);
+        // Set bacteria values
+        console.log(reportData);
+        if (reportData) {
+          setValues({
+            'C.Acne': reportData['C.Acne'],
+            'C.Stri': reportData['C.Stri'],
+            'S.Cap': reportData['S.Cap'],
+            'S.Epi': reportData['S.Epi'],
+            'C.Avi': reportData['C.Avi'],
+            'C.gran': reportData['C.gran'],
+            'S.haem': reportData['S.haem'],
+            'S.Aur': reportData['S.Aur'],
+            'C.Tub': reportData['C.Tub'],
+            'S.hom': reportData['S.hom'],
+            'C.Krop': reportData['C.Krop']
+          });
+        }
       }
     }
     fetchReport();
-  }, [params.slug, user?.email]);
+  }, [params.slug, user?.email, setValues]);
 
   if (!report) return null;
 
