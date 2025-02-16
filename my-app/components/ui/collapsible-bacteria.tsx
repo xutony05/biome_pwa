@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 interface CollapsibleBacteriaProps {
   bacteria: string;
   value: number;
-  isOutsideRange: boolean;
+  status: 'optimal' | 'above' | 'below';
 }
 
-export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: CollapsibleBacteriaProps) {
+export function CollapsibleBacteria({ bacteria, value, status }: CollapsibleBacteriaProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -45,7 +45,9 @@ export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: Collaps
         <div className="flex items-center gap-2">
           <div className={cn(
             "w-2 h-2 rounded-full",
-            isOutsideRange ? "bg-red-500" : "bg-green-500"
+            status === 'above' ? "bg-red-500" : 
+            status === 'below' ? "bg-amber-500" : 
+            "bg-green-500"
           )} />
           <span>{bacteria}</span>
         </div>

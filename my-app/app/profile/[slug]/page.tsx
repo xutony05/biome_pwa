@@ -12,7 +12,7 @@ import { CollapsibleBacteria } from "../../../components/ui/collapsible-bacteria
 import optimalRanges from '@/dataAssets/optimal.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
 
-const isOutsideOptimalRange = (bacteria: string, value: number) => {
+const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
     .replace('C.Acne', 'C. acnes')
     .replace('C.Stri', 'C. striatum')
@@ -27,15 +27,17 @@ const isOutsideOptimalRange = (bacteria: string, value: number) => {
     .replace('C.Krop', 'C. kroppenstedtii');
   
   const range = optimalRanges[bacteriaKey as keyof typeof optimalRanges];
-  if (!range) return false;
-  return value < range[0] || value > range[1];
+  if (!range) return 'optimal'; // default to optimal if no range found
+
+  if (value > range[1]) return 'above';
+  if (value < range[0]) return 'below';
+  return 'optimal';
 };
 
 export default function ReportPage() {
   const params = useParams();
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
-  const router = useRouter();
   const { setValues } = useBacteria();
   
   useEffect(() => {
@@ -113,10 +115,25 @@ export default function ReportPage() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">All Microbes</h2>
+                  <h2 className="text-lg font-medium">Key Microbes</h2>
                   <Button variant="ghost" className="text-sm text-blue-500 h-auto p-0">
                     EXPLAIN
                   </Button>
+                </div>
+
+                <div className="flex gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <span>Optimal Range</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <span>Above Optimal</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span>Below Optimal</span>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -128,13 +145,13 @@ export default function ReportPage() {
                       return a[0].localeCompare(b[0]);
                     })
                     .map(([bacteria, value]) => {
-                      const isOutside = isOutsideOptimalRange(bacteria, value as number);
+                      const status = getOptimalRangeStatus(bacteria, value as number);
                       return (
                         <CollapsibleBacteria 
                           key={bacteria}
                           bacteria={bacteria}
                           value={value as number}
-                          isOutsideRange={isOutside}
+                          status={status}
                         />
                       );
                     })}
