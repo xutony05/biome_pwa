@@ -222,7 +222,7 @@ export default function ReportPage() {
 
                 <div className="text-3xl font-bold">
                   {report.env_score}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/10</span>
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
             </CardContent>
@@ -244,7 +244,7 @@ export default function ReportPage() {
                 <div className="space-y-4">
                   <div className="p-4 bg-accent rounded-lg">
                     <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                    <ul className="list-disc list-inside space-y-2">
                       {Object.entries(report)
                         .filter(([key, value]) => {
                           return (key.includes('.') || key === 'Other') && 
@@ -265,7 +265,7 @@ export default function ReportPage() {
 
                   <div className="p-4 bg-accent rounded-lg">
                     <h3 className="font-medium mb-2">Lifestyle Tips</h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                    <ul className="list-disc list-inside space-y-2">
                       <li>Stay hydrated</li>
                       <li>Protect from UV exposure</li>
                       <li>Maintain a balanced diet</li>
