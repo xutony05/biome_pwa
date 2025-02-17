@@ -1,11 +1,15 @@
 'use client';
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBacteria } from '@/app/context/BacteriaContext';
 import optimalRanges from '@/dataAssets/optimal.json';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function HominisPage() {
+  const router = useRouter();
   const { values } = useBacteria();
   const value = values['S.hom'];
   const [min, max] = optimalRanges['S. hominis'];
@@ -13,6 +17,14 @@ export default function HominisPage() {
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
       <div className="min-h-full p-4">
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Report
+        </Button>
         <Card className="max-w-2xl mx-auto">
           <div className="p-6 space-y-8">
             {/* Title */}
@@ -67,9 +79,9 @@ export default function HominisPage() {
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
                 <p className="text-green-800">Optimal levels: {min}-{max}%</p>
-                <p className="text-green-700 text-sm">
+                <div className="text-green-700 text-sm">
                   When at healthy levels, S. hominis:
-                </p>
+                </div>
                 <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
                   <li>Supports your skin's natural defense system</li>
                   <li>Helps maintain bacterial balance</li>

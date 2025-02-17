@@ -1,7 +1,24 @@
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+'use client';
+
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useRouter } from 'next/navigation';
+
+// Add mapping for database names to description names
+const bacteriaNameMap: Record<string, string> = {
+  'C.Acne': 'C. acnes',
+  'C.Stri': 'C. striatum',
+  'S.Cap': 'S. capitis',
+  'S.Epi': 'S. epidermidis',
+  'C.Avi': 'C. avidum',
+  'C.gran': 'C. granulosum',
+  'S.haem': 'S. haemolyticus',
+  'S.Aur': 'S. aureus',
+  'C.Tub': 'C. tuberculostearicum',
+  'S.hom': 'S. hominis',
+  'C.Krop': 'C. kroppenstedtii'
+};
 
 interface CollapsibleBacteriaProps {
   bacteria: string;
@@ -49,7 +66,7 @@ export function CollapsibleBacteria({ bacteria, value, status }: CollapsibleBact
             status === 'below' ? "bg-amber-500" : 
             "bg-green-500"
           )} />
-          <span>{bacteria}</span>
+          <div className="font-medium">{bacteriaNameMap[bacteria] || bacteria}</div>
         </div>
         <div className="flex items-center gap-2">
           <span>{value.toFixed(1)}%</span>

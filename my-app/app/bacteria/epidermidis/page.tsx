@@ -1,11 +1,15 @@
 'use client';
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBacteria } from '@/app/context/BacteriaContext';
 import optimalRanges from '@/dataAssets/optimal.json';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function EpidermidisPage() {
+  const router = useRouter();
   const { values } = useBacteria();
   const value = values['S.Epi'];
   const [min, max] = optimalRanges['S. epidermidis'];
@@ -13,6 +17,14 @@ export default function EpidermidisPage() {
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
       <div className="min-h-full p-4">
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Report
+        </Button>
         <Card className="max-w-2xl mx-auto">
           <div className="p-6 space-y-8">
             {/* Title */}
@@ -66,16 +78,16 @@ export default function EpidermidisPage() {
             <section className="space-y-3">
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
-                <p className="text-green-800">Optimal levels: 15-30%</p>
-                <p className="text-green-700 text-sm">
+                <p className="text-green-800">Optimal levels: {min}-{max}%</p>
+                <div className="text-green-700 text-sm">
                   When at healthy levels, S. epidermidis:
-                  <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Creates a protective barrier on your skin</li>
-                    <li>Helps fight off harmful bacteria</li>
-                    <li>Supports your skin's moisture balance</li>
-                    <li>Keeps your skin ecosystem healthy</li>
-                  </ul>
-                </p>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
+                  <li>Creates a protective barrier on your skin</li>
+                  <li>Helps fight off harmful bacteria</li>
+                  <li>Supports your skin's moisture balance</li>
+                  <li>Keeps your skin ecosystem healthy</li>
+                </ul>
               </div>
             </section>
 
