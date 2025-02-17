@@ -1,9 +1,30 @@
+'use client';
+
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { useBacteria } from '@/app/context/BacteriaContext';
+import optimalRanges from '@/dataAssets/optimal.json';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function AureusPage() {
+  const router = useRouter();
+  const { values } = useBacteria();
+  const value = values['S.Aur'];
+  const [min, max] = optimalRanges['S. aureus'];
+
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
       <div className="min-h-full p-4">
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Report
+        </Button>
         <Card className="max-w-2xl mx-auto">
           <div className="p-6 space-y-8">
             {/* Title */}
@@ -18,6 +39,45 @@ export default function AureusPage() {
                 regulated. Unlike many other skin bacteria, S. aureus is best kept at very low levels 
                 to maintain skin health.
               </p>
+            </section>
+
+            {/* Your Profile */}
+            <section className="space-y-3">
+              <h2 className="text-lg font-semibold">Your Profile</h2>
+              <div className={cn(
+                "rounded-lg p-4 space-y-2",
+                value > max ? "bg-red-100" : 
+                value < min ? "bg-amber-100" : "bg-green-100"
+              )}>
+                <p className={cn(
+                  "font-medium",
+                  value > max ? "text-red-800" : 
+                  value < min ? "text-amber-800" : "text-green-800"
+                )}>
+                  Your level: {value.toFixed(1)}%
+                </p>
+                {value > max && (
+                  <p className="text-red-800">
+                    Your S. aureus levels are above the optimal range. This could potentially lead to skin concerns 
+                    and imbalances in your skin microbiome. It's recommended to consult with a healthcare provider 
+                    about ways to help restore balance to your skin's bacterial community.
+                  </p>
+                )}
+                {value < min && (
+                  <p className="text-amber-800">
+                    Your S. aureus levels are below the optimal range. While this is generally not a concern, 
+                    maintaining a balanced microbiome is important for overall skin health. Your skin's natural 
+                    defenses appear to be keeping this bacteria well regulated.
+                  </p>
+                )}
+                {value >= min && value <= max && (
+                  <p className="text-green-800">
+                    Great news! Your S. aureus levels are within the optimal range. This suggests your skin's 
+                    microbiome is well-balanced and your natural defense systems are working effectively to 
+                    maintain healthy bacterial levels.
+                  </p>
+                )}
+              </div>
             </section>
 
             {/* Good Range */}

@@ -1,11 +1,15 @@
 'use client';
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBacteria } from '@/app/context/BacteriaContext';
 import optimalRanges from '@/dataAssets/optimal.json';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function KroppenstedtiiPage() {
+  const router = useRouter();
   const { values } = useBacteria();
   const value = values['C.Krop'];
   const [min, max] = optimalRanges['C. kroppenstedtii'];
@@ -13,6 +17,14 @@ export default function KroppenstedtiiPage() {
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
       <div className="min-h-full p-4">
+        <Button 
+          variant="ghost" 
+          className="mb-4" 
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Report
+        </Button>
         <Card className="max-w-2xl mx-auto">
           <div className="p-6 space-y-8">
             {/* Title */}
