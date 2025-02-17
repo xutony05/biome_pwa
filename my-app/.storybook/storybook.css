@@ -1,0 +1,16 @@
+/* Import Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Override any problematic styles */
+#storybook-root {
+  height: auto !important;
+  overflow: auto !important;
+}
+
+/* If needed, override any viewport constraints */
+html, body {
+  height: auto !important;
+  overflow: auto !important;
+} 

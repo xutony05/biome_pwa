@@ -42,36 +42,54 @@ const questions: QuestionType[] = [
     id: "q1",
     type: "input",
     text: "First, what's your test kit serial number?",
-    placeholder: "e.g., 634123"
+    placeholder: "e.g., RISDT8A03"
   },
   {
     id: "q2",
-    type: "single",
-    text: "How often do you exfoliate your skin?",
-    options: ["Daily", "Weekly", "Monthly", "Never"]
+    type: "input",
+    text: "Which city are you based in?",
+    placeholder: "e.g., Vancouver, BC"
   },
   {
     id: "q3",
     type: "single",
-    text: "Do you experience breakouts?",
-    options: ["Rarely", "Occasionally", "Frequently"]
+    text: "How would you describe your skin type?",
+    options: ["Dry", "Oily", "Combination", "Balanced"]
   },
   {
     id: "q4",
     type: "multi",
-    text: "Do you have any specific skin conditions we should know about?",
+    text: "Which skin concerns do you currently experience?",
     options: [
-      "Acne",
-      "Seborrheic Dermatitis",
-      "Vitiligo",
-      "Contact Dermatitis",
+      "Acne/breakouts",
       "Rosacea",
       "Psoriasis",
+      "Eczema",
+      "Uneven pigmentation",
+      "Wrinkles",
       "None of the above"
     ]
   },
   {
     id: "q5",
+    type: "input",
+    text: "Do you have any allergies or skin sensitivities?",
+    placeholder: "e.g., Fragrance, Benzoyl Peroxide, Retinol, Salicylic Acid, None"
+  },
+  {
+    id: "q6",
+    type: "input",
+    text: "What skincare products do you currently use?",
+    placeholder: "e.g., CeraVe Cleanser, The Ordinary Niacinamide, Neutrogena Moisturizer"
+  },
+  {
+    id: "q7",
+    type: "input",
+    text: "Is there anything else you'd like us to know about your skin?",
+    placeholder: "e.g., Recent changes in skin condition, specific concerns, or treatment history"
+  },
+  {
+    id: "q8",
     type: "final",
     text: "All done!",
     description: "We'll use your answers to make your report even more tailored to you. Now, let's get you ready for the swab.",
