@@ -3,7 +3,7 @@
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import bacteriaDescriptions from "@/dataAssets/bacteriaDescription.json";
+import { useRouter } from 'next/navigation';
 
 // Add mapping for database names to description names
 const bacteriaNameMap: Record<string, string> = {
@@ -23,24 +23,48 @@ const bacteriaNameMap: Record<string, string> = {
 interface CollapsibleBacteriaProps {
   bacteria: string;
   value: number;
-  isOutsideRange: boolean;
+  status: 'optimal' | 'above' | 'below';
 }
 
-export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: CollapsibleBacteriaProps) {
+export function CollapsibleBacteria({ bacteria, value, status }: CollapsibleBacteriaProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const descriptionKey = bacteriaNameMap[bacteria];
-  const description = descriptionKey ? bacteriaDescriptions[descriptionKey as keyof typeof bacteriaDescriptions] : null;
+
+  const handleClick = () => {
+    const bacteriaMap: Record<string, string> = {
+      'C.Acne': 'acnes',
+      'C.Stri': 'striatum',
+      'S.Cap': 'capitis',
+      'S.Epi': 'epidermidis',
+      'C.Avi': 'avidum',
+      'C.gran': 'granulosum',
+      'S.haem': 'haemolyticus',
+      'S.Aur': 'aureus',
+      'C.Tub': 'tuberculostearicum',
+      'S.hom': 'hominis',
+      'C.Krop': 'kroppenstedtii'
+    };
+
+    const path = bacteriaMap[bacteria];
+    if (path) {
+      router.push(`/bacteria/${path}`);
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
 
   return (
     <div className="space-y-1.5">
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleClick}
         className="w-full flex items-center justify-between py-2 hover:bg-accent/50 rounded-lg transition-colors"
       >
         <div className="flex items-center gap-2">
           <div className={cn(
             "w-2 h-2 rounded-full",
-            isOutsideRange ? "bg-red-500" : "bg-green-500"
+            status === 'above' ? "bg-red-500" : 
+            status === 'below' ? "bg-amber-500" : 
+            "bg-green-500"
           )} />
           <span>{bacteria}</span>
         </div>
@@ -54,12 +78,6 @@ export function CollapsibleBacteria({ bacteria, value, isOutsideRange }: Collaps
           />
         </div>
       </button>
-      
-      {isOpen && description && (
-        <div className="pl-4 pr-2 py-2 text-sm text-muted-foreground bg-accent/50 rounded-lg">
-          {description}
-        </div>
-      )}
     </div>
   );
 } 
