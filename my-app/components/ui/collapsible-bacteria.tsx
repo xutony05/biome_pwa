@@ -66,7 +66,7 @@ export function CollapsibleBacteria({ bacteria, value, status }: CollapsibleBact
             status === 'below' ? "bg-amber-500" : 
             "bg-green-500"
           )} />
-          <span>{bacteria}</span>
+          <div className="font-medium">{bacteriaNameMap[bacteria] || bacteria}</div>
         </div>
         <div className="flex items-center gap-2">
           <span>{value.toFixed(1)}%</span>
