@@ -67,9 +67,9 @@ export default function HaemolyticusPage() {
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
                 <p className="text-green-800">Optimal levels: {min}-{max}%</p>
-                <p className="text-green-700 text-sm">
+                <div className="text-green-700 text-sm">
                   When at healthy levels, S. haemolyticus:
-                </p>
+                </div>
                 <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
                   <li>Enhances your skin's microbial diversity</li>
                   <li>Helps maintain proper bacterial balance</li>

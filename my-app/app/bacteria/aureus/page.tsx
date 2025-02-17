@@ -25,15 +25,15 @@ export default function AureusPage() {
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
                 <p className="text-green-800">Optimal levels: 0-1%</p>
-                <p className="text-green-700 text-sm">
+                <div className="text-green-700 text-sm">
                   When at healthy levels, S. aureus:
-                  <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Remains in check by other beneficial bacteria</li>
-                    <li>Coexists within a balanced microbiome</li>
-                    <li>Doesn't interfere with skin health</li>
-                    <li>Stays regulated by skin's natural defenses</li>
-                  </ul>
-                </p>
+                </div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-green-700 text-sm">
+                  <li>Remains in check by other beneficial bacteria</li>
+                  <li>Coexists within a balanced microbiome</li>
+                  <li>Doesn't interfere with skin health</li>
+                  <li>Stays regulated by skin's natural defenses</li>
+                </ul>
               </div>
             </section>
 

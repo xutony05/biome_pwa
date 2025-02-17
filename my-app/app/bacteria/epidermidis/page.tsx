@@ -66,16 +66,16 @@ export default function EpidermidisPage() {
             <section className="space-y-3">
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
-                <p className="text-green-800">Optimal levels: 15-30%</p>
-                <p className="text-green-700 text-sm">
+                <p className="text-green-800">Optimal levels: {min}-{max}%</p>
+                <div className="text-green-700 text-sm">
                   When at healthy levels, S. epidermidis:
-                  <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Creates a protective barrier on your skin</li>
-                    <li>Helps fight off harmful bacteria</li>
-                    <li>Supports your skin's moisture balance</li>
-                    <li>Keeps your skin ecosystem healthy</li>
-                  </ul>
-                </p>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
+                  <li>Creates a protective barrier on your skin</li>
+                  <li>Helps fight off harmful bacteria</li>
+                  <li>Supports your skin's moisture balance</li>
+                  <li>Keeps your skin ecosystem healthy</li>
+                </ul>
               </div>
             </section>
 
