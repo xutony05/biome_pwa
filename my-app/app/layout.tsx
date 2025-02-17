@@ -12,21 +12,24 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: "cover",
   themeColor: "#ffffff",
+  minimumScale: 1,
+  interactive: "yes",
+  'mobile-web-app-capable': 'yes',
+  'apple-mobile-web-app-capable': 'yes',
+  'apple-mobile-web-app-status-bar-style': 'default'
 };
 
 export const metadata: Metadata = {
   title: "Biomë",
   description: "A Progressive Web App built with Next.js",
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Biomë",
-    startupImage: [
-      {
-        url: "/splash/apple-splash-2048-2732.jpg",
-        media: "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
-      }
-    ]
+    statusBarStyle: "default",
+    title: "Biomë"
+  },
+  formatDetection: {
+    telephone: false
   }
 };
 

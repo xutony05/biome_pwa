@@ -5,6 +5,11 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development'
 })
 
-module.exports = withPWA({
-  // other Next.js config options here
-}) 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: ['your-domain.com']
+  }
+}
+
+module.exports = withPWA(nextConfig) 

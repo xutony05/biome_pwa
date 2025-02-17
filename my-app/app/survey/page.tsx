@@ -102,7 +102,7 @@ const Header = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boo
   const router = useRouter();
   
   return (
-    <div className="flex justify-between items-center h-14 px-4 bg-white">
+    <div className="flex justify-between items-center h-12 bg-white">
       {!isFinal && (
         <button onClick={onBack} className="w-10 h-10 flex items-center justify-center">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -214,8 +214,7 @@ export default function SurveyPage() {
     <div className="min-h-screen flex flex-col">
       {/* Fixed header and progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-white"> {/* Safe area background */}
-          <div className="h-12 bg-white" /> {/* Safe area padding */}
+        <div className="bg-white"> {/* Add horizontal padding here */}
           <Header 
             onBack={handleBack} 
             isFinal={currentQuestion.type === "final"}
@@ -230,7 +229,7 @@ export default function SurveyPage() {
       </div>
 
       {/* Main content with padding for fixed header */}
-      <main className="flex-1 pt-32 px-6 pb-6">
+      <main className="flex-1 pt-20 px-6 pb-6">
         {currentQuestion.type === "final" ? (
           <div className="flex flex-col items-center">
             <div className="relative w-20 h-20 mb-4 overflow-visible">
