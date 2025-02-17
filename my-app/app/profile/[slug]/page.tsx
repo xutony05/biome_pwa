@@ -141,7 +141,7 @@ export default function ReportPage() {
                   </Button>
                 </div>
 
-                <div className="text-2xl font-bold text-blue-500">
+                <div className="text-2xl font-bold">
                   {score}
                 </div>
 
@@ -149,7 +149,7 @@ export default function ReportPage() {
                   <div className="relative">
                     <Progress value={score} className="h-2" />
                     <div 
-                      className="absolute w-3 h-3 bg-blue-500 rounded-full -mt-2.5 transform -translate-x-1/2"
+                      className="absolute w-3 h-3 bg-black rounded-full -mt-2.5 transform -translate-x-1/2"
                       style={{ left: `${score}%` }}
                     />
                   </div>
