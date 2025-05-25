@@ -289,6 +289,17 @@ export default function ReportPage() {
               </div>
             </CardContent>
           </Card>
+
+          <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+            <p className="font-medium mb-2">Disclaimer</p>
+            <p className="space-y-2">
+              Please note that our microbiome tests are not substitutes for medical testing, consultations, diagnoses, or
+              treatments. If you have severe skin conditions, it is advisable to consult your local doctor. The information
+              and advice provided in your report should not replace any medical treatment you are receiving from a
+              dermatologist. All results are intended to enhance your skincare routine and help you better understand
+              your skin. Do not delay seeking medical advice based on the information in the report.
+            </p>
+          </div>
         </div>
       </div>
 
