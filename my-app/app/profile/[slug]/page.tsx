@@ -7,7 +7,7 @@ import { getReportByNumber, type Report } from '@/app/lib/supabase';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
@@ -206,83 +206,104 @@ export default function ReportPage() {
                   <h2 className="text-lg font-medium">Recommendations</h2>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-4 bg-accent rounded-lg">
-                    <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
-                    <div className="space-y-4">
+                <div className="space-y-6">
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Leaf className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Skincare Ingredients</h3>
+                    </div>
+                    <div className="space-y-6">
                       <div>
-                        <h4 className="text-sm font-medium text-green-600 mb-2">Recommended Ingredients</h4>
-                        <ul className="list-disc list-inside space-y-2">
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <h4 className="text-sm font-medium text-green-600">Recommended Ingredients</h4>
+                        </div>
+                        <div className="grid gap-3">
                           {report.good_ingredients?.map((ingredient: string, index: number) => (
-                            <li key={index} className="space-y-1">
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
                               <span className="font-medium text-primary">{ingredient}</span>
-                              <p className="ml-6 text-sm text-muted-foreground">
+                              <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
                               </p>
-                            </li>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-red-600 mb-2">Ingredients to Avoid</h4>
-                        <ul className="list-disc list-inside space-y-2">
+                        <div className="flex items-center gap-2 mb-3">
+                          <XCircle className="h-4 w-4 text-red-600" />
+                          <h4 className="text-sm font-medium text-red-600">Ingredients to Avoid</h4>
+                        </div>
+                        <div className="grid gap-3">
                           {report.avoid_ingredients?.map((ingredient: string, index: number) => (
-                            <li key={index} className="space-y-1">
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
                               <span className="font-medium text-red-600">{ingredient}</span>
-                              <p className="ml-6 text-sm text-muted-foreground">
+                              <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
                               </p>
-                            </li>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-accent rounded-lg">
-                    <h3 className="font-medium mb-2">Dietary Recommendations</h3>
-                    <div className="space-y-4">
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Apple className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Dietary Recommendations</h3>
+                    </div>
+                    <div className="space-y-6">
                       <div>
-                        <h4 className="text-sm font-medium text-green-600 mb-2">Foods to Include</h4>
-                        <ul className="list-disc list-inside space-y-2">
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <h4 className="text-sm font-medium text-green-600">Foods to Include</h4>
+                        </div>
+                        <div className="grid gap-3">
                           {report.good_food?.map((food: string, index: number) => (
-                            <li key={index} className="space-y-1">
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
                               <span className="font-medium text-primary">{food}</span>
-                              <p className="ml-6 text-sm text-muted-foreground">
+                              <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.diet[food as keyof typeof codex.diet]}
                               </p>
-                            </li>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-red-600 mb-2">Foods to Avoid</h4>
-                        <ul className="list-disc list-inside space-y-2">
+                        <div className="flex items-center gap-2 mb-3">
+                          <XCircle className="h-4 w-4 text-red-600" />
+                          <h4 className="text-sm font-medium text-red-600">Foods to Avoid</h4>
+                        </div>
+                        <div className="grid gap-3">
                           {report.avoid_food?.map((food: string, index: number) => (
-                            <li key={index} className="space-y-1">
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
                               <span className="font-medium text-red-600">{food}</span>
-                              <p className="ml-6 text-sm text-muted-foreground">
+                              <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.diet[food as keyof typeof codex.diet]}
                               </p>
-                            </li>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-accent rounded-lg">
-                    <h3 className="font-medium mb-2">Lifestyle Tips</h3>
-                    <ul className="list-disc list-inside space-y-2">
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Heart className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Lifestyle Tips</h3>
+                    </div>
+                    <div className="grid gap-3">
                       {report.lifestyle?.map((tip: string, index: number) => (
-                        <li key={index} className="space-y-1">
+                        <div key={index} className="bg-background/50 rounded-lg p-3">
                           <span className="font-medium text-primary">{tip}</span>
-                          <p className="ml-6 text-sm text-muted-foreground">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             {codex.lifestyle[tip as keyof typeof codex.lifestyle]}
                           </p>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 </div>
               </div>
