@@ -223,21 +223,64 @@ export default function ReportPage() {
                 <div className="space-y-4">
                   <div className="p-4 bg-accent rounded-lg">
                     <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
-                    <ul className="list-disc list-inside space-y-2">
-                      {report.good_medical_ingredients?.map((ingredient: string, index: number) => (
-                        <li key={index} className="space-y-1">
-                          <span className="font-medium text-primary">{ingredient}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-green-600 mb-2">Recommended Ingredients</h4>
+                        <ul className="list-disc list-inside space-y-2">
+                          {report.good_ingredients?.map((ingredient: string, index: number) => (
+                            <li key={index} className="space-y-1">
+                              <span className="font-medium text-primary">{ingredient}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-red-600 mb-2">Ingredients to Avoid</h4>
+                        <ul className="list-disc list-inside space-y-2">
+                          {report.avoid_ingredients?.map((ingredient: string, index: number) => (
+                            <li key={index} className="space-y-1">
+                              <span className="font-medium text-red-600">{ingredient}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-accent rounded-lg">
+                    <h3 className="font-medium mb-2">Dietary Recommendations</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-green-600 mb-2">Foods to Include</h4>
+                        <ul className="list-disc list-inside space-y-2">
+                          {report.good_food?.map((food: string, index: number) => (
+                            <li key={index} className="space-y-1">
+                              <span className="font-medium text-primary">{food}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-red-600 mb-2">Foods to Avoid</h4>
+                        <ul className="list-disc list-inside space-y-2">
+                          {report.avoid_food?.map((food: string, index: number) => (
+                            <li key={index} className="space-y-1">
+                              <span className="font-medium text-red-600">{food}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="p-4 bg-accent rounded-lg">
                     <h3 className="font-medium mb-2">Lifestyle Tips</h3>
                     <ul className="list-disc list-inside space-y-2">
-                      <li>Stay hydrated</li>
-                      <li>Protect from UV exposure</li>
-                      <li>Maintain a balanced diet</li>
+                      {report.lifestyle?.map((tip: string, index: number) => (
+                        <li key={index} className="space-y-1">
+                          <span className="font-medium text-primary">{tip}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
