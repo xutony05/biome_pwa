@@ -9,7 +9,6 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
-import recommendations from '@/dataAssets/recommendation.json';
 import optimalRanges from '@/dataAssets/optimal.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
 import {
@@ -33,34 +32,6 @@ const bacteriaFullNames: Record<string, string> = {
   'S.hom': 'S. hominis',
   'C.Krop': 'C. kroppenstedtii',
   'Other': 'Other species'
-};
-
-
-// Helper function to get random recommendation
-const getRandomRecommendation = (bacteria: string) => {
-  const bacteriaKey = bacteriaFullNames[bacteria];
-  const recs = recommendations[bacteriaKey as keyof typeof recommendations];
-  
-  if (recs === 'GENERAL') {
-    const generalRecs = recommendations.GENERAL;
-    const keys = Object.keys(generalRecs);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return {
-      ingredient: randomKey,
-      description: generalRecs[randomKey as keyof typeof generalRecs]
-    };
-  }
-  
-  if (recs) {
-    const keys = Object.keys(recs);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return {
-      ingredient: randomKey,
-      description: recs[randomKey as keyof typeof recs]
-    };
-  }
-  
-  return null;
 };
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
@@ -247,33 +218,17 @@ export default function ReportPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Recommendations</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
-                  >
-                    EXPLAIN
-                  </Button>
                 </div>
 
                 <div className="space-y-4">
                   <div className="p-4 bg-accent rounded-lg">
                     <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
                     <ul className="list-disc list-inside space-y-2">
-                      {Object.entries(report)
-                        .filter(([key, value]) => {
-                          return (key.includes('.') || key === 'Other') && 
-                            value !== null && 
-                            getOptimalRangeStatus(key, value as number) !== 'optimal';
-                        })
-                        .map(([bacteria]) => {
-                          const recommendation = getRandomRecommendation(bacteria);
-                          return recommendation ? (
-                            <li key={bacteria} className="space-y-1">
-                              <span className="font-medium">{recommendation.ingredient}</span>
-                              <p className="ml-6 text-sm">{recommendation.description}</p>
-                            </li>
-                          ) : null;
-                        })}
+                      {report.good_medical_ingredients?.map((ingredient: string, index: number) => (
+                        <li key={index} className="space-y-1">
+                          <span className="font-medium text-primary">{ingredient}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
