@@ -7,55 +7,18 @@ import { getReportByNumber, type Report } from '@/app/lib/supabase';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
-import recommendations from '@/dataAssets/recommendation.json';
 import optimalRanges from '@/dataAssets/optimal.json';
+import codex from '@/dataAssets/codex.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-// Define mapping at the top level
-const bacteriaFullNames: Record<string, string> = {
-  'C.Acne': 'C. acnes',
-  'C.Stri': 'C. striatum',
-  'S.Cap': 'S. capitis',
-  'S.Epi': 'S. epidermidis',
-  'C.Avi': 'C. avidum',
-  'C.gran': 'C. granulosum',
-  'S.haem': 'S. haemolyticus',
-  'S.Aur': 'S. aureus',
-  'C.Tub': 'C. tuberculostearicum',
-  'S.hom': 'S. hominis',
-  'C.Krop': 'C. kroppenstedtii',
-  'Other': 'Other species'
-};
-
-
-// Helper function to get random recommendation
-const getRandomRecommendation = (bacteria: string) => {
-  const bacteriaKey = bacteriaFullNames[bacteria];
-  const recs = recommendations[bacteriaKey as keyof typeof recommendations];
-  
-  if (recs === 'GENERAL') {
-    const generalRecs = recommendations.GENERAL;
-    const keys = Object.keys(generalRecs);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return {
-      ingredient: randomKey,
-      description: generalRecs[randomKey as keyof typeof generalRecs]
-    };
-  }
-  
-  if (recs) {
-    const keys = Object.keys(recs);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return {
-      ingredient: randomKey,
-      description: recs[randomKey as keyof typeof recs]
-    };
-  }
-  
-  return null;
-};
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -84,6 +47,9 @@ export default function ReportPage() {
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
   const { setValues } = useBacteria();
+  const [showEnvExplanation, setShowEnvExplanation] = useState(false);
+  const [showScoreExplanation, setShowScoreExplanation] = useState(false);
+  const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -136,7 +102,11 @@ export default function ReportPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Microbiome Balance Score</h2>
-                  <Button variant="ghost" className="text-sm text-blue-500 h-auto p-0">
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowScoreExplanation(true)}
+                  >
                     EXPLAIN
                   </Button>
                 </div>
@@ -162,8 +132,34 @@ export default function ReportPage() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Environment Health</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowEnvExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {report.env_score}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Key Microbes</h2>
-                  <Button variant="ghost" className="text-sm text-blue-500 h-auto p-0">
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowMicrobesExplanation(true)}
+                  >
                     EXPLAIN
                   </Button>
                 </div>
@@ -185,12 +181,8 @@ export default function ReportPage() {
 
                 <div className="space-y-2">
                   {Object.entries(report)
-                    .filter(([key, value]) => (key.includes('.') || key === 'Other') && value !== null)
-                    .sort((a, b) => {
-                      if (a[0] === 'Other') return 1;
-                      if (b[0] === 'Other') return -1;
-                      return a[0].localeCompare(b[0]);
-                    })
+                    .filter(([key, value]) => key.includes('.') && value !== null)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
                     .map(([bacteria, value]) => {
                       const status = getOptimalRangeStatus(bacteria, value as number);
                       return (
@@ -211,72 +203,235 @@ export default function ReportPage() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Environment Health</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {report.env_score}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Recommendations</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
-                  >
-                    EXPLAIN
-                  </Button>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-4 bg-accent rounded-lg">
-                    <h3 className="font-medium mb-2">Ingredients to Look Out For</h3>
-                    <ul className="list-disc list-inside space-y-2">
-                      {Object.entries(report)
-                        .filter(([key, value]) => {
-                          return (key.includes('.') || key === 'Other') && 
-                            value !== null && 
-                            getOptimalRangeStatus(key, value as number) !== 'optimal';
-                        })
-                        .map(([bacteria]) => {
-                          const recommendation = getRandomRecommendation(bacteria);
-                          return recommendation ? (
-                            <li key={bacteria} className="space-y-1">
-                              <span className="font-medium">{recommendation.ingredient}</span>
-                              <p className="ml-6 text-sm">{recommendation.description}</p>
-                            </li>
-                          ) : null;
-                        })}
-                    </ul>
+                <div className="space-y-6">
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Leaf className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Skincare Ingredients</h3>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <h4 className="text-sm font-medium text-emerald-500">Recommended Ingredients</h4>
+                        </div>
+                        <div className="grid gap-3">
+                          {report.good_ingredients?.map((ingredient: string, index: number) => (
+                            <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                              <span className="font-medium text-emerald-500">{ingredient}</span>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
+                          <h4 className="text-sm font-medium text-muted-foreground">Ingredients to Avoid</h4>
+                        </div>
+                        <div className="grid gap-3">
+                          {report.avoid_ingredients?.map((ingredient: string, index: number) => (
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
+                              <span className="font-medium text-muted-foreground">{ingredient}</span>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="p-4 bg-accent rounded-lg">
-                    <h3 className="font-medium mb-2">Lifestyle Tips</h3>
-                    <ul className="list-disc list-inside space-y-2">
-                      <li>Stay hydrated</li>
-                      <li>Protect from UV exposure</li>
-                      <li>Maintain a balanced diet</li>
-                    </ul>
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Apple className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Dietary Recommendations</h3>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <h4 className="text-sm font-medium text-emerald-500">Foods to Include</h4>
+                        </div>
+                        <div className="grid gap-3">
+                          {report.good_food?.map((food: string, index: number) => (
+                            <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                              <span className="font-medium text-emerald-500">{food}</span>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {codex.diet[food as keyof typeof codex.diet]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
+                          <h4 className="text-sm font-medium text-muted-foreground">Foods to Avoid</h4>
+                        </div>
+                        <div className="grid gap-3">
+                          {report.avoid_food?.map((food: string, index: number) => (
+                            <div key={index} className="bg-background/50 rounded-lg p-3">
+                              <span className="font-medium text-muted-foreground">{food}</span>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {codex.diet[food as keyof typeof codex.diet]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Heart className="h-5 w-5 text-emerald-500" />
+                      <h3 className="text-lg font-semibold">Lifestyle Tips</h3>
+                    </div>
+                    <div className="grid gap-3">
+                      {report.lifestyle?.map((tip: string, index: number) => (
+                        <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                          <span className="font-medium text-emerald-500">{tip}</span>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {codex.lifestyle[tip as keyof typeof codex.lifestyle]}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+            <p className="font-medium mb-2">Disclaimer</p>
+            <p className="space-y-2">
+              Please note that our microbiome tests are not substitutes for medical testing, consultations, diagnoses, or
+              treatments. If you have severe skin conditions, it is advisable to consult your local doctor. The information
+              and advice provided in your report should not replace any medical treatment you are receiving from a
+              dermatologist. All results are intended to enhance your skincare routine and help you better understand
+              your skin. Do not delay seeking medical advice based on the information in the report.
+            </p>
+          </div>
         </div>
       </div>
+
+      <Dialog open={showScoreExplanation} onOpenChange={setShowScoreExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Microbiome Balance Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Microbiome Balance Score is a comprehensive measure of your skin's microbial ecosystem health. 
+              This score takes into account the presence and abundance of key beneficial bacteria that contribute 
+              to skin health and protection.
+            </p>
+            <p>
+              Our research methodology combines extensive scientific literature review with in-house laboratory analysis:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Scientific Literature Analysis:</span> We analyzed over 100 peer-reviewed studies 
+                to identify key bacterial species associated with healthy skin. This included research on skin barrier function, 
+                inflammation markers, and microbial diversity in healthy individuals.
+              </li>
+              <li>
+                <span className="font-medium">Laboratory Validation:</span> Our research team conducted controlled studies 
+                in our state-of-the-art laboratory, analyzing skin samples from diverse populations to validate the optimal 
+                ranges for each bacterial species.
+              </li>
+            </ul>
+            <p>
+              A higher score indicates a more balanced and diverse microbiome, which is associated with:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Enhanced skin barrier function</li>
+              <li>Better protection against harmful pathogens</li>
+              <li>Improved skin hydration and moisture retention</li>
+              <li>Reduced inflammation and sensitivity</li>
+              <li>More resilient skin that can better handle environmental stressors</li>
+            </ul>
+            <p>
+              The score is calculated based on the optimal ranges of various beneficial bacteria species, 
+              considering both their presence and relative abundance. These ranges were determined through 
+              our proprietary research and laboratory analysis. Maintaining a balanced microbiome 
+              is crucial for overall skin health and can help prevent various skin concerns.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEnvExplanation} onOpenChange={setShowEnvExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Environment Health Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              While you may have limited control over your living environment, there are preventative measures you
+              can take to mitigate its effects on your skin. Your skin serves as the first line of defense against external
+              factors that can influence your skin's health, protecting against UV radiation and pollution particles.
+            </p>
+            <p>
+              To evaluate the health implications of your environment, we have analyzed pollution levels specific to your
+              region. This assessment provides insight into whether you reside in a healthy or unhealthy environment.
+            </p>
+            <p>
+              Look for antioxidant-rich ingredients to safeguard your skin from harmful infiltrators. Moreover, you should
+              wear sunscreen whenever you are exposed to the sun, even on cloudy days. The sun's UV rays can still
+              damage your skin, leading to sunburn, premature aging, and increased risk of skin cancer.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showMicrobesExplanation} onOpenChange={setShowMicrobesExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Key Microbes Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              The Key Microbes section displays the most important bacterial species that contribute to your skin's health. 
+              Each microbe plays a unique role in maintaining your skin's balance and protection.
+            </p>
+            <p>
+              Here's what each status means:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium text-green-600">Optimal Range:</span> The microbe is present in the ideal 
+                amount for maintaining healthy skin function. This is the target range we aim for.
+              </li>
+              <li>
+                <span className="font-medium text-amber-600">Below Optimal:</span> The microbe is present in lower than 
+                ideal amounts. This might indicate a need to support its growth through specific skincare ingredients.
+              </li>
+              <li>
+                <span className="font-medium text-red-600">Above Optimal:</span> The microbe is present in higher than 
+                ideal amounts. This might indicate an imbalance that could be addressed through targeted skincare.
+              </li>
+            </ul>
+            <p>
+              The optimal ranges for each microbe were determined through our proprietary research and laboratory analysis, 
+              taking into account their individual roles in skin health. Some microbes are more beneficial in higher 
+              amounts, while others work best in moderation.
+            </p>
+            <p>
+              Understanding these levels helps us provide personalized recommendations to help you achieve and maintain 
+              a balanced skin microbiome.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
