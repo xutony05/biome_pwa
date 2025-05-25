@@ -5,6 +5,14 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export type Product = {
+  id: number;
+  value_1_name: string;
+  value_1_price: number;
+  value_1_image: string;
+  value_1_url: string;
+}
+
 export type Report = {
   email: string;
   report_id: number;
@@ -28,6 +36,7 @@ export type Report = {
   good_food: string[];
   avoid_food: string[];
   lifestyle: string[];
+  products: Product | null;
 }
 
 export async function getReportCount(email: string): Promise<number> {
@@ -53,13 +62,20 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('*')
+      .select(`
+        *,
+        products:products(*)
+      `)
       .eq('email', email)
       .order('created_at', { ascending: true })
       .range(reportNumber - 1, reportNumber - 1)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
     return data;
   } catch (e) {
     console.error('Failed to fetch report:', e);

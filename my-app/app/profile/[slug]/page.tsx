@@ -7,7 +7,7 @@ import { getReportByNumber, type Report } from '@/app/lib/supabase';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart } from "lucide-react";
+import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
@@ -195,6 +195,68 @@ export default function ReportPage() {
                       );
                     })}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Recommended Products</h2>
+                </div>
+
+                {report.products ? (
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent hover:border-primary/50 transition-colors duration-200">
+                    <div className="flex items-center gap-2 mb-6">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <ShoppingBag className="h-5 w-5 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold">Personalized Product</h3>
+                    </div>
+                    <div className="grid gap-4">
+                      <div className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
+                        <div className="flex items-start gap-4">
+                          {report.products.value_1_image && (
+                            <div className="relative w-24 h-24 flex-shrink-0">
+                              <img 
+                                src={report.products.value_1_image} 
+                                alt={report.products.value_1_name}
+                                className="w-full h-full object-contain rounded-lg shadow-md bg-white"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-emerald-500 text-lg mb-1">
+                              {report.products.value_1_name}
+                            </h4>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              ${report.products.value_1_price.toFixed(2)}
+                            </p>
+                            {report.products.value_1_url && (
+                              <a 
+                                href={report.products.value_1_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                              >
+                                View Product
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent text-center">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ShoppingBag className="h-8 w-8 opacity-50" />
+                      <p>No personalized products recommended at this time.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
