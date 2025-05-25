@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
+import codex from '@/dataAssets/codex.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
 import {
   Dialog,
@@ -18,21 +19,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Define mapping at the top level
-const bacteriaFullNames: Record<string, string> = {
-  'C.Acne': 'C. acnes',
-  'C.Stri': 'C. striatum',
-  'S.Cap': 'S. capitis',
-  'S.Epi': 'S. epidermidis',
-  'C.Avi': 'C. avidum',
-  'C.gran': 'C. granulosum',
-  'S.haem': 'S. haemolyticus',
-  'S.Aur': 'S. aureus',
-  'C.Tub': 'C. tuberculostearicum',
-  'S.hom': 'S. hominis',
-  'C.Krop': 'C. kroppenstedtii',
-  'Other': 'Other species'
-};
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -230,6 +216,9 @@ export default function ReportPage() {
                           {report.good_ingredients?.map((ingredient: string, index: number) => (
                             <li key={index} className="space-y-1">
                               <span className="font-medium text-primary">{ingredient}</span>
+                              <p className="ml-6 text-sm text-muted-foreground">
+                                {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
+                              </p>
                             </li>
                           ))}
                         </ul>
@@ -240,6 +229,9 @@ export default function ReportPage() {
                           {report.avoid_ingredients?.map((ingredient: string, index: number) => (
                             <li key={index} className="space-y-1">
                               <span className="font-medium text-red-600">{ingredient}</span>
+                              <p className="ml-6 text-sm text-muted-foreground">
+                                {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
+                              </p>
                             </li>
                           ))}
                         </ul>
@@ -256,6 +248,9 @@ export default function ReportPage() {
                           {report.good_food?.map((food: string, index: number) => (
                             <li key={index} className="space-y-1">
                               <span className="font-medium text-primary">{food}</span>
+                              <p className="ml-6 text-sm text-muted-foreground">
+                                {codex.diet[food as keyof typeof codex.diet]}
+                              </p>
                             </li>
                           ))}
                         </ul>
@@ -266,6 +261,9 @@ export default function ReportPage() {
                           {report.avoid_food?.map((food: string, index: number) => (
                             <li key={index} className="space-y-1">
                               <span className="font-medium text-red-600">{food}</span>
+                              <p className="ml-6 text-sm text-muted-foreground">
+                                {codex.diet[food as keyof typeof codex.diet]}
+                              </p>
                             </li>
                           ))}
                         </ul>
@@ -279,6 +277,9 @@ export default function ReportPage() {
                       {report.lifestyle?.map((tip: string, index: number) => (
                         <li key={index} className="space-y-1">
                           <span className="font-medium text-primary">{tip}</span>
+                          <p className="ml-6 text-sm text-muted-foreground">
+                            {codex.lifestyle[tip as keyof typeof codex.lifestyle]}
+                          </p>
                         </li>
                       ))}
                     </ul>
