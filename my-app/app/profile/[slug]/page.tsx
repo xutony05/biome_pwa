@@ -162,6 +162,27 @@ export default function ReportPage() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Environment Health</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {report.env_score}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Key Microbes</h2>
                   <Button variant="ghost" className="text-sm text-blue-500 h-auto p-0">
                     EXPLAIN
@@ -198,27 +219,6 @@ export default function ReportPage() {
                         />
                       );
                     })}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Environment Health</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {report.env_score}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
             </CardContent>
