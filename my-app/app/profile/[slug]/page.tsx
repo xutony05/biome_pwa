@@ -215,13 +215,13 @@ export default function ReportPage() {
                     <div className="space-y-6">
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                          <h4 className="text-sm font-medium text-green-600">Recommended Ingredients</h4>
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <h4 className="text-sm font-medium text-emerald-500">Recommended Ingredients</h4>
                         </div>
                         <div className="grid gap-3">
                           {report.good_ingredients?.map((ingredient: string, index: number) => (
-                            <div key={index} className="bg-background/50 rounded-lg p-3">
-                              <span className="font-medium text-primary">{ingredient}</span>
+                            <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                              <span className="font-medium text-emerald-500">{ingredient}</span>
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
                               </p>
@@ -231,13 +231,13 @@ export default function ReportPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <XCircle className="h-4 w-4 text-red-600" />
-                          <h4 className="text-sm font-medium text-red-600">Ingredients to Avoid</h4>
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
+                          <h4 className="text-sm font-medium text-muted-foreground">Ingredients to Avoid</h4>
                         </div>
                         <div className="grid gap-3">
                           {report.avoid_ingredients?.map((ingredient: string, index: number) => (
                             <div key={index} className="bg-background/50 rounded-lg p-3">
-                              <span className="font-medium text-red-600">{ingredient}</span>
+                              <span className="font-medium text-muted-foreground">{ingredient}</span>
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
                               </p>
@@ -256,13 +256,13 @@ export default function ReportPage() {
                     <div className="space-y-6">
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                          <h4 className="text-sm font-medium text-green-600">Foods to Include</h4>
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <h4 className="text-sm font-medium text-emerald-500">Foods to Include</h4>
                         </div>
                         <div className="grid gap-3">
                           {report.good_food?.map((food: string, index: number) => (
-                            <div key={index} className="bg-background/50 rounded-lg p-3">
-                              <span className="font-medium text-primary">{food}</span>
+                            <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                              <span className="font-medium text-emerald-500">{food}</span>
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.diet[food as keyof typeof codex.diet]}
                               </p>
@@ -272,13 +272,13 @@ export default function ReportPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-3">
-                          <XCircle className="h-4 w-4 text-red-600" />
-                          <h4 className="text-sm font-medium text-red-600">Foods to Avoid</h4>
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
+                          <h4 className="text-sm font-medium text-muted-foreground">Foods to Avoid</h4>
                         </div>
                         <div className="grid gap-3">
                           {report.avoid_food?.map((food: string, index: number) => (
                             <div key={index} className="bg-background/50 rounded-lg p-3">
-                              <span className="font-medium text-red-600">{food}</span>
+                              <span className="font-medium text-muted-foreground">{food}</span>
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {codex.diet[food as keyof typeof codex.diet]}
                               </p>
@@ -291,13 +291,13 @@ export default function ReportPage() {
 
                   <div className="p-6 bg-accent/50 rounded-lg border border-accent">
                     <div className="flex items-center gap-2 mb-4">
-                      <Heart className="h-5 w-5 text-primary" />
+                      <Heart className="h-5 w-5 text-emerald-500" />
                       <h3 className="text-lg font-semibold">Lifestyle Tips</h3>
                     </div>
                     <div className="grid gap-3">
                       {report.lifestyle?.map((tip: string, index: number) => (
-                        <div key={index} className="bg-background/50 rounded-lg p-3">
-                          <span className="font-medium text-primary">{tip}</span>
+                        <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                          <span className="font-medium text-emerald-500">{tip}</span>
                           <p className="mt-1 text-sm text-muted-foreground">
                             {codex.lifestyle[tip as keyof typeof codex.lifestyle]}
                           </p>
