@@ -50,6 +50,7 @@ export default function ReportPage() {
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
+  const [showProductsExplanation, setShowProductsExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -204,6 +205,13 @@ export default function ReportPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Recommended Products</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowProductsExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
                 </div>
 
                 {report.products ? (
@@ -490,6 +498,53 @@ export default function ReportPage() {
             <p>
               Understanding these levels helps us provide personalized recommendations to help you achieve and maintain 
               a balanced skin microbiome.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showProductsExplanation} onOpenChange={setShowProductsExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Recommended Products Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              We have curated some product recommendations below. This is not an exhaustive list - the key is to look
+              for the recommended medical ingredients in your products. More expensive products tend to have
+              more complex formulations with more recommended ingredients. However, there exists diminishing returns;
+              you do not need expensive products to look amazing!
+            </p>
+            <p>
+              Our recommended products are carefully selected based on your unique skin microbiome profile and test results. 
+              Each product is chosen to help support and maintain your skin's optimal bacterial balance.
+            </p>
+            <p>
+              The selection process takes into account:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Microbiome Compatibility:</span> Products that support the growth of beneficial 
+                bacteria while maintaining a balanced ecosystem.
+              </li>
+              <li>
+                <span className="font-medium">Ingredient Analysis:</span> Careful evaluation of ingredients to ensure they 
+                align with your skin's needs and avoid any potential irritants.
+              </li>
+              <li>
+                <span className="font-medium">Scientific Research:</span> Products backed by research demonstrating their 
+                effectiveness in supporting skin microbiome health.
+              </li>
+              <li>
+                <span className="font-medium">Value Consideration:</span> While we may recommend some premium products, 
+                we emphasize that effective skincare doesn't have to be expensive. Focus on finding products with the 
+                right ingredients for your skin.
+              </li>
+            </ul>
+            <p>
+              These recommendations are personalized to your specific skin profile and are designed to help you achieve 
+              and maintain a healthy, balanced skin microbiome. Remember that consistency is key when introducing new 
+              products to your skincare routine.
             </p>
           </div>
         </DialogContent>
