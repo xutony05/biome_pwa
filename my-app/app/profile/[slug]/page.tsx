@@ -172,7 +172,7 @@ export default function ReportPage() {
                   <h2 className="text-lg font-medium">Environment Health</h2>
                   <Button 
                     variant="ghost" 
-                    className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
+                    className="text-sm text-blue-500 h-auto p-0"
                     onClick={() => setShowEnvExplanation(true)}
                   >
                     EXPLAIN
