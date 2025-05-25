@@ -185,12 +185,8 @@ export default function ReportPage() {
 
                 <div className="space-y-2">
                   {Object.entries(report)
-                    .filter(([key, value]) => (key.includes('.') || key === 'Other') && value !== null)
-                    .sort((a, b) => {
-                      if (a[0] === 'Other') return 1;
-                      if (b[0] === 'Other') return -1;
-                      return a[0].localeCompare(b[0]);
-                    })
+                    .filter(([key, value]) => key.includes('.') && value !== null)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
                     .map(([bacteria, value]) => {
                       const status = getOptimalRangeStatus(bacteria, value as number);
                       return (
