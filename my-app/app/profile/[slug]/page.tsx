@@ -12,6 +12,12 @@ import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import recommendations from '@/dataAssets/recommendation.json';
 import optimalRanges from '@/dataAssets/optimal.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Define mapping at the top level
 const bacteriaFullNames: Record<string, string> = {
@@ -84,6 +90,7 @@ export default function ReportPage() {
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
   const { setValues } = useBacteria();
+  const [showEnvExplanation, setShowEnvExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -166,6 +173,7 @@ export default function ReportPage() {
                   <Button 
                     variant="ghost" 
                     className="text-sm text-gray-400 h-auto p-0 hover:text-gray-500"
+                    onClick={() => setShowEnvExplanation(true)}
                   >
                     EXPLAIN
                   </Button>
@@ -273,6 +281,30 @@ export default function ReportPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={showEnvExplanation} onOpenChange={setShowEnvExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Environment Health Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              While you may have limited control over your living environment, there are preventative measures you
+              can take to mitigate its effects on your skin. Your skin serves as the first line of defense against external
+              factors that can influence your skin's health, protecting against UV radiation and pollution particles.
+            </p>
+            <p>
+              To evaluate the health implications of your environment, we have analyzed pollution levels specific to your
+              region. This assessment provides insight into whether you reside in a healthy or unhealthy environment.
+            </p>
+            <p>
+              Look for antioxidant-rich ingredients to safeguard your skin from harmful infiltrators. Moreover, you should
+              wear sunscreen whenever you are exposed to the sun, even on cloudy days. The sun's UV rays can still
+              damage your skin, leading to sunburn, premature aging, and increased risk of skin cancer.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
