@@ -7,7 +7,7 @@ import { getReportByNumber, type Report } from '@/app/lib/supabase';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart } from "lucide-react";
+import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
@@ -50,6 +50,7 @@ export default function ReportPage() {
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
+  const [showProductsExplanation, setShowProductsExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -195,6 +196,228 @@ export default function ReportPage() {
                       );
                     })}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Recommended Products</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowProductsExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                {report.products ? (
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent hover:border-primary/50 transition-colors duration-200">
+                    <div className="flex items-center gap-2 mb-6">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <ShoppingBag className="h-5 w-5 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold">Personalized Product</h3>
+                    </div>
+                    <div className="grid gap-6">
+                      {/* Value Products */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Best Value Products</h3>
+                        <div className="grid gap-4">
+                          {[
+                            {
+                              name: report.products.value_1_name,
+                              price: report.products.value_1_price,
+                              image: report.products.value_1_image,
+                              url: report.products.value_1_url
+                            },
+                            {
+                              name: report.products.value_2_name,
+                              price: report.products.value_2_price,
+                              image: report.products.value_2_image,
+                              url: report.products.value_2_url
+                            },
+                            {
+                              name: report.products.value_3_name,
+                              price: report.products.value_3_price,
+                              image: report.products.value_3_image,
+                              url: report.products.value_3_url
+                            }
+                          ].map((product, index) => (
+                            product.name && (
+                              <div key={`value-${index}`} className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
+                                <div className="flex items-start gap-4">
+                                  {product.image && (
+                                    <div className="relative w-24 h-24 flex-shrink-0">
+                                      <img 
+                                        src={product.image} 
+                                        alt={product.name}
+                                        className="w-full h-full object-contain rounded-lg shadow-md bg-white"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-emerald-500 text-lg mb-1">
+                                      {product.name}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                      ${product.price.toFixed(2)}
+                                    </p>
+                                    {product.url && (
+                                      <a 
+                                        href={product.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                                      >
+                                        View Product
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Quality Products */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Premium Quality Products</h3>
+                        <div className="grid gap-4">
+                          {[
+                            {
+                              name: report.products.quality_1_name,
+                              price: report.products.quality_1_price,
+                              image: report.products.quality_1_image,
+                              url: report.products.quality_1_url
+                            },
+                            {
+                              name: report.products.quality_2_name,
+                              price: report.products.quality_2_price,
+                              image: report.products.quality_2_image,
+                              url: report.products.quality_2_url
+                            },
+                            {
+                              name: report.products.quality_3_name,
+                              price: report.products.quality_3_price,
+                              image: report.products.quality_3_image,
+                              url: report.products.quality_3_url
+                            }
+                          ].map((product, index) => (
+                            product.name && (
+                              <div key={`quality-${index}`} className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
+                                <div className="flex items-start gap-4">
+                                  {product.image && (
+                                    <div className="relative w-24 h-24 flex-shrink-0">
+                                      <img 
+                                        src={product.image} 
+                                        alt={product.name}
+                                        className="w-full h-full object-contain rounded-lg shadow-md bg-white"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-emerald-500 text-lg mb-1">
+                                      {product.name}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                      ${product.price.toFixed(2)}
+                                    </p>
+                                    {product.url && (
+                                      <a 
+                                        href={product.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                                      >
+                                        View Product
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Luxury Products */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Luxury Products</h3>
+                        <div className="grid gap-4">
+                          {[
+                            {
+                              name: report.products.luxury_1_name,
+                              price: report.products.luxury_1_price,
+                              image: report.products.luxury_1_image,
+                              url: report.products.luxury_1_url
+                            },
+                            {
+                              name: report.products.luxury_2_name,
+                              price: report.products.luxury_2_price,
+                              image: report.products.luxury_2_image,
+                              url: report.products.luxury_2_url
+                            },
+                            {
+                              name: report.products.luxury_3_name,
+                              price: report.products.luxury_3_price,
+                              image: report.products.luxury_3_image,
+                              url: report.products.luxury_3_url
+                            }
+                          ].map((product, index) => (
+                            product.name && (
+                              <div key={`luxury-${index}`} className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
+                                <div className="flex items-start gap-4">
+                                  {product.image && (
+                                    <div className="relative w-24 h-24 flex-shrink-0">
+                                      <img 
+                                        src={product.image} 
+                                        alt={product.name}
+                                        className="w-full h-full object-contain rounded-lg shadow-md bg-white"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-emerald-500 text-lg mb-1">
+                                      {product.name}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                      ${product.price.toFixed(2)}
+                                    </p>
+                                    {product.url && (
+                                      <a 
+                                        href={product.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                                      >
+                                        View Product
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-6 bg-accent/50 rounded-lg border border-accent text-center">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ShoppingBag className="h-8 w-8 opacity-50" />
+                      <p>No personalized products recommended at this time.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -428,6 +651,53 @@ export default function ReportPage() {
             <p>
               Understanding these levels helps us provide personalized recommendations to help you achieve and maintain 
               a balanced skin microbiome.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showProductsExplanation} onOpenChange={setShowProductsExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Recommended Products Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              We have curated some product recommendations below. This is not an exhaustive list - the key is to look
+              for the recommended medical ingredients in your products. More expensive products tend to have
+              more complex formulations with more recommended ingredients. However, there exists diminishing returns;
+              you do not need expensive products to look amazing!
+            </p>
+            <p>
+              Our recommended products are carefully selected based on your unique skin microbiome profile and test results. 
+              Each product is chosen to help support and maintain your skin's optimal bacterial balance.
+            </p>
+            <p>
+              The selection process takes into account:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Microbiome Compatibility:</span> Products that support the growth of beneficial 
+                bacteria while maintaining a balanced ecosystem.
+              </li>
+              <li>
+                <span className="font-medium">Ingredient Analysis:</span> Careful evaluation of ingredients to ensure they 
+                align with your skin's needs and avoid any potential irritants.
+              </li>
+              <li>
+                <span className="font-medium">Scientific Research:</span> Products backed by research demonstrating their 
+                effectiveness in supporting skin microbiome health.
+              </li>
+              <li>
+                <span className="font-medium">Value Consideration:</span> While we may recommend some premium products, 
+                we emphasize that effective skincare doesn't have to be expensive. Focus on finding products with the 
+                right ingredients for your skin.
+              </li>
+            </ul>
+            <p>
+              These recommendations are personalized to your specific skin profile and are designed to help you achieve 
+              and maintain a healthy, balanced skin microbiome. Remember that consistency is key when introducing new 
+              products to your skincare routine.
             </p>
           </div>
         </DialogContent>

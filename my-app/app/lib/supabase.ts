@@ -5,6 +5,49 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export type Product = {
+  id: number;
+  // Value products
+  value_1_name: string;
+  value_1_price: number;
+  value_1_image: string;
+  value_1_url: string;
+  value_2_name: string;
+  value_2_price: number;
+  value_2_image: string;
+  value_2_url: string;
+  value_3_name: string;
+  value_3_price: number;
+  value_3_image: string;
+  value_3_url: string;
+  // Quality products
+  quality_1_name: string;
+  quality_1_price: number;
+  quality_1_image: string;
+  quality_1_url: string;
+  quality_2_name: string;
+  quality_2_price: number;
+  quality_2_image: string;
+  quality_2_url: string;
+  quality_3_name: string;
+  quality_3_price: number;
+  quality_3_image: string;
+  quality_3_url: string;
+  // Luxury products
+  luxury_1_name: string;
+  luxury_1_price: number;
+  luxury_1_image: string;
+  luxury_1_url: string;
+  luxury_2_name: string;
+  luxury_2_price: number;
+  luxury_2_image: string;
+  luxury_2_url: string;
+  luxury_3_name: string;
+  luxury_3_price: number;
+  luxury_3_image: string;
+  luxury_3_url: string;
+}
+
 export type Report = {
   email: string;
   report_id: number;
@@ -28,6 +71,7 @@ export type Report = {
   good_food: string[];
   avoid_food: string[];
   lifestyle: string[];
+  products: Product | null;
 }
 
 export async function getReportCount(email: string): Promise<number> {
@@ -53,13 +97,20 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('*')
+      .select(`
+        *,
+        products:products(*)
+      `)
       .eq('email', email)
       .order('created_at', { ascending: true })
       .range(reportNumber - 1, reportNumber - 1)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
     return data;
   } catch (e) {
     console.error('Failed to fetch report:', e);
