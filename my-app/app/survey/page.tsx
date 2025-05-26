@@ -97,8 +97,8 @@ const questions: QuestionType[] = [
   {
     id: "q9",
     type: "input",
-    text: "What skincare products do you currently use?",
-    placeholder: "Please list your current skincare products"
+    text: "What skincare brands do you use?",
+    placeholder: "Please list the brands you use (e.g., CeraVe, The Ordinary, etc.)"
   },
   {
     id: "q10",
