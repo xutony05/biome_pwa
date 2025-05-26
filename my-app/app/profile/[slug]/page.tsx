@@ -223,38 +223,61 @@ export default function ReportPage() {
                       <h3 className="text-lg font-semibold">Personalized Product</h3>
                     </div>
                     <div className="grid gap-4">
-                      <div className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
-                        <div className="flex items-start gap-4">
-                          {report.products.value_1_image && (
-                            <div className="relative w-24 h-24 flex-shrink-0">
-                              <img 
-                                src={report.products.value_1_image} 
-                                alt={report.products.value_1_name}
-                                className="w-full h-full object-contain rounded-lg shadow-md bg-white"
-                              />
+                      {[
+                        {
+                          name: report.products.value_1_name,
+                          price: report.products.value_1_price,
+                          image: report.products.value_1_image,
+                          url: report.products.value_1_url
+                        },
+                        {
+                          name: report.products.value_2_name,
+                          price: report.products.value_2_price,
+                          image: report.products.value_2_image,
+                          url: report.products.value_2_url
+                        },
+                        {
+                          name: report.products.value_3_name,
+                          price: report.products.value_3_price,
+                          image: report.products.value_3_image,
+                          url: report.products.value_3_url
+                        }
+                      ].map((product, index) => (
+                        product.name && (
+                          <div key={index} className="bg-background/50 rounded-lg p-4 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200">
+                            <div className="flex items-start gap-4">
+                              {product.image && (
+                                <div className="relative w-24 h-24 flex-shrink-0">
+                                  <img 
+                                    src={product.image} 
+                                    alt={product.name}
+                                    className="w-full h-full object-contain rounded-lg shadow-md bg-white"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-emerald-500 text-lg mb-1">
+                                  {product.name}
+                                </h4>
+                                <p className="text-sm text-muted-foreground mb-3">
+                                  ${product.price.toFixed(2)}
+                                </p>
+                                {product.url && (
+                                  <a 
+                                    href={product.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                                  >
+                                    View Product
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                )}
+                              </div>
                             </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-emerald-500 text-lg mb-1">
-                              {report.products.value_1_name}
-                            </h4>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              ${report.products.value_1_price.toFixed(2)}
-                            </p>
-                            {report.products.value_1_url && (
-                              <a 
-                                href={report.products.value_1_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors duration-200"
-                              >
-                                View Product
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            )}
                           </div>
-                        </div>
-                      </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 ) : (

@@ -11,6 +11,14 @@ export type Product = {
   value_1_price: number;
   value_1_image: string;
   value_1_url: string;
+  value_2_name: string;
+  value_2_price: number;
+  value_2_image: string;
+  value_2_url: string;
+  value_3_name: string;
+  value_3_price: number;
+  value_3_image: string;
+  value_3_url: string;
 }
 
 export type Report = {
