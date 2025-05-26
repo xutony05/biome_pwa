@@ -7,6 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Product = {
   id: number;
+  // Value products
   value_1_name: string;
   value_1_price: number;
   value_1_image: string;
@@ -19,6 +20,19 @@ export type Product = {
   value_3_price: number;
   value_3_image: string;
   value_3_url: string;
+  // Quality products
+  quality_1_name: string;
+  quality_1_price: number;
+  quality_1_image: string;
+  quality_1_url: string;
+  quality_2_name: string;
+  quality_2_price: number;
+  quality_2_image: string;
+  quality_2_url: string;
+  quality_3_name: string;
+  quality_3_price: number;
+  quality_3_image: string;
+  quality_3_url: string;
 }
 
 export type Report = {
