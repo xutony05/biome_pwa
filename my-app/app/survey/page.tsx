@@ -59,8 +59,8 @@ const questions: QuestionType[] = [
   {
     id: "q4",
     type: "single",
-    text: "How often do you exfoliate your skin?",
-    options: ["Daily", "Weekly", "Monthly", "Never"]
+    text: "What is your gender?",
+    options: ["Female", "Male", "Non-binary"]
   },
   {
     id: "q5",
