@@ -46,9 +46,9 @@ const questions: QuestionType[] = [
   },
   {
     id: "q2",
-    type: "single",
-    text: "How often do you exfoliate your skin?",
-    options: ["Daily", "Weekly", "Monthly", "Never"]
+    type: "input",
+    text: "Where should we send your report?",
+    placeholder: "Enter your email address"
   },
   {
     id: "q3",
