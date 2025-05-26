@@ -64,9 +64,9 @@ const questions: QuestionType[] = [
   },
   {
     id: "q5",
-    type: "single",
-    text: "Do you experience breakouts?",
-    options: ["Rarely", "Occasionally", "Frequently"]
+    type: "input",
+    text: "What city are you based in?",
+    placeholder: "Enter your city"
   },
   {
     id: "q6",
