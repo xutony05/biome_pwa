@@ -52,12 +52,24 @@ const questions: QuestionType[] = [
   },
   {
     id: "q3",
+    type: "input",
+    text: "What is your age?",
+    placeholder: "Enter your age"
+  },
+  {
+    id: "q4",
+    type: "single",
+    text: "How often do you exfoliate your skin?",
+    options: ["Daily", "Weekly", "Monthly", "Never"]
+  },
+  {
+    id: "q5",
     type: "single",
     text: "Do you experience breakouts?",
     options: ["Rarely", "Occasionally", "Frequently"]
   },
   {
-    id: "q4",
+    id: "q6",
     type: "multi",
     text: "Do you have any specific skin conditions we should know about?",
     options: [
@@ -71,7 +83,7 @@ const questions: QuestionType[] = [
     ]
   },
   {
-    id: "q5",
+    id: "q7",
     type: "final",
     text: "All done!",
     description: "We'll use your answers to make your report even more tailored to you. Now, let's get you ready for the swab.",
