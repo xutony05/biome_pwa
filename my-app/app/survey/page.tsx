@@ -70,20 +70,44 @@ const questions: QuestionType[] = [
   },
   {
     id: "q6",
-    type: "multi",
-    text: "Do you have any specific skin conditions we should know about?",
-    options: [
-      "Acne",
-      "Seborrheic Dermatitis",
-      "Vitiligo",
-      "Contact Dermatitis",
-      "Rosacea",
-      "Psoriasis",
-      "None of the above"
-    ]
+    type: "single",
+    text: "How would you describe your skin?",
+    options: ["Dry", "Oily", "Combination", "Balanced"]
   },
   {
     id: "q7",
+    type: "multi",
+    text: "Do you experience any of the following?",
+    options: [
+      "Acne/breakouts",
+      "Rosacea",
+      "Psoriasis",
+      "Eczema",
+      "Uneven pigmentation",
+      "Wrinkles",
+      "None/Other"
+    ]
+  },
+  {
+    id: "q8",
+    type: "input",
+    text: "Do you have any allergies?",
+    placeholder: "Enter your allergies or 'None'"
+  },
+  {
+    id: "q9",
+    type: "input",
+    text: "What skincare products do you currently use?",
+    placeholder: "Please list your current skincare products"
+  },
+  {
+    id: "q10",
+    type: "input",
+    text: "Is there anything else you would like us to know?",
+    placeholder: "Share any additional information that might be relevant to your skin health"
+  },
+  {
+    id: "q11",
     type: "final",
     text: "All done!",
     description: "We'll use your answers to make your report even more tailored to you. Now, let's get you ready for the swab.",
@@ -172,6 +196,7 @@ export default function SurveyPage() {
             question={currentQuestion.text}
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
+            isLargeInput={currentQuestion.id === "q9" || currentQuestion.id === "q10"}
           />
         );
       case "single":

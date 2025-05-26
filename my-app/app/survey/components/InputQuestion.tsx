@@ -9,9 +9,10 @@ interface InputQuestionProps {
   question: string;
   placeholder?: string;
   onNext: (value: string) => void;
+  isLargeInput?: boolean;
 }
 
-export function InputQuestion({ question, placeholder, onNext }: InputQuestionProps) {
+export function InputQuestion({ question, placeholder, onNext, isLargeInput }: InputQuestionProps) {
   const [value, setValue] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,14 +55,24 @@ export function InputQuestion({ question, placeholder, onNext }: InputQuestionPr
       animate="show"
     >
       <motion.div className="w-full" variants={item}>
-        <Input
-          type="text"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-full min-h-0 h-auto"
-          style={{ boxSizing: 'border-box' }}
-        />
+        {isLargeInput ? (
+          <textarea
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-2xl min-h-[120px] resize-none"
+            style={{ boxSizing: 'border-box' }}
+          />
+        ) : (
+          <Input
+            type="text"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-full min-h-0 h-auto"
+            style={{ boxSizing: 'border-box' }}
+          />
+        )}
       </motion.div>
       <motion.div className="flex justify-end w-full" variants={item}>
         <button 
