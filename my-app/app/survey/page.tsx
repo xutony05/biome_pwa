@@ -193,6 +193,7 @@ export default function SurveyPage() {
       case "input":
         return (
           <InputQuestion
+            key={currentQuestion.id}
             question={currentQuestion.text}
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
