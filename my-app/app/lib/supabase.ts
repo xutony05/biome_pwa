@@ -33,6 +33,19 @@ export type Product = {
   quality_3_price: number;
   quality_3_image: string;
   quality_3_url: string;
+  // Luxury products
+  luxury_1_name: string;
+  luxury_1_price: number;
+  luxury_1_image: string;
+  luxury_1_url: string;
+  luxury_2_name: string;
+  luxury_2_price: number;
+  luxury_2_image: string;
+  luxury_2_url: string;
+  luxury_3_name: string;
+  luxury_3_price: number;
+  luxury_3_image: string;
+  luxury_3_url: string;
 }
 
 export type Report = {
