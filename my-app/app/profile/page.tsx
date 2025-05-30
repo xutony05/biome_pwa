@@ -67,7 +67,7 @@ export default function ProfilePage() {
             variant="default"
             className="rounded-full"
           >
-            <Link href="/instructions">Start</Link>
+            <Link href="/activation">Start</Link>
           </Button>
         </CardContent>
         {/* Decorative Gradient Blob */}
