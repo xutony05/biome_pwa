@@ -150,6 +150,15 @@ export default function SurveyPage() {
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
+  // Add safety check
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Something went wrong. Please try refreshing the page.</p>
+      </div>
+    );
+  }
+
   const handleNext = async (value: any) => {
     // Validate required fields
     if (currentQuestion.id === "q1" && !value) {
@@ -184,7 +193,7 @@ export default function SurveyPage() {
     setAnswers(newAnswers);
     
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
     } 
     if (isLastQuestion && user?.email) {
       try {
@@ -195,7 +204,7 @@ export default function SurveyPage() {
           return;
         }
         // Only proceed to next question if save was successful
-        setCurrentQuestionIndex(prev => prev + 1);
+        setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
       } catch (error) {
         console.error('Error in survey submission:', error);
         alert("There was an error saving your survey. Please try again.");
@@ -205,7 +214,7 @@ export default function SurveyPage() {
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
     }
   };
 
