@@ -180,4 +180,26 @@ export async function getSurveyCount(email: string): Promise<number> {
     console.error('Failed to fetch survey count:', e);
     return 0;
   }
+}
+
+export async function getLastSurvey(email: string): Promise<SurveyAnswers | null> {
+  try {
+    const { data, error } = await supabase
+      .from('surveys')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.error('Error fetching last survey:', error);
+      return null;
+    }
+
+    return data;
+  } catch (e) {
+    console.error('Failed to fetch last survey:', e);
+    return null;
+  }
 } 

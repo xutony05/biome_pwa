@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +10,7 @@ import { MultiChoiceQuestion } from "./components/MultiChoiceQuestion";
 import { FinalPage } from "./components/FinalPage";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../context/AuthContext';
-import { saveSurveyAnswers } from '../lib/supabase';
+import { saveSurveyAnswers, getLastSurvey } from '../lib/supabase';
 
 // Define question types for better type safety
 interface BaseQuestion {
@@ -146,15 +146,53 @@ export default function SurveyPage() {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadLastSurvey() {
+      if (user?.email) {
+        try {
+          const lastSurvey = await getLastSurvey(user.email);
+          if (lastSurvey) {
+            // Convert survey data to answers format
+            const surveyAnswers = {
+              q1: lastSurvey.kit_id,
+              q3: lastSurvey.age,
+              q4: lastSurvey.gender,
+              q5: lastSurvey.city,
+              q6: lastSurvey.skin_type,
+              q7: lastSurvey.skin_conditions,
+              q8: lastSurvey.allergies,
+              q9: lastSurvey.skincare_brands,
+              q10: lastSurvey.additional_info
+            };
+            setAnswers(surveyAnswers);
+
+            // Find the index of the last question answered and go to the next question
+            const lastQuestionId = lastSurvey.last_question_answered;
+            const lastQuestionIndex = questions.findIndex(q => q.id === lastQuestionId);
+            if (lastQuestionIndex !== -1) {
+              // Go to the next question, but don't exceed the questions array length
+              setCurrentQuestionIndex(Math.min(lastQuestionIndex + 1, questions.length - 1));
+            }
+          }
+        } catch (error) {
+          console.error('Error loading last survey:', error);
+        }
+      }
+      setIsLoading(false);
+    }
+    loadLastSurvey();
+  }, [user?.email]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
   // Add safety check
-  if (!currentQuestion) {
+  if (!currentQuestion || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Something went wrong. Please try refreshing the page.</p>
+        <p>Loading...</p>
       </div>
     );
   }
