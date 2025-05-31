@@ -45,12 +45,6 @@ const questions: QuestionType[] = [
     placeholder: "e.g., 634123"
   },
   {
-    id: "q2",
-    type: "input",
-    text: "Where should we send your report?",
-    placeholder: "Enter your email address"
-  },
-  {
     id: "q3",
     type: "input",
     text: "What is your age?",
@@ -157,23 +151,54 @@ export default function SurveyPage() {
   const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
   const handleNext = async (value: any) => {
+    // Validate required fields
+    if (currentQuestion.id === "q1" && !value) {
+      alert("Please enter your test kit serial number");
+      return;
+    }
+    if (currentQuestion.id === "q3" && !value) {
+      alert("Please enter your age");
+      return;
+    }
+    if (currentQuestion.id === "q4" && !value) {
+      alert("Please select your gender");
+      return;
+    }
+    if (currentQuestion.id === "q5" && !value) {
+      alert("Please enter your city");
+      return;
+    }
+    if (currentQuestion.id === "q6" && !value) {
+      alert("Please select your skin type");
+      return;
+    }
+    if (currentQuestion.id === "q7" && (!value || value.length === 0)) {
+      alert("Please select at least one skin condition");
+      return;
+    }
+
     const newAnswers = {
       ...answers,
       [currentQuestion.id]: value
     };
     setAnswers(newAnswers);
-    console.log('newAnswers', newAnswers);
-    console.log(currentQuestionIndex);
     
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } 
     if (isLastQuestion && user?.email) {
-      console.log('Saving survey on last question');
-      // Save survey on last question
-      const { error } = await saveSurveyAnswers(user.email, newAnswers);
-      if (error) {
-        console.error('Failed to save survey:', error);
+      try {
+        const { error } = await saveSurveyAnswers(user.email, newAnswers);
+        if (error) {
+          console.error('Failed to save survey:', error);
+          alert("There was an error saving your survey. Please try again.");
+          return;
+        }
+        // Only proceed to next question if save was successful
+        setCurrentQuestionIndex(prev => prev + 1);
+      } catch (error) {
+        console.error('Error in survey submission:', error);
+        alert("There was an error saving your survey. Please try again.");
       }
     }
   };
