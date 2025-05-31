@@ -189,15 +189,15 @@ export async function getLastSurvey(email: string): Promise<SurveyAnswers | null
       .select('*')
       .eq('email', email.toLowerCase())
       .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+      .limit(1);
 
     if (error) {
       console.error('Error fetching last survey:', error);
       return null;
     }
 
-    return data;
+    // Return the first item if it exists, otherwise return null
+    return data?.[0] || null;
   } catch (e) {
     console.error('Failed to fetch last survey:', e);
     return null;

@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { getSurveyCount, getReportCount } from "../lib/supabase";
+import { getSurveyCount, getReportCount, getLastSurvey, SurveyAnswers } from "../lib/supabase";
 
 export default function ActivationPage() {
   const { user } = useAuth();
   const [surveyCount, setSurveyCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastSurvey, setLastSurvey] = useState<SurveyAnswers | null>(null);
 
   useEffect(() => {
     async function fetchCounts() {
@@ -23,6 +24,12 @@ export default function ActivationPage() {
           console.log('Fetched counts:', { surveys, reports });
           setSurveyCount(surveys);
           setReportCount(reports);
+
+          // Only fetch last survey if there are more surveys than reports
+          if (surveys > reports) {
+            const lastSurveyData = await getLastSurvey(user.email);
+            setLastSurvey(lastSurveyData);
+          }
         } catch (error) {
           console.error('Error fetching counts:', error);
         } finally {
