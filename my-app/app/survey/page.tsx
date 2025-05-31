@@ -86,7 +86,7 @@ const questions: QuestionType[] = [
     id: "q8",
     type: "input",
     text: "Do you have any allergies?",
-    placeholder: "Enter your allergies or 'None'"
+    placeholder: "Enter any allergies"
   },
   {
     id: "q9",
@@ -186,15 +186,18 @@ export default function SurveyPage() {
       return;
     }
 
+    // For q8 (allergies), q9 (skincare brands), and q10 (additional info), allow empty value
     const newAnswers = {
       ...answers,
-      [currentQuestion.id]: value
+      [currentQuestion.id]: value || "" // Use empty string if value is null/undefined
     };
     setAnswers(newAnswers);
     
     // Save answers after each question if user is logged in
     if (user?.email) {
       try {
+        // Check if this is the last question before the final page
+        const isLastQuestion = currentQuestionIndex === questions.length - 2;
         const { error } = await saveSurveyAnswers(
           user.email, 
           newAnswers, 
@@ -238,6 +241,7 @@ export default function SurveyPage() {
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
             isLargeInput={currentQuestion.id === "q9" || currentQuestion.id === "q10"}
+            isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
           />
         );
       case "single":

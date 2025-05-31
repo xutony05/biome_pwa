@@ -10,14 +10,15 @@ interface InputQuestionProps {
   placeholder?: string;
   onNext: (value: string) => void;
   isLargeInput?: boolean;
+  isOptional?: boolean;
 }
 
-export function InputQuestion({ question, placeholder, onNext, isLargeInput }: InputQuestionProps) {
+export function InputQuestion({ question, placeholder, onNext, isLargeInput, isOptional }: InputQuestionProps) {
   const [value, setValue] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (value.trim()) {
+    if (value.trim() || isOptional) {
       onNext(value);
     }
   };
@@ -77,7 +78,7 @@ export function InputQuestion({ question, placeholder, onNext, isLargeInput }: I
       <motion.div className="flex justify-end w-full" variants={item}>
         <button 
           type="submit"
-          disabled={!value.trim()}
+          disabled={!isOptional && !value.trim()}
           className="inline-flex px-8 py-3.5 text-base leading-[1.125rem] rounded-full min-h-0 h-auto bg-black text-white disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] transition-colors"
         >
           Next
