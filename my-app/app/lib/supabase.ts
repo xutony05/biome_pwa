@@ -143,4 +143,23 @@ export async function saveSurveyAnswers(email: string, answers: Record<string, a
     console.error('Error saving survey');
     return { error: e };
   }
+}
+
+export async function getSurveyCount(email: string): Promise<number> {
+  try {
+    const { count, error } = await supabase
+      .from('surveys')
+      .select('*', { count: 'exact', head: true })
+      .eq('email', email);
+
+    if (error) {
+      console.error('Supabase error:', error.message);
+      return 0;
+    }
+
+    return count || 0;
+  } catch (e) {
+    console.error('Failed to fetch survey count:', e);
+    return 0;
+  }
 } 
