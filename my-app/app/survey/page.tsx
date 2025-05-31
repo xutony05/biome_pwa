@@ -242,6 +242,7 @@ export default function SurveyPage() {
             onNext={handleNext}
             isLargeInput={currentQuestion.id === "q9" || currentQuestion.id === "q10"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
+            previousAnswer={answers[currentQuestion.id]}
           />
         );
       case "single":
@@ -252,12 +253,14 @@ export default function SurveyPage() {
             question={choiceQuestion.text}
             options={choiceQuestion.options}
             onSelect={handleNext}
+            previousAnswer={answers[currentQuestion.id]}
           />
         ) : (
           <MultiChoiceQuestion
             question={choiceQuestion.text}
             options={choiceQuestion.options}
             onNext={handleNext}
+            previousAnswers={answers[currentQuestion.id]}
           />
         );
       case "final":

@@ -8,10 +8,11 @@ interface SingleChoiceQuestionProps {
   question: string;
   options: string[];
   onSelect: (value: string) => void;
+  previousAnswer?: string;
 }
 
-export function SingleChoiceQuestion({ question, options, onSelect }: SingleChoiceQuestionProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+export function SingleChoiceQuestion({ question, options, onSelect, previousAnswer }: SingleChoiceQuestionProps) {
+  const [selectedOption, setSelectedOption] = useState<string | null>(previousAnswer || null);
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);

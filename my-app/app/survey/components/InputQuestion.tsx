@@ -11,10 +11,11 @@ interface InputQuestionProps {
   onNext: (value: string) => void;
   isLargeInput?: boolean;
   isOptional?: boolean;
+  previousAnswer?: string;
 }
 
-export function InputQuestion({ question, placeholder, onNext, isLargeInput, isOptional }: InputQuestionProps) {
-  const [value, setValue] = useState("");
+export function InputQuestion({ question, placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
+  const [value, setValue] = useState(previousAnswer || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -8,10 +8,11 @@ interface MultiChoiceQuestionProps {
   question: string;
   options: string[];
   onNext: (values: string[]) => void;
+  previousAnswers?: string[];
 }
 
-export function MultiChoiceQuestion({ question, options, onNext }: MultiChoiceQuestionProps) {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+export function MultiChoiceQuestion({ question, options, onNext, previousAnswers }: MultiChoiceQuestionProps) {
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(previousAnswers || []);
 
   const toggleOption = (option: string) => {
     setSelectedOptions((prev) => {
