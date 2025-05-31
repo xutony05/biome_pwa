@@ -131,13 +131,15 @@ export interface SurveyAnswers {
   allergies: string;    // q8
   skincare_brands: string;    // q9
   additional_info: string;    // q10
+  last_question_answered: string;  // Track the last question answered
+  completed: boolean;   // Track if survey is completed
 }
 
-export async function saveSurveyAnswers(email: string, answers: Record<string, any>): Promise<{ error: any }> {
+export async function saveSurveyAnswers(email: string, answers: Record<string, any>, lastQuestionId: string, isCompleted: boolean = false): Promise<{ error: any }> {
   try {
     const { error } = await supabase
       .from('surveys')
-      .insert({
+      .upsert({
         email: email,
         kit_id: answers.q1,
         age: answers.q3,
@@ -148,7 +150,10 @@ export async function saveSurveyAnswers(email: string, answers: Record<string, a
         allergies: answers.q8,
         skincare_brands: answers.q9,
         additional_info: answers.q10,
-        created_at: new Date().toISOString()
+        last_question_answered: lastQuestionId,
+        completed: isCompleted
+      }, {
+        onConflict: 'kit_id'
       });
 
     return { error };

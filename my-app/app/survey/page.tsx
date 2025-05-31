@@ -192,23 +192,29 @@ export default function SurveyPage() {
     };
     setAnswers(newAnswers);
     
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
-    } 
-    if (isLastQuestion && user?.email) {
+    // Save answers after each question if user is logged in
+    if (user?.email) {
       try {
-        const { error } = await saveSurveyAnswers(user.email, newAnswers);
+        const { error } = await saveSurveyAnswers(
+          user.email, 
+          newAnswers, 
+          currentQuestion.id,
+          isLastQuestion
+        );
         if (error) {
           console.error('Failed to save survey:', error);
           alert("There was an error saving your survey. Please try again.");
           return;
         }
-        // Only proceed to next question if save was successful
-        setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
       } catch (error) {
         console.error('Error in survey submission:', error);
         alert("There was an error saving your survey. Please try again.");
+        return;
       }
+    }
+    
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
     }
   };
 
