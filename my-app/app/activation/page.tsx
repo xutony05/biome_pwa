@@ -14,13 +14,11 @@ export default function ActivationPage() {
   useEffect(() => {
     async function fetchCounts() {
       if (user?.email) {
-        console.log('Fetching counts for user:', user.email);
         try {
           const [surveys, reports] = await Promise.all([
             getSurveyCount(user.email),
             getReportCount(user.email)
           ]);
-          console.log('Fetched counts:', { surveys, reports });
           setSurveyCount(surveys);
           setReportCount(reports);
 
@@ -32,8 +30,6 @@ export default function ActivationPage() {
         } catch (error) {
           console.error('Error fetching counts:', error);
         }
-      } else {
-        console.log('No user email available');
       }
     }
     fetchCounts();
