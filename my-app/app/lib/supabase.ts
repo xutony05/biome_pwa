@@ -76,7 +76,6 @@ export type Report = {
 
 export async function getReportCount(email: string): Promise<number> {
   try {
-    console.log('Getting report count for email:', email);
     const { count, error } = await supabase
       .from('reports')
       .select('*', { count: 'exact', head: true })
@@ -86,8 +85,6 @@ export async function getReportCount(email: string): Promise<number> {
       console.error('Supabase error in getReportCount:', error.message);
       return 0;
     }
-
-    console.log('Report count result:', count);
     return count || 0;
   } catch (e) {
     console.error('Failed to fetch report count:', e);

@@ -21,6 +21,7 @@ export default function ActivationPage() {
             getSurveyCount(user.email),
             getReportCount(user.email)
           ]);
+          console.log('Fetched counts:', { surveys, reports });
           setSurveyCount(surveys);
           setReportCount(reports);
 
@@ -42,7 +43,7 @@ export default function ActivationPage() {
     fetchCounts();
   }, [user?.email]);
 
-  const canViewGuide = surveyCount > reportCount;
+  const canViewGuide = surveyCount > reportCount && lastSurvey?.completed;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
