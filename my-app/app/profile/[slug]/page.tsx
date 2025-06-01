@@ -58,7 +58,6 @@ export default function ReportPage() {
         const reportData = await getReportByNumber(user.email, Number(params.slug));
         setReport(reportData);
         // Set bacteria values
-        console.log(reportData);
         if (reportData) {
           setValues({
             'C.Acne': reportData['C.Acne'],

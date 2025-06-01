@@ -305,7 +305,7 @@ export default function SurveyPage() {
             key={currentQuestion.id}
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
-            isLargeInput={currentQuestion.id === "q10"}
+            isLargeInput={currentQuestion.id === "q10" || currentQuestion.id === "q9"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
             previousAnswer={answers[currentQuestion.id] as string}
           />
