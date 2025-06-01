@@ -241,23 +241,39 @@ export default function SurveyPage() {
         // Check if this is the last question before the final page
         const isLastQuestion = currentQuestionIndex === questions.length - 2;
         
-        // Get the current survey data to preserve last_question_answered and completed
-        const currentSurvey = await getLastSurvey(user.email);
+        // Get the mode from URL search params
+        const searchParams = new URLSearchParams(window.location.search);
+        const mode = searchParams.get('mode');
         
-        const { error } = await saveSurveyAnswers(
-          user.email, 
-          newAnswers, 
-          // Only update last_question_answered if we're moving forward
-          currentQuestionIndex > questions.findIndex(q => q.id === currentSurvey?.last_question_answered) 
-            ? currentQuestion.id 
-            : currentSurvey?.last_question_answered || currentQuestion.id,
-          // Preserve the completed status
-          currentSurvey?.completed || isLastQuestion
-        );
-        if (error) {
-          console.error('Failed to save survey:', error);
-          alert("There was an error saving your survey. Please try again.");
-          return;
+        // For new surveys, don't preserve previous state
+        if (mode === 'new') {
+          const { error } = await saveSurveyAnswers(
+            user.email,
+            newAnswers,
+            currentQuestion.id,
+            isLastQuestion
+          );
+          if (error) {
+            console.error('Failed to save survey:', error);
+            alert("There was an error saving your survey. Please try again.");
+            return;
+          }
+        } else {
+          // For resume mode, preserve state
+          const currentSurvey = await getLastSurvey(user.email);
+          const { error } = await saveSurveyAnswers(
+            user.email,
+            newAnswers,
+            currentQuestionIndex > questions.findIndex(q => q.id === currentSurvey?.last_question_answered)
+              ? currentQuestion.id
+              : currentSurvey?.last_question_answered || currentQuestion.id,
+            currentSurvey?.completed || isLastQuestion
+          );
+          if (error) {
+            console.error('Failed to save survey:', error);
+            alert("There was an error saving your survey. Please try again.");
+            return;
+          }
         }
       } catch (error) {
         console.error('Error in survey submission:', error);
