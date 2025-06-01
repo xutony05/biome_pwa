@@ -5,13 +5,12 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface MultiChoiceQuestionProps {
-  question: string;
   options: string[];
   onNext: (values: string[]) => void;
   previousAnswers?: string[];
 }
 
-export function MultiChoiceQuestion({ question, options, onNext, previousAnswers }: MultiChoiceQuestionProps) {
+export function MultiChoiceQuestion({ options, onNext, previousAnswers }: MultiChoiceQuestionProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(previousAnswers || []);
 
   const toggleOption = (option: string) => {

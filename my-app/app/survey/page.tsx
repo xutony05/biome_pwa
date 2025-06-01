@@ -143,7 +143,7 @@ export default function SurveyPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -191,7 +191,6 @@ export default function SurveyPage() {
   }, [user?.email]);
 
   const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
   // Add safety check
   if (!currentQuestion || isLoading) {
@@ -202,7 +201,7 @@ export default function SurveyPage() {
     );
   }
 
-  const handleNext = async (value: any) => {
+  const handleNext = async (value: string | string[]) => {
     // Validate required fields
     if (currentQuestion.id === "q1" && !value) {
       alert("Please enter your test kit serial number");
@@ -224,7 +223,7 @@ export default function SurveyPage() {
       alert("Please select your skin type");
       return;
     }
-    if (currentQuestion.id === "q7" && (!value || value.length === 0)) {
+    if (currentQuestion.id === "q7" && (!value || (Array.isArray(value) && value.length === 0))) {
       alert("Please select at least one skin condition");
       return;
     }
@@ -288,38 +287,33 @@ export default function SurveyPage() {
         return (
           <InputQuestion
             key={currentQuestion.id}
-            question={currentQuestion.text}
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
-            isLargeInput={currentQuestion.id === "q9" || currentQuestion.id === "q10"}
+            isLargeInput={currentQuestion.id === "q10"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
-            previousAnswer={answers[currentQuestion.id]}
+            previousAnswer={answers[currentQuestion.id] as string}
           />
         );
       case "single":
-      case "multi":
-        const choiceQuestion = currentQuestion as ChoiceQuestionType;
-        return currentQuestion.type === "single" ? (
+        return (
           <SingleChoiceQuestion
-            question={choiceQuestion.text}
-            options={choiceQuestion.options}
+            options={currentQuestion.options}
             onSelect={handleNext}
-            previousAnswer={answers[currentQuestion.id]}
+            previousAnswer={answers[currentQuestion.id] as string}
           />
-        ) : (
+        );
+      case "multi":
+        return (
           <MultiChoiceQuestion
-            question={choiceQuestion.text}
-            options={choiceQuestion.options}
+            options={currentQuestion.options}
             onNext={handleNext}
-            previousAnswers={answers[currentQuestion.id]}
+            previousAnswers={answers[currentQuestion.id] as string[]}
           />
         );
       case "final":
-        const finalQuestion = currentQuestion as FinalQuestionType;
         return (
           <FinalPage
-            text={finalQuestion.text}
-            description={finalQuestion.description}
+            description={currentQuestion.description}
             onViewInstructions={handleViewInstructions}
           />
         );

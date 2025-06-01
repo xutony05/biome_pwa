@@ -5,13 +5,12 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface SingleChoiceQuestionProps {
-  question: string;
   options: string[];
   onSelect: (value: string) => void;
   previousAnswer?: string;
 }
 
-export function SingleChoiceQuestion({ question, options, onSelect, previousAnswer }: SingleChoiceQuestionProps) {
+export function SingleChoiceQuestion({ options, onSelect, previousAnswer }: SingleChoiceQuestionProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(previousAnswer || null);
 
   const handleSelect = (option: string) => {

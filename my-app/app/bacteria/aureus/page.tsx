@@ -11,8 +11,31 @@ import { ArrowLeft } from "lucide-react";
 export default function AureusPage() {
   const router = useRouter();
   const { values } = useBacteria();
-  const value = values['S.Aur'];
+  const value = values?.['S.Aur'];
   const [min, max] = optimalRanges['S. aureus'];
+
+  // Add loading state
+  if (value === undefined) {
+    return (
+      <main className="fixed inset-0 overflow-y-auto bg-background">
+        <div className="min-h-full p-4">
+          <Button 
+            variant="ghost" 
+            className="mb-4" 
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Report
+          </Button>
+          <Card className="max-w-2xl mx-auto">
+            <div className="p-6">
+              <p>Loading...</p>
+            </div>
+          </Card>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">

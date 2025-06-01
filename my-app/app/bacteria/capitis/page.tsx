@@ -11,8 +11,31 @@ import { ArrowLeft } from "lucide-react";
 export default function CapitisPage() {
   const router = useRouter();
   const { values } = useBacteria();
-  const value = values['S.Cap'];
+  const value = values?.['S.Cap'];
   const [min, max] = optimalRanges['S. capitis'];
+
+  // Add loading state
+  if (value === undefined) {
+    return (
+      <main className="fixed inset-0 overflow-y-auto bg-background">
+        <div className="min-h-full p-4">
+          <Button 
+            variant="ghost" 
+            className="mb-4" 
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Report
+          </Button>
+          <Card className="max-w-2xl mx-auto">
+            <div className="p-6">
+              <p>Loading...</p>
+            </div>
+          </Card>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
@@ -34,9 +57,10 @@ export default function CapitisPage() {
             <section className="space-y-3">
               <h2 className="text-lg font-semibold">What is S. capitis?</h2>
               <p className="text-muted-foreground">
-                S. capitis is a friendly bacteria commonly found on human skin, especially on the scalp 
-                and face. It's one of the good bacteria that helps keep your skin healthy by working 
-                with other beneficial bacteria to maintain a balanced skin environment.
+                S. capitis is a member of the skin microbiome that requires careful monitoring. 
+                While it can be found naturally on human skin, its presence needs to be kept at low 
+                levels to maintain optimal skin health. This bacteria is best kept in check by other 
+                beneficial members of your skin's microbiome.
               </p>
             </section>
 
@@ -53,21 +77,27 @@ export default function CapitisPage() {
                   value > max ? "text-red-800" : 
                   value < min ? "text-amber-800" : "text-green-800"
                 )}>
-                  Your level: {value?.toFixed(1)}%
+                  Your level: {value.toFixed(1)}%
                 </p>
                 {value > max && (
                   <p className="text-red-800">
-                    Your S. capitis levels are above the optimal range. This might be taking up too much space from other beneficial bacteria and could cause skin sensitivity.
+                    Your S. capitis levels are above the optimal range. This could potentially lead to 
+                    skin concerns and imbalances in your skin microbiome. It's recommended to consult with 
+                    a healthcare provider about ways to help restore balance to your skin's bacterial community.
                   </p>
                 )}
                 {value < min && (
                   <p className="text-amber-800">
-                    Your S. capitis levels are below the optimal range. This could reduce your skin's natural protection and affect how well your skin maintains itself.
+                    Your S. capitis levels are below the optimal range. While this is generally not a concern, 
+                    maintaining a balanced microbiome is important for overall skin health. Your skin's natural 
+                    defenses appear to be keeping this bacteria well regulated.
                   </p>
                 )}
                 {value >= min && value <= max && (
                   <p className="text-green-800">
-                    Great news! Your S. capitis levels are within the optimal range. This helps maintain a healthy balance in your skin's microbiome.
+                    Great news! Your S. capitis levels are within the optimal range. This suggests your skin's 
+                    microbiome is well-balanced and your natural defense systems are working effectively to maintain 
+                    healthy bacterial levels.
                   </p>
                 )}
               </div>
@@ -81,10 +111,11 @@ export default function CapitisPage() {
                 <div className="text-green-700 text-sm">
                   When at healthy levels, S. capitis:
                 </div>
-                <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
-                  <li>Helps protect your skin from harmful bacteria</li>
-                  <li>Supports your skin's natural defense system</li>
-                  <li>Helps maintain a healthy skin environment</li>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-green-700 text-sm">
+                  <li>Remains in check by other beneficial bacteria</li>
+                  <li>Coexists within a balanced microbiome</li>
+                  <li>Doesn't interfere with skin health</li>
+                  <li>Stays regulated by skin's natural defenses</li>
                 </ul>
               </div>
             </section>
@@ -94,23 +125,25 @@ export default function CapitisPage() {
               <h2 className="text-lg font-semibold">When Levels Are Too High</h2>
               <div className="bg-red-100 rounded-lg p-4 space-y-2">
                 <ul className="list-disc list-inside space-y-1 text-red-800">
-                  <li>May take up too much space from other good bacteria</li>
-                  <li>Could cause skin to become more sensitive</li>
-                  <li>Might lead to an unbalanced skin environment</li>
-                  <li>Can affect how your skin feels and looks</li>
+                  <li>Can disrupt skin barrier function</li>
+                  <li>May cause increased skin sensitivity</li>
+                  <li>Could lead to various skin concerns</li>
+                  <li>Often indicates an imbalanced microbiome</li>
+                  <li>Might compete with beneficial bacteria</li>
                 </ul>
               </div>
             </section>
 
             {/* What happens when too low */}
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold">When Levels Are Too Low</h2>
-              <div className="bg-amber-100 rounded-lg p-4 space-y-2">
-                <ul className="list-disc list-inside space-y-1 text-amber-800">
-                  <li>Your skin might become more vulnerable to unwanted bacteria</li>
-                  <li>Could reduce your skin's natural protection</li>
-                  <li>May affect how well your skin maintains itself</li>
-                  <li>Might impact overall skin health</li>
+              <h2 className="text-lg font-semibold">When Levels Are Low</h2>
+              <div className="bg-green-100 rounded-lg p-4 space-y-2">
+                <ul className="list-disc list-inside space-y-1 text-green-800">
+                  <li>This is actually good for your skin</li>
+                  <li>Allows beneficial bacteria to thrive</li>
+                  <li>Indicates a well-functioning skin barrier</li>
+                  <li>Shows your skin's defense system is working</li>
+                  <li>Supports overall skin health</li>
                 </ul>
               </div>
             </section>
