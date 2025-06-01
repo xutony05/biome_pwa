@@ -9,14 +9,17 @@ interface InputQuestionProps {
   question: string;
   placeholder?: string;
   onNext: (value: string) => void;
+  isLargeInput?: boolean;
+  isOptional?: boolean;
+  previousAnswer?: string;
 }
 
-export function InputQuestion({ question, placeholder, onNext }: InputQuestionProps) {
-  const [value, setValue] = useState("");
+export function InputQuestion({ question, placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
+  const [value, setValue] = useState(previousAnswer || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (value.trim()) {
+    if (value.trim() || isOptional) {
       onNext(value);
     }
   };
@@ -54,19 +57,29 @@ export function InputQuestion({ question, placeholder, onNext }: InputQuestionPr
       animate="show"
     >
       <motion.div className="w-full" variants={item}>
-        <Input
-          type="text"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-full min-h-0 h-auto"
-          style={{ boxSizing: 'border-box' }}
-        />
+        {isLargeInput ? (
+          <textarea
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-2xl min-h-[120px] resize-none"
+            style={{ boxSizing: 'border-box' }}
+          />
+        ) : (
+          <Input
+            type="text"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-full min-h-0 h-auto"
+            style={{ boxSizing: 'border-box' }}
+          />
+        )}
       </motion.div>
       <motion.div className="flex justify-end w-full" variants={item}>
         <button 
           type="submit"
-          disabled={!value.trim()}
+          disabled={!isOptional && !value.trim()}
           className="inline-flex px-8 py-3.5 text-base leading-[1.125rem] rounded-full min-h-0 h-auto bg-black text-white disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] transition-colors"
         >
           Next

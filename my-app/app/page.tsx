@@ -10,7 +10,7 @@ export default function HomePage() {
     { name: "Login", path: "/login" },
     { name: "Survey", path: "/survey" },
     { name: "Instructions", path: "/instructions" },
-    { name: "Home Report", path: "/report" },
+    { name: "Activation", path: "/activation" },
     { name: "Profile", path: "/profile" },
   ];
 

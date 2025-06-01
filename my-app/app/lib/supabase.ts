@@ -82,10 +82,9 @@ export async function getReportCount(email: string): Promise<number> {
       .eq('email', email);
 
     if (error) {
-      console.error('Supabase error:', error.message);
+      console.error('Supabase error in getReportCount:', error.message);
       return 0;
     }
-
     return count || 0;
   } catch (e) {
     console.error('Failed to fetch report count:', e);
@@ -120,27 +119,84 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
 
 export interface SurveyAnswers {
   email: string;
-  kit_id: string;        // from q1
-  exfoliation: string;   // from q2
-  breakouts: string;     // from q3
-  skin_conditions: string[];  // from q4
+  kit_id: string;        // q1
+  age: string;          // q3
+  gender: string;       // q4
+  city: string;         // q5
+  skin_type: string;    // q6
+  skin_conditions: string[];  // q7
+  allergies: string;    // q8
+  skincare_brands: string;    // q9
+  additional_info: string;    // q10
+  last_question_answered: string;  // Track the last question answered
+  completed: boolean;   // Track if survey is completed
 }
 
-export async function saveSurveyAnswers(email: string, answers: Record<string, any>): Promise<{ error: any }> {
+export async function saveSurveyAnswers(email: string, answers: Record<string, any>, lastQuestionId: string, isCompleted: boolean = false): Promise<{ error: any }> {
   try {
     const { error } = await supabase
       .from('surveys')
-      .insert({
+      .upsert({
         email: email,
         kit_id: answers.q1,
-        exfoliation: answers.q2,
-        breakouts: answers.q3,
-        skin_conditions: answers.q4,
+        age: answers.q3,
+        gender: answers.q4,
+        city: answers.q5,
+        skin_type: answers.q6,
+        skin_conditions: answers.q7,
+        allergies: answers.q8,
+        skincare_brands: answers.q9,
+        additional_info: answers.q10,
+        last_question_answered: lastQuestionId,
+        completed: isCompleted
+      }, {
+        onConflict: 'kit_id'
       });
 
     return { error };
   } catch (e) {
-    console.error('Error saving survey');
+    console.error('Error saving survey:', e);
     return { error: e };
+  }
+}
+
+export async function getSurveyCount(email: string): Promise<number> {
+  try {
+    const { data, error } = await supabase
+      .from('surveys')
+      .select('kit_id')
+      .eq('email', email.toLowerCase());
+
+    if (error) {
+      console.error('Error fetching survey count:', error);
+      return 0;
+    }
+
+    return data?.length || 0;
+  } catch (e) {
+    console.error('Failed to fetch survey count:', e);
+    return 0;
+  }
+}
+
+export async function getLastSurvey(email: string): Promise<SurveyAnswers | null> {
+  try {
+    const { data, error } = await supabase
+      .from('surveys')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error('Error fetching last survey:', error);
+      return null;
+    }
+
+    // Return the first item if it exists, otherwise return null
+    return data?.[0] || null;
+  } catch (e) {
+    console.error('Failed to fetch last survey:', e);
+    return null;
   }
 } 

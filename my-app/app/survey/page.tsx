@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +10,7 @@ import { MultiChoiceQuestion } from "./components/MultiChoiceQuestion";
 import { FinalPage } from "./components/FinalPage";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../context/AuthContext';
-import { saveSurveyAnswers } from '../lib/supabase';
+import { saveSurveyAnswers, getLastSurvey } from '../lib/supabase';
 
 // Define question types for better type safety
 interface BaseQuestion {
@@ -45,33 +45,63 @@ const questions: QuestionType[] = [
     placeholder: "e.g., 634123"
   },
   {
-    id: "q2",
-    type: "single",
-    text: "How often do you exfoliate your skin?",
-    options: ["Daily", "Weekly", "Monthly", "Never"]
-  },
-  {
     id: "q3",
-    type: "single",
-    text: "Do you experience breakouts?",
-    options: ["Rarely", "Occasionally", "Frequently"]
+    type: "input",
+    text: "What is your age?",
+    placeholder: "Enter your age"
   },
   {
     id: "q4",
-    type: "multi",
-    text: "Do you have any specific skin conditions we should know about?",
-    options: [
-      "Acne",
-      "Seborrheic Dermatitis",
-      "Vitiligo",
-      "Contact Dermatitis",
-      "Rosacea",
-      "Psoriasis",
-      "None of the above"
-    ]
+    type: "single",
+    text: "What is your gender?",
+    options: ["Female", "Male", "Non-binary"]
   },
   {
     id: "q5",
+    type: "input",
+    text: "What city are you based in?",
+    placeholder: "Enter your city"
+  },
+  {
+    id: "q6",
+    type: "single",
+    text: "How would you describe your skin?",
+    options: ["Dry", "Oily", "Combination", "Balanced"]
+  },
+  {
+    id: "q7",
+    type: "multi",
+    text: "Do you experience any of the following?",
+    options: [
+      "Acne/breakouts",
+      "Rosacea",
+      "Psoriasis",
+      "Eczema",
+      "Uneven pigmentation",
+      "Wrinkles",
+      "None/Other"
+    ]
+  },
+  {
+    id: "q8",
+    type: "input",
+    text: "Do you have any allergies?",
+    placeholder: "Enter any allergies"
+  },
+  {
+    id: "q9",
+    type: "input",
+    text: "What skincare brands do you use?",
+    placeholder: "Please list the brands you use (e.g., CeraVe, The Ordinary, etc.)"
+  },
+  {
+    id: "q10",
+    type: "input",
+    text: "Is there anything else you would like us to know?",
+    placeholder: "Share any additional information that might be relevant to your skin health"
+  },
+  {
+    id: "q11",
     type: "final",
     text: "All done!",
     description: "We'll use your answers to make your report even more tailored to you. Now, let's get you ready for the swab.",
@@ -85,13 +115,11 @@ const Header = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boo
   
   return (
     <div className="flex justify-between items-center h-14 px-4 bg-white">
-      {!isFinal && (
-        <button onClick={onBack} className="w-10 h-10 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      )}
+      <button onClick={onBack} className="w-10 h-10 flex items-center justify-center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
       <Button 
         variant="ghost" 
         className="text-base leading-[18px] hover:bg-transparent"
@@ -116,35 +144,137 @@ export default function SurveyPage() {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadLastSurvey() {
+      if (user?.email) {
+        try {
+          // Get the mode from URL search params
+          const searchParams = new URLSearchParams(window.location.search);
+          const mode = searchParams.get('mode');
+
+          // Only load last survey if we're in resume mode
+          if (mode === 'resume') {
+            const lastSurvey = await getLastSurvey(user.email);
+            if (lastSurvey) {
+              // Convert survey data to answers format
+              const surveyAnswers = {
+                q1: lastSurvey.kit_id,
+                q3: lastSurvey.age,
+                q4: lastSurvey.gender,
+                q5: lastSurvey.city,
+                q6: lastSurvey.skin_type,
+                q7: lastSurvey.skin_conditions,
+                q8: lastSurvey.allergies,
+                q9: lastSurvey.skincare_brands,
+                q10: lastSurvey.additional_info
+              };
+              setAnswers(surveyAnswers);
+
+              // Find the index of the last question answered and go to the next question
+              const lastQuestionId = lastSurvey.last_question_answered;
+              const lastQuestionIndex = questions.findIndex(q => q.id === lastQuestionId);
+              if (lastQuestionIndex !== -1) {
+                // Go to the next question, but don't exceed the questions array length
+                setCurrentQuestionIndex(Math.min(lastQuestionIndex + 1, questions.length - 1));
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading last survey:', error);
+        }
+      }
+      setIsLoading(false);
+    }
+    loadLastSurvey();
+  }, [user?.email]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 2;
 
+  // Add safety check
+  if (!currentQuestion || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   const handleNext = async (value: any) => {
+    // Validate required fields
+    if (currentQuestion.id === "q1" && !value) {
+      alert("Please enter your test kit serial number");
+      return;
+    }
+    if (currentQuestion.id === "q3" && !value) {
+      alert("Please enter your age");
+      return;
+    }
+    if (currentQuestion.id === "q4" && !value) {
+      alert("Please select your gender");
+      return;
+    }
+    if (currentQuestion.id === "q5" && !value) {
+      alert("Please enter your city");
+      return;
+    }
+    if (currentQuestion.id === "q6" && !value) {
+      alert("Please select your skin type");
+      return;
+    }
+    if (currentQuestion.id === "q7" && (!value || value.length === 0)) {
+      alert("Please select at least one skin condition");
+      return;
+    }
+
+    // For q8 (allergies), q9 (skincare brands), and q10 (additional info), allow empty value
     const newAnswers = {
       ...answers,
-      [currentQuestion.id]: value
+      [currentQuestion.id]: value || "" // Use empty string if value is null/undefined
     };
     setAnswers(newAnswers);
-    console.log('newAnswers', newAnswers);
-    console.log(currentQuestionIndex);
+    
+    // Save answers after each question if user is logged in
+    if (user?.email) {
+      try {
+        // Check if this is the last question before the final page
+        const isLastQuestion = currentQuestionIndex === questions.length - 2;
+        
+        // Get the current survey data to preserve last_question_answered and completed
+        const currentSurvey = await getLastSurvey(user.email);
+        
+        const { error } = await saveSurveyAnswers(
+          user.email, 
+          newAnswers, 
+          // Only update last_question_answered if we're moving forward
+          currentQuestionIndex > questions.findIndex(q => q.id === currentSurvey?.last_question_answered) 
+            ? currentQuestion.id 
+            : currentSurvey?.last_question_answered || currentQuestion.id,
+          // Preserve the completed status
+          currentSurvey?.completed || isLastQuestion
+        );
+        if (error) {
+          console.error('Failed to save survey:', error);
+          alert("There was an error saving your survey. Please try again.");
+          return;
+        }
+      } catch (error) {
+        console.error('Error in survey submission:', error);
+        alert("There was an error saving your survey. Please try again.");
+        return;
+      }
+    }
     
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } 
-    if (isLastQuestion && user?.email) {
-      console.log('Saving survey on last question');
-      // Save survey on last question
-      const { error } = await saveSurveyAnswers(user.email, newAnswers);
-      if (error) {
-        console.error('Failed to save survey:', error);
-      }
+      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
     }
   };
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
     }
   };
 
@@ -157,9 +287,13 @@ export default function SurveyPage() {
       case "input":
         return (
           <InputQuestion
+            key={currentQuestion.id}
             question={currentQuestion.text}
             placeholder={currentQuestion.placeholder}
             onNext={handleNext}
+            isLargeInput={currentQuestion.id === "q9" || currentQuestion.id === "q10"}
+            isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
+            previousAnswer={answers[currentQuestion.id]}
           />
         );
       case "single":
@@ -170,12 +304,14 @@ export default function SurveyPage() {
             question={choiceQuestion.text}
             options={choiceQuestion.options}
             onSelect={handleNext}
+            previousAnswer={answers[currentQuestion.id]}
           />
         ) : (
           <MultiChoiceQuestion
             question={choiceQuestion.text}
             options={choiceQuestion.options}
             onNext={handleNext}
+            previousAnswers={answers[currentQuestion.id]}
           />
         );
       case "final":

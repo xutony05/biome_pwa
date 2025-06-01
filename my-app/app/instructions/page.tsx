@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 
 const stepsData = [
   {
@@ -84,10 +85,13 @@ const stepsData = [
 
 export default function InstructionsPage() {
   const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
 
   const handleNext = () => {
     if (currentStep < stepsData.length - 1) {
       setCurrentStep(currentStep + 1);
+    } else {
+      router.push('/profile');
     }
   };
 
