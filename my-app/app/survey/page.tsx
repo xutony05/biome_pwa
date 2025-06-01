@@ -241,11 +241,19 @@ export default function SurveyPage() {
       try {
         // Check if this is the last question before the final page
         const isLastQuestion = currentQuestionIndex === questions.length - 2;
+        
+        // Get the current survey data to preserve last_question_answered and completed
+        const currentSurvey = await getLastSurvey(user.email);
+        
         const { error } = await saveSurveyAnswers(
           user.email, 
           newAnswers, 
-          currentQuestion.id,
-          isLastQuestion
+          // Only update last_question_answered if we're moving forward
+          currentQuestionIndex > questions.findIndex(q => q.id === currentSurvey?.last_question_answered) 
+            ? currentQuestion.id 
+            : currentSurvey?.last_question_answered || currentQuestion.id,
+          // Preserve the completed status
+          currentSurvey?.completed || isLastQuestion
         );
         if (error) {
           console.error('Failed to save survey:', error);
