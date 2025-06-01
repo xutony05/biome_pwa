@@ -11,8 +11,31 @@ import { ArrowLeft } from "lucide-react";
 export default function GranulosumPage() {
   const router = useRouter();
   const { values } = useBacteria();
-  const value = values['C.gran'];
+  const value = values?.['C.gran'];
   const [min, max] = optimalRanges['C. granulosum'];
+
+  // Add loading state
+  if (value === undefined) {
+    return (
+      <main className="fixed inset-0 overflow-y-auto bg-background">
+        <div className="min-h-full p-4">
+          <Button 
+            variant="ghost" 
+            className="mb-4" 
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Report
+          </Button>
+          <Card className="max-w-2xl mx-auto">
+            <div className="p-6">
+              <p>Loading...</p>
+            </div>
+          </Card>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="fixed inset-0 overflow-y-auto bg-background">
@@ -28,16 +51,16 @@ export default function GranulosumPage() {
         <Card className="max-w-2xl mx-auto">
           <div className="p-6 space-y-8">
             {/* Title */}
-            <h1 className="text-2xl font-bold">Cutibacterium granulosum</h1>
+            <h1 className="text-2xl font-bold">Corynebacterium granulosum</h1>
 
             {/* What is this bacteria */}
             <section className="space-y-3">
               <h2 className="text-lg font-semibold">What is C. granulosum?</h2>
               <p className="text-muted-foreground">
-                C. granulosum is a beneficial skin bacteria that's part of your skin's natural 
-                microbiome. It's particularly active in sebum-rich areas of your skin, where it 
-                helps process skin oils and maintains a healthy balance with other bacteria. 
-                While less common than C. acnes, it plays a unique role in skin health.
+                C. granulosum is a member of the skin microbiome that requires careful monitoring. 
+                While it can be found naturally on human skin, its presence needs to be kept at low 
+                levels to maintain optimal skin health. This bacteria is best kept in check by other 
+                beneficial members of your skin's microbiome.
               </p>
             </section>
 
@@ -54,21 +77,27 @@ export default function GranulosumPage() {
                   value > max ? "text-red-800" : 
                   value < min ? "text-amber-800" : "text-green-800"
                 )}>
-                  Your level: {value?.toFixed(1)}%
+                  Your level: {value.toFixed(1)}%
                 </p>
                 {value > max && (
                   <p className="text-red-800">
-                    Your C. granulosum levels are above optimal. This might affect how your skin processes oils and could lead to increased skin sensitivity.
+                    Your C. granulosum levels are above the optimal range. This could potentially lead to 
+                    skin concerns and imbalances in your skin microbiome. It's recommended to consult with 
+                    a healthcare provider about ways to help restore balance to your skin's bacterial community.
                   </p>
                 )}
                 {value < min && (
                   <p className="text-amber-800">
-                    Your C. granulosum levels are below the optimal range. This could affect how well your skin processes oils and maintains its protective barrier.
+                    Your C. granulosum levels are below the optimal range. While this is generally not a concern, 
+                    maintaining a balanced microbiome is important for overall skin health. Your skin's natural 
+                    defenses appear to be keeping this bacteria well regulated.
                   </p>
                 )}
                 {value >= min && value <= max && (
                   <p className="text-green-800">
-                    Great news! Your C. granulosum levels are in the healthy range, supporting balanced oil processing and skin health.
+                    Great news! Your C. granulosum levels are within the optimal range. This suggests your skin's 
+                    microbiome is well-balanced and your natural defense systems are working effectively to maintain 
+                    healthy bacterial levels.
                   </p>
                 )}
               </div>
@@ -82,11 +111,11 @@ export default function GranulosumPage() {
                 <div className="text-green-700 text-sm">
                   When at healthy levels, C. granulosum:
                 </div>
-                <ul className="list-disc list-inside space-y-1 text-green-700 text-sm">
-                  <li>Helps process natural skin oils</li>
-                  <li>Supports balanced oil production</li>
-                  <li>Contributes to overall skin health</li>
-                  <li>Works with other bacteria to maintain skin balance</li>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-green-700 text-sm">
+                  <li>Remains in check by other beneficial bacteria</li>
+                  <li>Coexists within a balanced microbiome</li>
+                  <li>Doesn't interfere with skin health</li>
+                  <li>Stays regulated by skin's natural defenses</li>
                 </ul>
               </div>
             </section>
@@ -96,23 +125,25 @@ export default function GranulosumPage() {
               <h2 className="text-lg font-semibold">When Levels Are Too High</h2>
               <div className="bg-red-100 rounded-lg p-4 space-y-2">
                 <ul className="list-disc list-inside space-y-1 text-red-800">
-                  <li>May affect how your skin processes oils</li>
-                  <li>Could lead to increased skin sensitivity</li>
-                  <li>Might disrupt the balance with other bacteria</li>
-                  <li>Can impact overall skin comfort</li>
+                  <li>Can disrupt skin barrier function</li>
+                  <li>May cause increased skin sensitivity</li>
+                  <li>Could lead to various skin concerns</li>
+                  <li>Often indicates an imbalanced microbiome</li>
+                  <li>Might compete with beneficial bacteria</li>
                 </ul>
               </div>
             </section>
 
             {/* What happens when too low */}
             <section className="space-y-3">
-              <h2 className="text-lg font-semibold">When Levels Are Too Low</h2>
-              <div className="bg-amber-100 rounded-lg p-4 space-y-2">
-                <ul className="list-disc list-inside space-y-1 text-amber-800">
-                  <li>Could affect how well your skin manages oils</li>
-                  <li>May create gaps in your skin's bacterial community</li>
-                  <li>Might impact your skin's natural processes</li>
-                  <li>Can contribute to an unbalanced skin environment</li>
+              <h2 className="text-lg font-semibold">When Levels Are Low</h2>
+              <div className="bg-green-100 rounded-lg p-4 space-y-2">
+                <ul className="list-disc list-inside space-y-1 text-green-800">
+                  <li>This is actually good for your skin</li>
+                  <li>Allows beneficial bacteria to thrive</li>
+                  <li>Indicates a well-functioning skin barrier</li>
+                  <li>Shows your skin's defense system is working</li>
+                  <li>Supports overall skin health</li>
                 </ul>
               </div>
             </section>

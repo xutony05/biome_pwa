@@ -1,15 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 interface FinalPageProps {
-  text: string;
   description: string;
   onViewInstructions: () => void;
 }
 
-export function FinalPage({ text, description, onViewInstructions }: FinalPageProps) {
+export function FinalPage({ description, onViewInstructions }: FinalPageProps) {
   const container = {
     hidden: { opacity: 0 },
     show: {

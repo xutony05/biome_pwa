@@ -9,7 +9,6 @@ export default function ActivationPage() {
   const { user } = useAuth();
   const [surveyCount, setSurveyCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [lastSurvey, setLastSurvey] = useState<SurveyAnswers | null>(null);
 
   useEffect(() => {
@@ -32,12 +31,9 @@ export default function ActivationPage() {
           }
         } catch (error) {
           console.error('Error fetching counts:', error);
-        } finally {
-          setIsLoading(false);
         }
       } else {
         console.log('No user email available');
-        setIsLoading(false);
       }
     }
     fetchCounts();

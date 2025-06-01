@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';

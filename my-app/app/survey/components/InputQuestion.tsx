@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 interface InputQuestionProps {
-  question: string;
   placeholder?: string;
   onNext: (value: string) => void;
   isLargeInput?: boolean;
@@ -14,7 +12,7 @@ interface InputQuestionProps {
   previousAnswer?: string;
 }
 
-export function InputQuestion({ question, placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
+export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
   const [value, setValue] = useState(previousAnswer || "");
 
   const handleSubmit = (e: React.FormEvent) => {
