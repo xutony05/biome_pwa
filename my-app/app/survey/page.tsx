@@ -115,13 +115,11 @@ const Header = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boo
   
   return (
     <div className="flex justify-between items-center h-14 px-4 bg-white">
-      {!isFinal && (
-        <button onClick={onBack} className="w-10 h-10 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      )}
+      <button onClick={onBack} className="w-10 h-10 flex items-center justify-center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
       <Button 
         variant="ghost" 
         className="text-base leading-[18px] hover:bg-transparent"
@@ -152,28 +150,35 @@ export default function SurveyPage() {
     async function loadLastSurvey() {
       if (user?.email) {
         try {
-          const lastSurvey = await getLastSurvey(user.email);
-          if (lastSurvey) {
-            // Convert survey data to answers format
-            const surveyAnswers = {
-              q1: lastSurvey.kit_id,
-              q3: lastSurvey.age,
-              q4: lastSurvey.gender,
-              q5: lastSurvey.city,
-              q6: lastSurvey.skin_type,
-              q7: lastSurvey.skin_conditions,
-              q8: lastSurvey.allergies,
-              q9: lastSurvey.skincare_brands,
-              q10: lastSurvey.additional_info
-            };
-            setAnswers(surveyAnswers);
+          // Get the mode from URL search params
+          const searchParams = new URLSearchParams(window.location.search);
+          const mode = searchParams.get('mode');
 
-            // Find the index of the last question answered and go to the next question
-            const lastQuestionId = lastSurvey.last_question_answered;
-            const lastQuestionIndex = questions.findIndex(q => q.id === lastQuestionId);
-            if (lastQuestionIndex !== -1) {
-              // Go to the next question, but don't exceed the questions array length
-              setCurrentQuestionIndex(Math.min(lastQuestionIndex + 1, questions.length - 1));
+          // Only load last survey if we're in resume mode
+          if (mode === 'resume') {
+            const lastSurvey = await getLastSurvey(user.email);
+            if (lastSurvey) {
+              // Convert survey data to answers format
+              const surveyAnswers = {
+                q1: lastSurvey.kit_id,
+                q3: lastSurvey.age,
+                q4: lastSurvey.gender,
+                q5: lastSurvey.city,
+                q6: lastSurvey.skin_type,
+                q7: lastSurvey.skin_conditions,
+                q8: lastSurvey.allergies,
+                q9: lastSurvey.skincare_brands,
+                q10: lastSurvey.additional_info
+              };
+              setAnswers(surveyAnswers);
+
+              // Find the index of the last question answered and go to the next question
+              const lastQuestionId = lastSurvey.last_question_answered;
+              const lastQuestionIndex = questions.findIndex(q => q.id === lastQuestionId);
+              if (lastQuestionIndex !== -1) {
+                // Go to the next question, but don't exceed the questions array length
+                setCurrentQuestionIndex(Math.min(lastQuestionIndex + 1, questions.length - 1));
+              }
             }
           }
         } catch (error) {

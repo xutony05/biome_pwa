@@ -21,7 +21,6 @@ export default function ActivationPage() {
             getSurveyCount(user.email),
             getReportCount(user.email)
           ]);
-          console.log('Fetched counts:', { surveys, reports });
           setSurveyCount(surveys);
           setReportCount(reports);
 
@@ -54,7 +53,7 @@ export default function ActivationPage() {
         <div className="bg-white rounded-xl shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-1">Activate Your Kit</h2>
           <p className="text-gray-600 mb-4">Enter your kit serial number and share your skin background to get deeper insights into your skin microbiome results.</p>
-          <Link href="/survey">
+          <Link href={`/survey?mode=${surveyCount > reportCount ? 'resume' : 'new'}`}>
             <button className="bg-blue-400 text-white font-medium px-5 py-2 rounded-full hover:bg-blue-500 transition">
               {surveyCount > reportCount ? "Resume Activation" : "Start Activation"}
             </button>
