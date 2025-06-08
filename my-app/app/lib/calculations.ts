@@ -1,3 +1,17 @@
+export type BacteriaPercentages = {
+  'C.Acne': number;
+  'C.Stri': number;
+  'S.Cap': number;
+  'S.Epi': number;
+  'C.Avi': number;
+  'C.gran': number;
+  'S.haem': number;
+  'S.Aur': number;
+  'C.Tub': number;
+  'S.hom': number;
+  'C.Krop': number;
+};
+
 export const calculateHydrationScore = (age: number, bacteriaPercentages: Record<string, number>) => {
   // Define optimal ranges based on age
   const optimalRanges = {
@@ -165,4 +179,37 @@ export const estimateAge = (bacteriaPercentages: Record<string, number>): number
 
   // Clamp result
   return Math.max(10, Math.min(85, Math.round(ageEstimate * 10) / 10));
-}; 
+};
+
+export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentages): number {
+  // Antioxidant weights based on direction and magnitude of effect
+  const antioxidantWeights = {
+    'C.Acne': -0.5,
+    'S.Epi': 2.0,
+    'C.Krop': -2.0,
+    'S.Cap': -0.5,
+    'S.Aur': -2.0,
+    'C.Stri': -1.5,
+    'C.Tub': -1.0,
+    'C.Avi': 0.0,
+    'C.gran': 0.5,
+    'S.haem': -2.0,
+    'S.hom': 0.5
+  };
+
+  // Normalize by scaling bacteria % (0–100) into contribution to antioxidant score
+  let score = 0;
+  let maxScore = 0;
+
+  for (const [bacterium, weight] of Object.entries(antioxidantWeights)) {
+    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    // Cap influence of each microbe at 10% abundance for scoring
+    const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
+    score += cappedPercent * weight;
+    maxScore += Math.abs(weight);  // For normalization
+  }
+
+  // Normalize to 0–100 score
+  const normalized = (score + maxScore) / (2 * maxScore) * 100;
+  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+} 

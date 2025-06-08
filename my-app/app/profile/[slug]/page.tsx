@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,7 @@ export default function ReportPage() {
   const [showProductsExplanation, setShowProductsExplanation] = useState(false);
   const [showHydrationExplanation, setShowHydrationExplanation] = useState(false);
   const [showAgeExplanation, setShowAgeExplanation] = useState(false);
+  const [showAntioxidantExplanation, setShowAntioxidantExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -99,6 +100,7 @@ export default function ReportPage() {
   const estimatedAge = estimateAge(bacteriaPercentages);
   const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
+  const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
   const skinType = classifySkinType(hydrationScore);
 
   return (
@@ -213,6 +215,28 @@ export default function ReportPage() {
                   <div className="text-lg font-medium text-primary">
                     {skinType} Skin
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Antioxidant Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowAntioxidantExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {antioxidantScore}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
             </CardContent>
@@ -854,6 +878,52 @@ export default function ReportPage() {
               This estimate provides insight into your skin's biological age based on its microbial composition, 
               which may differ from your chronological age. Understanding this difference can help guide 
               personalized skincare recommendations.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAntioxidantExplanation} onOpenChange={setShowAntioxidantExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Antioxidant Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Antioxidant Score measures your skin's ability to combat oxidative stress based on your 
+              microbiome composition. This score takes into account the presence and abundance of bacteria 
+              that either contribute to or reduce antioxidant activity in your skin.
+            </p>
+            <p>
+              The score is calculated using a weighted system that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
+                that enhance antioxidant activity
+              </li>
+              <li>
+                <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus and 
+                Corynebacterium kroppenstedtii that may reduce antioxidant activity
+              </li>
+              <li>
+                <span className="font-medium">Neutral Bacteria:</span> Species that have minimal impact on 
+                antioxidant levels
+              </li>
+            </ul>
+            <p>
+              A higher score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better protection against environmental stressors</li>
+              <li>Enhanced ability to combat free radicals</li>
+              <li>More resilient skin barrier function</li>
+              <li>Reduced oxidative damage</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better antioxidant 
+              potential. This score can help guide your skincare choices and help you understand how your 
+              skin's microbiome composition affects its ability to combat oxidative stress.
             </p>
           </div>
         </DialogContent>
