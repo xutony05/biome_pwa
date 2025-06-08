@@ -238,4 +238,30 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
   // Normalize to 0–100 score
   const normalized = (score + maxScore) / (2 * maxScore) * 100;
   return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+}
+
+export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages): number {
+  const weights = {
+    'S.Aur': -2.5,
+    'S.haem': -2.0,
+    'C.Krop': -1.5,
+    'C.Stri': -1.0,
+    'S.hom': 1.5,
+    'S.Epi': 2.0
+  };
+
+  let score = 0;
+  let maxScore = 0;
+
+  for (const [bacterium, weight] of Object.entries(weights)) {
+    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    // Cap influence of each microbe at 10% abundance for scoring
+    const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
+    score += cappedPercent * weight;
+    maxScore += Math.abs(weight);  // For normalization
+  }
+
+  // Normalize to 0–100 score
+  const normalized = (score + maxScore) / (2 * maxScore) * 100;
+  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
 } 

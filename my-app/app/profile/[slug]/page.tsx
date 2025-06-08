@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore, calculateFirmnessScore } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,7 @@ export default function ReportPage() {
   const [showAgeExplanation, setShowAgeExplanation] = useState(false);
   const [showAntioxidantExplanation, setShowAntioxidantExplanation] = useState(false);
   const [showFirmnessExplanation, setShowFirmnessExplanation] = useState(false);
+  const [showSensitivityExplanation, setShowSensitivityExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -103,6 +104,7 @@ export default function ReportPage() {
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
   const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
   const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
+  const sensitivityScore = calculateSensitivityScore(bacteriaPercentages);
   const skinType = classifySkinType(hydrationScore);
 
   return (
@@ -260,6 +262,28 @@ export default function ReportPage() {
 
                 <div className="text-3xl font-bold">
                   {firmnessScore}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Skin Sensitivity Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowSensitivityExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {sensitivityScore}
                   <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
@@ -990,6 +1014,48 @@ export default function ReportPage() {
               The score is normalized to a 0-100 scale, where higher scores indicate better skin firmness 
               potential. This score can help guide your skincare choices and help you understand how your 
               skin's microbiome composition affects its structural integrity.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSensitivityExplanation} onOpenChange={setShowSensitivityExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Skin Sensitivity Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Skin Sensitivity Score measures your skin's resilience to irritants and environmental 
+              stressors based on your microbiome composition. This score takes into account the presence 
+              and abundance of bacteria that either protect against or contribute to skin sensitivity.
+            </p>
+            <p>
+              The score is calculated using a weighted system that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
+                and Staphylococcus hominis that help protect against sensitivity
+              </li>
+              <li>
+                <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus, 
+                Staphylococcus haemolyticus, and Corynebacterium kroppenstedtii that may increase skin sensitivity
+              </li>
+            </ul>
+            <p>
+              A higher score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better tolerance to skincare products</li>
+              <li>Reduced likelihood of irritation</li>
+              <li>More resilient skin barrier</li>
+              <li>Better protection against environmental stressors</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better skin resilience 
+              and lower sensitivity. This score can help guide your skincare choices and help you understand 
+              how your skin's microbiome composition affects its sensitivity to various factors.
             </p>
           </div>
         </DialogContent>
