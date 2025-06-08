@@ -184,7 +184,7 @@ export default function ReportPage() {
                 </div>
 
                 <div className="text-3xl font-bold">
-                  {estimatedAge}
+                  {Math.round(estimatedAge)}
                   <span className="text-base font-normal text-muted-foreground ml-1">years</span>
                 </div>
               </div>
