@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,7 @@ export default function ReportPage() {
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
   const [showProductsExplanation, setShowProductsExplanation] = useState(false);
   const [showHydrationExplanation, setShowHydrationExplanation] = useState(false);
+  const [showAgeExplanation, setShowAgeExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -95,8 +96,9 @@ export default function ReportPage() {
     'C.Krop': report['C.Krop']
   };
 
-  const score = calculateMicrobiomeScore(report.age || 30, bacteriaPercentages);
-  const hydrationScore = calculateHydrationScore(report.age || 30, bacteriaPercentages);
+  const estimatedAge = estimateAge(bacteriaPercentages);
+  const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
+  const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
   const skinType = classifySkinType(hydrationScore);
 
   return (
@@ -162,6 +164,28 @@ export default function ReportPage() {
                 <div className="text-3xl font-bold">
                   {report.env_score}
                   <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Estimated Age</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowAgeExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {estimatedAge}
+                  <span className="text-base font-normal text-muted-foreground ml-1">years</span>
                 </div>
               </div>
             </CardContent>
@@ -790,6 +814,46 @@ export default function ReportPage() {
               The score is normalized to a 0-100 scale, where higher scores indicate better hydration potential. 
               This score can help guide your skincare choices and help you understand how your skin's microbiome 
               composition affects its hydration levels.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAgeExplanation} onOpenChange={setShowAgeExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Estimated Age Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your estimated age is calculated based on the composition of your skin microbiome. 
+              Different bacterial species have been shown to correlate with different age groups, 
+              and their relative abundances can be used to estimate biological age.
+            </p>
+            <p>
+              The calculation takes into account:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Cutibacterium acnes:</span> Higher levels are associated with younger skin
+              </li>
+              <li>
+                <span className="font-medium">Staphylococcus epidermidis:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Corynebacterium kroppenstedtii:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Corynebacterium tuberculostearicum:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Cutibacterium granulosum:</span> Higher levels are associated with younger skin
+              </li>
+            </ul>
+            <p>
+              This estimate provides insight into your skin's biological age based on its microbial composition, 
+              which may differ from your chronological age. Understanding this difference can help guide 
+              personalized skincare recommendations.
             </p>
           </div>
         </DialogContent>

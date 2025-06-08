@@ -113,4 +113,56 @@ export const classifySkinType = (score: number): string => {
   } else {
     return "Oily";
   }
+};
+
+export const estimateAge = (bacteriaPercentages: Record<string, number>): number => {
+  // Midpoints from reference ranges
+  const ageAnchors = {
+    'C.Acne': { young: 74, old: 37 },
+    'S.Epi': { young: 5, old: 12 },
+    'C.Krop': { young: 2, old: 13 },
+    'C.Tub': { young: 0.3, old: 0.5 },
+    'C.gran': { young: 0.8, old: 0.2 }
+  };
+
+  // Age weights (how much each shifts the predicted age)
+  const ageWeights = {
+    'C.Acne': -3.5,
+    'S.Epi': +3.0,
+    'C.Krop': +2.5,
+    'C.Tub': +2.0,
+    'C.gran': -1.5
+  };
+
+  let totalShift = 0;
+  let totalWeight = 0;
+  const baselineAge = 40; // neutral midpoint
+
+  for (const [bacterium, anchors] of Object.entries(ageAnchors)) {
+    const weight = ageWeights[bacterium as keyof typeof ageWeights];
+    const observed = bacteriaPercentages[bacterium] || 0;
+    const youngVal = anchors.young;
+    const oldVal = anchors.old;
+
+    // Expected range delta
+    const expectedRange = Math.abs(oldVal - youngVal);
+    if (expectedRange === 0) {
+      continue; // avoid divide-by-zero
+    }
+
+    // Directional deviation: -1 = like young, +1 = like old
+    let deviation = (observed - youngVal) / expectedRange;
+    deviation = Math.max(Math.min(deviation, 1), -1); // clamp between -1 and 1
+
+    // Multiply by weight and sum
+    const shift = deviation * weight;
+    totalShift += shift;
+    totalWeight += Math.abs(weight);
+  }
+
+  // Normalize and apply to baseline
+  const ageEstimate = baselineAge + (totalShift / totalWeight) * 25; // 25 = max age deviation from 40
+
+  // Clamp result
+  return Math.max(10, Math.min(85, Math.round(ageEstimate * 10) / 10));
 }; 
