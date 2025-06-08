@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
+import { calculateMicrobiomeScore, calculateHydrationScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -51,6 +51,7 @@ export default function ReportPage() {
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
   const [showProductsExplanation, setShowProductsExplanation] = useState(false);
+  const [showHydrationExplanation, setShowHydrationExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -80,7 +81,22 @@ export default function ReportPage() {
 
   if (!report) return null;
 
-  const score = report.microbiome_score || 0;
+  const bacteriaPercentages = {
+    'C.Acne': report['C.Acne'],
+    'C.Stri': report['C.Stri'],
+    'S.Cap': report['S.Cap'],
+    'S.Epi': report['S.Epi'],
+    'C.Avi': report['C.Avi'],
+    'C.gran': report['C.gran'],
+    'S.haem': report['S.haem'],
+    'S.Aur': report['S.Aur'],
+    'C.Tub': report['C.Tub'],
+    'S.hom': report['S.hom'],
+    'C.Krop': report['C.Krop']
+  };
+
+  const score = calculateMicrobiomeScore(report.age || 30, bacteriaPercentages);
+  const hydrationScore = calculateHydrationScore(report.age || 30, bacteriaPercentages);
 
   return (
     <main className="fixed inset-0 flex flex-col">
@@ -144,6 +160,28 @@ export default function ReportPage() {
 
                 <div className="text-3xl font-bold">
                   {report.env_score}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Hydration Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowHydrationExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {hydrationScore}
                   <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
@@ -697,6 +735,55 @@ export default function ReportPage() {
               These recommendations are personalized to your specific skin profile and are designed to help you achieve 
               and maintain a healthy, balanced skin microbiome. Remember that consistency is key when introducing new 
               products to your skincare routine.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showHydrationExplanation} onOpenChange={setShowHydrationExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Hydration Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Hydration Score is a specialized measure that evaluates your skin's moisture balance based on the 
+              composition of your skin microbiome. This score takes into account the presence and abundance of specific 
+              bacteria that are known to influence skin hydration levels.
+            </p>
+            <p>
+              The score is calculated using a sophisticated algorithm that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Age-Specific Optimal Ranges:</span> Different bacterial compositions are 
+                optimal for different age groups. The algorithm adjusts its calculations based on your age to provide 
+                more accurate results.
+              </li>
+              <li>
+                <span className="font-medium">Bacterial Weights:</span> Each bacterial species is assigned a specific 
+                weight based on its impact on skin hydration. Some bacteria contribute positively to hydration, while 
+                others may have a negative effect.
+              </li>
+              <li>
+                <span className="font-medium">Optimal Ranges:</span> Each bacterial species has an optimal range that 
+                contributes to healthy skin hydration. The algorithm evaluates how well your bacterial composition 
+                aligns with these ranges.
+              </li>
+            </ul>
+            <p>
+              A higher hydration score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better moisture retention in the skin</li>
+              <li>More balanced skin barrier function</li>
+              <li>Reduced likelihood of dryness and dehydration</li>
+              <li>Improved skin elasticity and suppleness</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better hydration potential. 
+              This score can help guide your skincare choices and help you understand how your skin's microbiome 
+              composition affects its hydration levels.
             </p>
           </div>
         </DialogContent>
