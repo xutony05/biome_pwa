@@ -212,4 +212,30 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
   // Normalize to 0–100 score
   const normalized = (score + maxScore) / (2 * maxScore) * 100;
   return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+}
+
+export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {
+  const weights = {
+    'S.Epi': 2.0,
+    'C.gran': 1.0,
+    'C.Krop': -2.0,
+    'S.Aur': -2.0,
+    'C.Tub': -1.5,
+    'S.haem': -1.5
+  };
+
+  let score = 0;
+  let maxScore = 0;
+
+  for (const [bacterium, weight] of Object.entries(weights)) {
+    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    // Cap influence of each microbe at 10% abundance for scoring
+    const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
+    score += cappedPercent * weight;
+    maxScore += Math.abs(weight);  // For normalization
+  }
+
+  // Normalize to 0–100 score
+  const normalized = (score + maxScore) / (2 * maxScore) * 100;
+  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
 } 
