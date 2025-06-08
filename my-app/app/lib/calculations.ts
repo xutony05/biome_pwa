@@ -72,7 +72,7 @@ export const calculateHydrationScore = (age: number, bacteriaPercentages: Record
   const normalized = (shiftedScore / (2 * maxScore)) * 100;
   // Ensure the score is within 0-100 range
   const clampedScore = Math.max(0, Math.min(100, normalized));
-  return Math.round(clampedScore * 100) / 100;
+  return Math.round(clampedScore);
 };
 
 export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Record<string, number>) => {
@@ -114,7 +114,7 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
   // Calculate final score
   const microbiomeScore = Math.max(0, 100 - totalPenalty - diversityPenalty);
   
-  return Math.round(microbiomeScore * 100) / 100;
+  return Math.round(microbiomeScore);
 };
 
 export const classifySkinType = (score: number): string => {
@@ -211,7 +211,7 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
 
   // Normalize to 0–100 score
   const normalized = (score + maxScore) / (2 * maxScore) * 100;
-  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+  return Math.round(normalized);  // Return integer
 }
 
 export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {
@@ -237,7 +237,7 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
 
   // Normalize to 0–100 score
   const normalized = (score + maxScore) / (2 * maxScore) * 100;
-  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+  return Math.round(normalized);  // Return integer
 }
 
 export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages): number {
@@ -263,5 +263,5 @@ export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentag
 
   // Normalize to 0–100 score
   const normalized = (score + maxScore) / (2 * maxScore) * 100;
-  return Math.round(normalized * 100) / 100;  // Round to 2 decimal places
+  return Math.round(normalized);  // Return integer
 } 
