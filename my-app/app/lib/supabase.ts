@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { calculateHydrationScore, calculateMicrobiomeScore } from './calculations';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -49,12 +50,10 @@ export type Product = {
 }
 
 export type Report = {
+  id: number;
   email: string;
-  report_id: number;
   created_at: string;
   'C.Acne': number;
-  'Other': number;
-  'C.Krop': number;
   'C.Stri': number;
   'S.Cap': number;
   'S.Epi': number;
@@ -64,14 +63,15 @@ export type Report = {
   'S.Aur': number;
   'C.Tub': number;
   'S.hom': number;
+  'C.Krop': number;
   env_score: number;
-  microbiome_score: number;
+  age: number;
+  products: Product | null;
   good_ingredients: string[];
   avoid_ingredients: string[];
   good_food: string[];
   avoid_food: string[];
   lifestyle: string[];
-  products: Product | null;
 }
 
 export async function getReportCount(email: string): Promise<number> {
@@ -109,7 +109,6 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
       console.error('Supabase error:', error);
       throw error;
     }
-
     return data;
   } catch (e) {
     console.error('Failed to fetch report:', e);

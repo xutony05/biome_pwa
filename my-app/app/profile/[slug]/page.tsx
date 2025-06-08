@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
+import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -51,6 +51,11 @@ export default function ReportPage() {
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
   const [showProductsExplanation, setShowProductsExplanation] = useState(false);
+  const [showHydrationExplanation, setShowHydrationExplanation] = useState(false);
+  const [showAgeExplanation, setShowAgeExplanation] = useState(false);
+  const [showAntioxidantExplanation, setShowAntioxidantExplanation] = useState(false);
+  const [showFirmnessExplanation, setShowFirmnessExplanation] = useState(false);
+  const [showSensitivityExplanation, setShowSensitivityExplanation] = useState(false);
   
   useEffect(() => {
     async function fetchReport() {
@@ -80,7 +85,27 @@ export default function ReportPage() {
 
   if (!report) return null;
 
-  const score = report.microbiome_score || 0;
+  const bacteriaPercentages = {
+    'C.Acne': report['C.Acne'],
+    'C.Stri': report['C.Stri'],
+    'S.Cap': report['S.Cap'],
+    'S.Epi': report['S.Epi'],
+    'C.Avi': report['C.Avi'],
+    'C.gran': report['C.gran'],
+    'S.haem': report['S.haem'],
+    'S.Aur': report['S.Aur'],
+    'C.Tub': report['C.Tub'],
+    'S.hom': report['S.hom'],
+    'C.Krop': report['C.Krop']
+  };
+
+  const estimatedAge = estimateAge(bacteriaPercentages);
+  const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
+  const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
+  const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
+  const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
+  const sensitivityScore = calculateSensitivityScore(bacteriaPercentages);
+  const skinType = classifySkinType(hydrationScore);
 
   return (
     <main className="fixed inset-0 flex flex-col">
@@ -144,6 +169,121 @@ export default function ReportPage() {
 
                 <div className="text-3xl font-bold">
                   {report.env_score}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Estimated Age</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowAgeExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {Math.round(estimatedAge)}
+                  <span className="text-base font-normal text-muted-foreground ml-1">years</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Hydration Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowHydrationExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold">
+                    {hydrationScore}
+                    <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                  </div>
+                  <div className="text-lg font-medium text-primary">
+                    {skinType} Skin
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Antioxidant Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowAntioxidantExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {antioxidantScore}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Skin Firmness Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowFirmnessExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {firmnessScore}
+                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Skin Sensitivity Score</h2>
+                  <Button 
+                    variant="ghost" 
+                    className="text-sm text-blue-500 h-auto p-0"
+                    onClick={() => setShowSensitivityExplanation(true)}
+                  >
+                    EXPLAIN
+                  </Button>
+                </div>
+
+                <div className="text-3xl font-bold">
+                  {sensitivityScore}
                   <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                 </div>
               </div>
@@ -697,6 +837,225 @@ export default function ReportPage() {
               These recommendations are personalized to your specific skin profile and are designed to help you achieve 
               and maintain a healthy, balanced skin microbiome. Remember that consistency is key when introducing new 
               products to your skincare routine.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showHydrationExplanation} onOpenChange={setShowHydrationExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Hydration Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Hydration Score is a specialized measure that evaluates your skin's moisture balance based on the 
+              composition of your skin microbiome. This score takes into account the presence and abundance of specific 
+              bacteria that are known to influence skin hydration levels.
+            </p>
+            <p>
+              The score is calculated using a sophisticated algorithm that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Age-Specific Optimal Ranges:</span> Different bacterial compositions are 
+                optimal for different age groups. The algorithm adjusts its calculations based on your age to provide 
+                more accurate results.
+              </li>
+              <li>
+                <span className="font-medium">Bacterial Weights:</span> Each bacterial species is assigned a specific 
+                weight based on its impact on skin hydration. Some bacteria contribute positively to hydration, while 
+                others may have a negative effect.
+              </li>
+              <li>
+                <span className="font-medium">Optimal Ranges:</span> Each bacterial species has an optimal range that 
+                contributes to healthy skin hydration. The algorithm evaluates how well your bacterial composition 
+                aligns with these ranges.
+              </li>
+            </ul>
+            <p>
+              A higher hydration score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better moisture retention in the skin</li>
+              <li>More balanced skin barrier function</li>
+              <li>Reduced likelihood of dryness and dehydration</li>
+              <li>Improved skin elasticity and suppleness</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better hydration potential. 
+              This score can help guide your skincare choices and help you understand how your skin's microbiome 
+              composition affects its hydration levels.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAgeExplanation} onOpenChange={setShowAgeExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Estimated Age Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your estimated age is calculated based on the composition of your skin microbiome. 
+              Different bacterial species have been shown to correlate with different age groups, 
+              and their relative abundances can be used to estimate biological age.
+            </p>
+            <p>
+              The calculation takes into account:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Cutibacterium acnes:</span> Higher levels are associated with younger skin
+              </li>
+              <li>
+                <span className="font-medium">Staphylococcus epidermidis:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Corynebacterium kroppenstedtii:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Corynebacterium tuberculostearicum:</span> Higher levels are associated with older skin
+              </li>
+              <li>
+                <span className="font-medium">Cutibacterium granulosum:</span> Higher levels are associated with younger skin
+              </li>
+            </ul>
+            <p>
+              This estimate provides insight into your skin's biological age based on its microbial composition, 
+              which may differ from your chronological age. Understanding this difference can help guide 
+              personalized skincare recommendations.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAntioxidantExplanation} onOpenChange={setShowAntioxidantExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Antioxidant Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Antioxidant Score measures your skin's ability to combat oxidative stress based on your 
+              microbiome composition. This score takes into account the presence and abundance of bacteria 
+              that either contribute to or reduce antioxidant activity in your skin.
+            </p>
+            <p>
+              The score is calculated using a weighted system that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
+                that enhance antioxidant activity
+              </li>
+              <li>
+                <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus and 
+                Corynebacterium kroppenstedtii that may reduce antioxidant activity
+              </li>
+              <li>
+                <span className="font-medium">Neutral Bacteria:</span> Species that have minimal impact on 
+                antioxidant levels
+              </li>
+            </ul>
+            <p>
+              A higher score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better protection against environmental stressors</li>
+              <li>Enhanced ability to combat free radicals</li>
+              <li>More resilient skin barrier function</li>
+              <li>Reduced oxidative damage</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better antioxidant 
+              potential. This score can help guide your skincare choices and help you understand how your 
+              skin's microbiome composition affects its ability to combat oxidative stress.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showFirmnessExplanation} onOpenChange={setShowFirmnessExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Skin Firmness Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Skin Firmness Score measures your skin's structural integrity and elasticity based on your 
+              microbiome composition. This score takes into account the presence and abundance of bacteria 
+              that either contribute to or reduce skin firmness.
+            </p>
+            <p>
+              The score is calculated using a weighted system that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
+                and Cutibacterium granulosum that enhance skin firmness
+              </li>
+              <li>
+                <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus, 
+                Corynebacterium kroppenstedtii, and Staphylococcus haemolyticus that may reduce skin firmness
+              </li>
+            </ul>
+            <p>
+              A higher score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better skin elasticity and resilience</li>
+              <li>Enhanced structural integrity</li>
+              <li>Reduced sagging and loss of firmness</li>
+              <li>More youthful skin appearance</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better skin firmness 
+              potential. This score can help guide your skincare choices and help you understand how your 
+              skin's microbiome composition affects its structural integrity.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSensitivityExplanation} onOpenChange={setShowSensitivityExplanation}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Skin Sensitivity Score Explanation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <p>
+              Your Skin Sensitivity Score measures your skin's resilience to irritants and environmental 
+              stressors based on your microbiome composition. This score takes into account the presence 
+              and abundance of bacteria that either protect against or contribute to skin sensitivity.
+            </p>
+            <p>
+              The score is calculated using a weighted system that considers:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
+                and Staphylococcus hominis that help protect against sensitivity
+              </li>
+              <li>
+                <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus, 
+                Staphylococcus haemolyticus, and Corynebacterium kroppenstedtii that may increase skin sensitivity
+              </li>
+            </ul>
+            <p>
+              A higher score indicates:
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Better tolerance to skincare products</li>
+              <li>Reduced likelihood of irritation</li>
+              <li>More resilient skin barrier</li>
+              <li>Better protection against environmental stressors</li>
+            </ul>
+            <p>
+              The score is normalized to a 0-100 scale, where higher scores indicate better skin resilience 
+              and lower sensitivity. This score can help guide your skincare choices and help you understand 
+              how your skin's microbiome composition affects its sensitivity to various factors.
             </p>
           </div>
         </DialogContent>
