@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -97,6 +97,7 @@ export default function ReportPage() {
 
   const score = calculateMicrobiomeScore(report.age || 30, bacteriaPercentages);
   const hydrationScore = calculateHydrationScore(report.age || 30, bacteriaPercentages);
+  const skinType = classifySkinType(hydrationScore);
 
   return (
     <main className="fixed inset-0 flex flex-col">
@@ -180,9 +181,14 @@ export default function ReportPage() {
                   </Button>
                 </div>
 
-                <div className="text-3xl font-bold">
-                  {hydrationScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold">
+                    {hydrationScore}
+                    <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                  </div>
+                  <div className="text-lg font-medium text-primary">
+                    {skinType} Skin
+                  </div>
                 </div>
               </div>
             </CardContent>

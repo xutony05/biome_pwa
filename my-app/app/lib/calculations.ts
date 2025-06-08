@@ -101,4 +101,16 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
   const microbiomeScore = Math.max(0, 100 - totalPenalty - diversityPenalty);
   
   return Math.round(microbiomeScore * 100) / 100;
+};
+
+export const classifySkinType = (score: number): string => {
+  if (score < 35) {
+    return "Dry";
+  } else if (score < 55) {
+    return "Combination";
+  } else if (score < 75) {
+    return "Healthy";
+  } else {
+    return "Oily";
+  }
 }; 
