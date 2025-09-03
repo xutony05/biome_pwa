@@ -9,10 +9,9 @@
   --sar: env(safe-area-inset-right);
 }
 
-/* Prevent bounce but allow scrolling */
+/* Allow scrolling on mobile */
 html {
   height: -webkit-fill-available;
-  overflow: hidden; /* Prevents bounce on iOS */
   height: 100%;
 }
 
@@ -23,7 +22,7 @@ body {
   min-height: -webkit-fill-available;
   /* Enable smooth scrolling */
   -webkit-overflow-scrolling: touch;
-  /* Remove fixed position to allow scrolling */
+  /* Allow scrolling */
   overflow-y: auto;
   overscroll-behavior-y: none; /* Prevents pull-to-refresh */
 }
