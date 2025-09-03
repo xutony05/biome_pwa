@@ -8,7 +8,9 @@ import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, es
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
+import { MainHeader } from "@/components/ui/header";
+import { ChevronLeft } from "lucide-react";
+import { CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
@@ -108,19 +110,25 @@ export default function ReportPage() {
   const skinType = classifySkinType(hydrationScore);
 
   return (
-    <main className="fixed inset-0 flex flex-col">
-      {/* Fixed Header */}
-      <div className="bg-background z-10 p-4">
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-            <ChevronLeft className="h-6 w-6" />
+    <div className="bg-gray-50">
+      <MainHeader />
+      
+      {/* Report Header Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => window.history.back()}
+            className="h-10 w-10"
+          >
+            <ChevronLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-semibold ml-2">Report #{params.slug}</h1>
+          <h1 className="text-2xl font-semibold">Report #{params.slug}</h1>
         </div>
       </div>
-
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
         <div className="space-y-4">
           <Card>
             <CardContent className="pt-6">
@@ -1060,6 +1068,6 @@ export default function ReportPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }

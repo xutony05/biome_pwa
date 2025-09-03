@@ -4,7 +4,7 @@ import { Button } from "./button";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { logout } from "@/app/lib/auth";
-import { ArrowLeft, LogOut, Home, User } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -38,14 +38,6 @@ export function Header({
     router.push('/');
   };
 
-  const handleHomeClick = () => {
-    if (user) {
-      router.push('/profile');
-    } else {
-      router.push('/');
-    }
-  };
-
   const isHomePage = pathname === '/' || pathname === '/profile';
 
   return (
@@ -57,7 +49,7 @@ export function Header({
         <div className="flex items-center justify-between h-14">
           {/* Left section */}
           <div className="flex items-center gap-3">
-            {showBackButton && !isHomePage && (
+            {showBackButton && (
               <Button 
                 variant="ghost" 
                 size="icon"
@@ -92,28 +84,15 @@ export function Header({
             {customActions}
             
             {showUserActions && user && (
-              <>
-                {!isHomePage && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={handleHomeClick}
-                    className="h-10 w-10"
-                  >
-                    <Home className="h-5 w-5" />
-                  </Button>
-                )}
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
             )}
             
             {showUserActions && !user && pathname !== '/login' && (
