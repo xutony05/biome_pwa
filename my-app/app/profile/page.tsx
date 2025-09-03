@@ -34,10 +34,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       <MainHeader />
       
-      <main className="p-4 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* Test Kit Section */}
         <Card className="relative overflow-hidden border-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50">
           <CardContent className="relative z-10 pt-6">
@@ -79,7 +79,7 @@ export default function ProfilePage() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

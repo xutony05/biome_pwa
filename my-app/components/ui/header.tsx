@@ -53,77 +53,79 @@ export function Header({
       {/* Safe area padding for mobile */}
       <div className="h-safe-area-inset-top bg-white" />
       
-      <div className="flex items-center justify-between h-14 px-4">
-        {/* Left section */}
-        <div className="flex items-center gap-3">
-          {showBackButton && !isHomePage && (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleBack}
-              className="h-10 w-10"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          )}
-          
-          {showLogo && (
-            <Link href={user ? '/profile' : '/'} className="flex items-center gap-2">
-              <div className="relative w-8 h-8">
-                <Image
-                  src="/images/orb.png"
-                  alt="PurelyBiome"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-xl font-semibold text-gray-900">PurelyBiome</span>
-            </Link>
-          )}
-          
-          {title && !showLogo && (
-            <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-          )}
-        </div>
-
-        {/* Right section */}
-        <div className="flex items-center gap-2">
-          {customActions}
-          
-          {showUserActions && user && (
-            <>
-              {!isHomePage && (
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={handleHomeClick}
-                  className="h-10 w-10"
-                >
-                  <Home className="h-5 w-5" />
-                </Button>
-              )}
-              
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-14">
+          {/* Left section */}
+          <div className="flex items-center gap-3">
+            {showBackButton && !isHomePage && (
               <Button 
                 variant="ghost" 
-                size="sm"
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
+                size="icon"
+                onClick={handleBack}
+                className="h-10 w-10"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                <ArrowLeft className="h-5 w-5" />
               </Button>
-            </>
-          )}
-          
-          {showUserActions && !user && pathname !== '/login' && (
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={() => router.push('/login')}
-            >
-              Sign In
-            </Button>
-          )}
+            )}
+            
+            {showLogo && (
+              <Link href={user ? '/profile' : '/'} className="flex items-center gap-2">
+                <div className="relative w-8 h-8">
+                  <Image
+                    src="/images/orb.png"
+                    alt="PurelyBiome"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-xl font-semibold text-gray-900">PurelyBiome</span>
+              </Link>
+            )}
+            
+            {title && !showLogo && (
+              <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+            )}
+          </div>
+
+          {/* Right section */}
+          <div className="flex items-center gap-2">
+            {customActions}
+            
+            {showUserActions && user && (
+              <>
+                {!isHomePage && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={handleHomeClick}
+                    className="h-10 w-10"
+                  >
+                    <Home className="h-5 w-5" />
+                  </Button>
+                )}
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            )}
+            
+            {showUserActions && !user && pathname !== '/login' && (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => router.push('/login')}
+              >
+                Sign In
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </header>
