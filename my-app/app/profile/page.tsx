@@ -39,23 +39,21 @@ export default function ProfilePage() {
       
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* Test Kit Section */}
-        <Card className="relative overflow-hidden border-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50">
-          <CardContent className="relative z-10 pt-6">
-            <h2 className="text-2xl font-semibold mb-2">Got your test kit?</h2>
-            <p className="text-muted-foreground mb-4">
+        <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-600 via-blue-500 to-purple-500 p-8">
+          <div className="relative z-10">
+            <div className="text-white text-sm font-medium mb-2">Welcome</div>
+            <h2 className="text-3xl font-bold text-white mb-3">Got your test kit?</h2>
+            <p className="text-white/90 mb-6 text-lg">
               Activate your kit and follow the steps to get started.
             </p>
             <Button 
               asChild
-              variant="default"
-              className="rounded-full"
+              className="bg-white text-gray-900 hover:bg-gray-100 rounded-lg px-6 py-3 font-medium"
             >
-              <Link href="/activation">Start</Link>
+              <Link href="/activation">Get Started</Link>
             </Button>
-          </CardContent>
-          {/* Decorative Gradient Blob */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-200/50 via-purple-200/50 to-green-200/50 blur-2xl rounded-full transform translate-x-10 -translate-y-10" />
-        </Card>
+          </div>
+        </div>
 
         {/* Reports Section */}
         <section>
