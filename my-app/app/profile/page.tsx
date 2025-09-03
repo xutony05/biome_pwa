@@ -7,27 +7,41 @@ import { MainHeader } from "@/components/ui/header";
 import Link from 'next/link';
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from 'react';
-import { getReportCount } from '../lib/supabase';
+import { getReportsWithDates } from '../lib/supabase';
+
+interface ReportWithDate {
+  created_at: string;
+  report_number: number;
+}
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
-  const [numberOfReports, setNumberOfReports] = useState(0);
+  const [reports, setReports] = useState<ReportWithDate[]>([]);
 
   useEffect(() => {
     if (!loading && user?.email) {
-      async function fetchReportCount() {
+      async function fetchReports() {
         try {
           if (user?.email) {
-            const count = await getReportCount(user.email);
-            setNumberOfReports(count);
+            const reportsData = await getReportsWithDates(user.email);
+            setReports(reportsData);
           }
         } catch (error) {
-          console.error('Error fetching report count:', error);
+          console.error('Error fetching reports:', error);
         }
       }
-      fetchReportCount();
+      fetchReports();
     }
   }, [loading, user?.email]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   if (loading || !user?.email) {
     return null;
@@ -59,16 +73,19 @@ export default function ProfilePage() {
         <section>
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Past Reports</h2>
           <div className="space-y-2 sm:space-y-3">
-            {[...Array(numberOfReports)].map((_, index) => (
-              <Card key={index}>
+            {reports.map((report, index) => (
+              <Card key={`report-${report.report_number}-${index}`}>
                 <CardContent className="p-3 sm:p-4">
                   <Link 
-                    href={`/profile/${numberOfReports - index}`} 
+                    href={`/profile/${report.report_number}`} 
                     className="flex justify-between items-center"
                   >
                     <div className="flex items-center gap-2 sm:gap-3">
                       <span className="text-blue-500 text-sm sm:text-base">📄</span>
-                      <span className="text-sm sm:text-base">Report #{numberOfReports - index}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm sm:text-base font-medium">Report #{report.report_number}</span>
+                        <span className="text-xs sm:text-sm text-gray-500">{formatDate(report.created_at)}</span>
+                      </div>
                     </div>
                     <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   </Link>
