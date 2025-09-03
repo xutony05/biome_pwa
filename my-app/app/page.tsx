@@ -16,7 +16,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen p-6 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-8">Biome Test App</h1>
+      <h1 className="text-2xl font-bold mb-8">PurelyBiome</h1>
       
       <div className="w-full max-w-md space-y-4">
         {routes.map((route) => (

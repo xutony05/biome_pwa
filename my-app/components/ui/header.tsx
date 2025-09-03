@@ -72,12 +72,12 @@ export function Header({
               <div className="relative w-8 h-8">
                 <Image
                   src="/images/orb.png"
-                  alt="Biomë"
+                  alt="PurelyBiome"
                   fill
                   className="object-contain"
                 />
               </div>
-              <span className="text-xl font-semibold text-gray-900">Biomë</span>
+              <span className="text-xl font-semibold text-gray-900">PurelyBiome</span>
             </Link>
           )}
           

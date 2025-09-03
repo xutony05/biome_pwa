@@ -1,7 +1,7 @@
 {
-  "name": "Biomë",
-  "short_name": "Biomë",
-  "description": "A Progressive Web App built with Next.js",
+  "name": "PurelyBiome",
+  "short_name": "PurelyBiome",
+  "description": "PurelyBiome provides personalized, science-based skincare recommendations through facial microbiome testing.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

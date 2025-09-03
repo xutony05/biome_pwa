@@ -16,12 +16,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Biomë",
-  description: "A Progressive Web App built with Next.js",
+  title: "PurelyBiome",
+  description: "PurelyBiome provides personalized, science-based skincare recommendations through facial microbiome testing.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Biomë",
+    title: "PurelyBiome",
     startupImage: [
       {
         url: "/splash/apple-splash-2048-2732.jpg",
