@@ -130,31 +130,84 @@ export default function ReportPage() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
         <div className="space-y-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
+          <Card className="w-full">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                {/* Header with icon and explain button */}
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Microbiome Balance Score</h2>
+                  <div className="flex items-center gap-3">
+                    {/* Microbiome icon - four dots in diamond shape */}
+                    <div className="flex flex-col items-center gap-1" aria-label="Microbiome balance indicator">
+                      <div className="flex gap-1">
+                        <div className="size-2 rounded-full bg-emerald-400" />
+                        <div className="size-2 rounded-full bg-emerald-400" />
+                      </div>
+                      <div className="flex gap-1">
+                        <div className="size-2 rounded-full bg-emerald-400" />
+                        <div className="size-2 rounded-full bg-emerald-400" />
+                      </div>
+                    </div>
+                    <h2 className="text-lg font-medium text-foreground">
+                      Microbiome Balance Score
+                    </h2>
+                  </div>
                   <Button 
                     variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
+                    size="sm"
+                    className="h-auto p-0 text-sm text-primary hover:text-primary/80"
                     onClick={() => setShowScoreExplanation(true)}
+                    aria-label="Explain microbiome balance score"
                   >
+                    <div className="mr-1 flex size-4 items-center justify-center rounded-full border border-primary">
+                      <span className="text-xs text-primary">i</span>
+                    </div>
                     EXPLAIN
                   </Button>
                 </div>
 
-                <div className="text-2xl font-bold">
-                  {score}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Progress value={score} className="h-2" />
+                {/* Score display and slider */}
+                <div className="space-y-4">
+                  {/* Score number positioned above slider */}
+                  <div className="relative h-8">
                     <div 
-                      className="absolute w-3 h-3 bg-black rounded-full -mt-2.5 transform -translate-x-1/2"
-                      style={{ left: `${score}%` }}
+                      className="absolute -translate-x-1/2 -translate-y-2 text-2xl font-bold text-sky-400"
+                      style={{ left: `${Math.min(Math.max(score, 0), 100)}%` }}
+                      aria-label={`Score: ${score}`}
+                    >
+                      {score}
+                    </div>
+                  </div>
+
+                  {/* Horizontal slider bar */}
+                  <div className="relative">
+                    {/* Main slider track */}
+                    <div className="h-3 overflow-hidden rounded-full bg-muted">
+                      {/* Blue filled portion */}
+                      <div 
+                        className="h-full rounded-full bg-sky-400 transition-all duration-300 ease-in-out"
+                        style={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
+                        aria-hidden="true"
+                      />
+                    </div>
+                    
+                    {/* Dotted dividers */}
+                    <div 
+                      className="absolute top-0 h-3 w-px -translate-x-1/2 border-l-2 border-dotted border-muted-foreground/40"
+                      style={{ left: '33.33%' }}
+                      aria-hidden="true"
                     />
+                    <div 
+                      className="absolute top-0 h-3 w-px -translate-x-1/2 border-l-2 border-dotted border-muted-foreground/40"
+                      style={{ left: '66.66%' }}
+                      aria-hidden="true"
+                    />
+                  </div>
+
+                  {/* Skin type labels */}
+                  <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                    <span>OILY</span>
+                    <span>BALANCED</span>
+                    <span>DRY</span>
                   </div>
                 </div>
               </div>
@@ -205,98 +258,163 @@ export default function ReportPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Hydration Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowHydrationExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-3xl font-bold">
-                    {hydrationScore}
-                    <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+          {/* Skin Traits Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-foreground">Skin Traits</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Antioxidant Capacity */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Antioxidant Capacity</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowAntioxidantExplanation(true)}
+                      >
+                        <div className="w-3 h-3 rounded-full border border-muted-foreground flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">i</span>
+                        </div>
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-sky-400 rounded-full transition-all duration-300"
+                          style={{ width: `${antioxidantScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-lg font-medium text-primary">
-                    {skinType} Skin
+                </CardContent>
+              </Card>
+
+              {/* Sensitivity Response */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Sensitivity Response</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowSensitivityExplanation(true)}
+                      >
+                        <div className="w-3 h-3 rounded-full border border-muted-foreground flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">i</span>
+                        </div>
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+                          style={{ width: `${sensitivityScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Antioxidant Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowAntioxidantExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
+              {/* Skin Firmness */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Skin Firmness</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowFirmnessExplanation(true)}
+                      >
+                        <div className="w-3 h-3 rounded-full border border-muted-foreground flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">i</span>
+                        </div>
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-purple-500 rounded-full transition-all duration-300"
+                          style={{ width: `${firmnessScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <div className="text-3xl font-bold">
-                  {antioxidantScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Skin Firmness Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowFirmnessExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {firmnessScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Skin Sensitivity Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowSensitivityExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {sensitivityScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Hydration (Pigmentation equivalent) */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Hydration</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowHydrationExplanation(true)}
+                      >
+                        <div className="w-3 h-3 rounded-full border border-muted-foreground flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">i</span>
+                        </div>
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-amber-600 rounded-full transition-all duration-300"
+                          style={{ width: `${hydrationScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           <Card>
             <CardContent className="pt-6">
