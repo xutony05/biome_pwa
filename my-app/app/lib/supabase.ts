@@ -116,6 +116,30 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
   }
 }
 
+export async function getReportsWithDates(email: string): Promise<Array<{ created_at: string; report_number: number }>> {
+  try {
+    const { data, error } = await supabase
+      .from('reports')
+      .select('created_at')
+      .eq('email', email)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase error in getReportsWithDates:', error.message);
+      return [];
+    }
+
+    // Add report numbers (most recent = 1, oldest = last)
+    return data?.map((report, index) => ({
+      created_at: report.created_at,
+      report_number: index + 1
+    })) || [];
+  } catch (e) {
+    console.error('Failed to fetch reports with dates:', e);
+    return [];
+  }
+}
+
 export interface SurveyAnswers {
   email: string;
   kit_id: string;        // q1

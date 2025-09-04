@@ -8,7 +8,9 @@ import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, es
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
+import { MainHeader } from "@/components/ui/header";
+import { ChevronLeft } from "lucide-react";
+import { CheckCircle2, XCircle, Leaf, Apple, Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
@@ -19,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Link from 'next/link';
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -40,6 +43,42 @@ const getOptimalRangeStatus = (bacteria: string, value: number) => {
   if (value > range[1]) return 'above';
   if (value < range[0]) return 'below';
   return 'optimal';
+};
+
+const getFullBacteriaName = (bacteria: string) => {
+  const nameMap: { [key: string]: string } = {
+    'C.Acne': 'Cutibacterium acnes',
+    'C.Stri': 'Corynebacterium striatum',
+    'S.Cap': 'Staphylococcus capitis',
+    'S.Epi': 'Staphylococcus epidermidis',
+    'C.Avi': 'Corynebacterium avidum',
+    'C.gran': 'Cutibacterium granulosum',
+    'S.haem': 'Staphylococcus haemolyticus',
+    'S.Aur': 'Staphylococcus aureus',
+    'C.Tub': 'Corynebacterium tuberculostearicum',
+    'S.hom': 'Staphylococcus hominis',
+    'C.Krop': 'Corynebacterium kroppenstedtii'
+  };
+  
+  return nameMap[bacteria] || bacteria;
+};
+
+const getBacteriaRoute = (bacteria: string) => {
+  const routeMap: { [key: string]: string } = {
+    'C.Acne': 'acnes',
+    'C.Stri': 'striatum',
+    'S.Cap': 'capitis',
+    'S.Epi': 'epidermidis',
+    'C.Avi': 'avidum',
+    'C.gran': 'granulosum',
+    'S.haem': 'haemolyticus',
+    'S.Aur': 'aureus',
+    'C.Tub': 'tuberculostearicum',
+    'S.hom': 'hominis',
+    'C.Krop': 'kroppenstedtii'
+  };
+  
+  return routeMap[bacteria] || bacteria;
 };
 
 export default function ReportPage() {
@@ -108,193 +147,149 @@ export default function ReportPage() {
   const skinType = classifySkinType(hydrationScore);
 
   return (
-    <main className="fixed inset-0 flex flex-col">
-      {/* Fixed Header */}
-      <div className="bg-background z-10 p-4">
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-            <ChevronLeft className="h-6 w-6" />
+    <div className="bg-gray-50">
+      <MainHeader />
+      
+      {/* Report Header Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => window.history.back()}
+            className="h-10 w-10"
+          >
+            <ChevronLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-semibold ml-2">Report #{params.slug}</h1>
+          <h1 className="text-2xl font-semibold">Report #{params.slug}</h1>
         </div>
       </div>
-
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
         <div className="space-y-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
+          <Card className="w-full">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                {/* Header with icon and explain button */}
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Microbiome Balance Score</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-medium text-foreground">
+                      Microbiome Balance Score
+                    </h2>
+                  </div>
                   <Button 
                     variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
+                    size="sm"
+                    className="h-auto p-0 text-sm text-blue-500 hover:text-blue-600"
                     onClick={() => setShowScoreExplanation(true)}
+                    aria-label="Explain microbiome balance score"
                   >
                     EXPLAIN
                   </Button>
                 </div>
 
-                <div className="text-2xl font-bold">
-                  {score}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Progress value={score} className="h-2" />
+                {/* Score display and slider */}
+                <div className="space-y-4">
+                  {/* Score number positioned above slider */}
+                  <div className="relative h-8">
                     <div 
-                      className="absolute w-3 h-3 bg-black rounded-full -mt-2.5 transform -translate-x-1/2"
-                      style={{ left: `${score}%` }}
+                      className="absolute -translate-x-1/2 -translate-y-2 text-2xl font-bold text-sky-400"
+                      style={{ left: `${Math.min(Math.max(score, 0), 100)}%` }}
+                      aria-label={`Score: ${score}`}
+                    >
+                      {score}
+                    </div>
+                  </div>
+
+                  {/* Horizontal slider bar */}
+                  <div className="relative">
+                    {/* Main slider track */}
+                    <div className="h-3 overflow-hidden rounded-full bg-muted">
+                      {/* Blue filled portion */}
+                      <div 
+                        className="h-full rounded-full bg-sky-400 transition-all duration-300 ease-in-out"
+                        style={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
+                        aria-hidden="true"
+                      />
+                    </div>
+                    
+                    {/* Dotted dividers */}
+                    <div 
+                      className="absolute top-0 h-3 w-px -translate-x-1/2 border-l-2 border-dotted border-muted-foreground/40"
+                      style={{ left: '33.33%' }}
+                      aria-hidden="true"
+                    />
+                    <div 
+                      className="absolute top-0 h-3 w-px -translate-x-1/2 border-l-2 border-dotted border-muted-foreground/40"
+                      style={{ left: '66.66%' }}
+                      aria-hidden="true"
                     />
                   </div>
+
+                  {/* Skin type labels */}
+                  <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                    <span>OILY</span>
+                    <span>BALANCED</span>
+                    <span>DRY</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Environment Health</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowEnvExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium">Estimated Age</h2>
+                    <Button 
+                      variant="ghost" 
+                      className="text-sm text-blue-500 h-auto p-0"
+                      onClick={() => setShowAgeExplanation(true)}
+                    >
+                      EXPLAIN
+                    </Button>
+                  </div>
 
-                <div className="text-3xl font-bold">
-                  {report.env_score}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Estimated Age</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowAgeExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {Math.round(estimatedAge)}
-                  <span className="text-base font-normal text-muted-foreground ml-1">years</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Hydration Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowHydrationExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
                   <div className="text-3xl font-bold">
-                    {hydrationScore}
+                    {Math.round(estimatedAge)}
+                    <span className="text-base font-normal text-muted-foreground ml-1">years</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium">Environment Health</h2>
+                    <Button 
+                      variant="ghost" 
+                      className="text-sm text-blue-500 h-auto p-0"
+                      onClick={() => setShowEnvExplanation(true)}
+                    >
+                      EXPLAIN
+                    </Button>
+                  </div>
+
+                  <div className="text-3xl font-bold">
+                    {report.env_score}
                     <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
                   </div>
-                  <div className="text-lg font-medium text-primary">
-                    {skinType} Skin
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-medium">Key Microbes</h2>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Antioxidant Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowAntioxidantExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {antioxidantScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Skin Firmness Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowFirmnessExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {firmnessScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Skin Sensitivity Score</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowSensitivityExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
-
-                <div className="text-3xl font-bold">
-                  {sensitivityScore}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Key Microbes</h2>
                   <Button 
                     variant="ghost" 
                     className="text-sm text-blue-500 h-auto p-0"
@@ -304,36 +299,312 @@ export default function ReportPage() {
                   </Button>
                 </div>
 
-                <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                    <span>Optimal Range</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <span>Above Optimal</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500" />
-                    <span>Below Optimal</span>
+                {/* Composition Bars */}
+                <div className="space-y-4">
+                  {(() => {
+                    // Calculate actual percentages for each category
+                    const bacteriaData = Object.entries(report)
+                      .filter(([key, value]) => key.includes('.') && value !== null)
+                      .map(([bacteria, value]) => ({
+                        bacteria,
+                        value: value as number,
+                        status: getOptimalRangeStatus(bacteria, value as number)
+                      }));
+
+                    const totalDisruptive = bacteriaData
+                      .filter(item => item.status === 'above')
+                      .reduce((sum, item) => sum + item.value, 0);
+                    
+                    const totalNeutral = bacteriaData
+                      .filter(item => item.status === 'below')
+                      .reduce((sum, item) => sum + item.value, 0);
+                    
+                    const totalHelpful = bacteriaData
+                      .filter(item => item.status === 'optimal')
+                      .reduce((sum, item) => sum + item.value, 0);
+
+                    const total = totalDisruptive + totalNeutral + totalHelpful;
+                    
+                    const disruptivePercent = total > 0 ? (totalDisruptive / total * 100) : 0;
+                    const neutralPercent = total > 0 ? (totalNeutral / total * 100) : 0;
+                    const helpfulPercent = total > 0 ? (totalHelpful / total * 100) : 0;
+
+                    return (
+                      <div className="flex justify-center gap-8">
+                        {/* Your Composition Bar */}
+                        <div className="flex flex-col items-center space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground">Your Composition</h3>
+                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                            {disruptivePercent > 0 && (
+                              <div 
+                                className="bg-red-500 flex items-center justify-center"
+                                style={{ height: `${disruptivePercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {disruptivePercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                            {neutralPercent > 0 && (
+                              <div 
+                                className="bg-sky-400 flex items-center justify-center"
+                                style={{ height: `${neutralPercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {neutralPercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                            {helpfulPercent > 0 && (
+                              <div 
+                                className="bg-emerald-400 flex items-center justify-center"
+                                style={{ height: `${helpfulPercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {helpfulPercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Ideal Composition Bar */}
+                        <div className="flex flex-col items-center space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground">Ideal Composition</h3>
+                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                            <div className="flex-1 bg-red-500 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">20%</span>
+                            </div>
+                            <div className="flex-1 bg-sky-400 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">30%</span>
+                            </div>
+                            <div className="flex-1 bg-emerald-400 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">50%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Color Legend */}
+                  <div className="flex justify-center gap-6 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <span>Disruptive</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-sky-400" />
+                      <span>Neutral</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                      <span>Helpful</span>
+                    </div>
                   </div>
                 </div>
 
+                {/* Microbe List */}
                 <div className="space-y-2">
                   {Object.entries(report)
                     .filter(([key, value]) => key.includes('.') && value !== null)
                     .sort((a, b) => a[0].localeCompare(b[0]))
                     .map(([bacteria, value]) => {
                       const status = getOptimalRangeStatus(bacteria, value as number);
+                      const getStatusColor = (status: string) => {
+                        switch (status) {
+                          case 'above': return 'bg-red-500';
+                          case 'optimal': return 'bg-emerald-400';
+                          case 'below': return 'bg-sky-400';
+                          default: return 'bg-sky-400';
+                        }
+                      };
+                      const getStatusLabel = (status: string) => {
+                        switch (status) {
+                          case 'above': return 'Disruptive';
+                          case 'optimal': return 'Helpful';
+                          case 'below': return 'Neutral';
+                          default: return 'Neutral';
+                        }
+                      };
+                      
                       return (
-                        <CollapsibleBacteria 
-                          key={bacteria}
-                          bacteria={bacteria}
-                          value={value as number}
-                          status={status}
-                        />
+                        <Link 
+                          key={bacteria} 
+                          href={`/bacteria/${getBacteriaRoute(bacteria)}`}
+                          className="block"
+                        >
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`} />
+                              <span className="font-medium">{getFullBacteriaName(bacteria)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{value as number}%</span>
+                              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        </Link>
                       );
                     })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Skin Traits Section */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-medium">Skin Traits</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Antioxidant Capacity */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Antioxidant Capacity</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
+                        onClick={() => setShowAntioxidantExplanation(true)}
+                      >
+                        EXPLAIN
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-sky-400 rounded-full transition-all duration-300"
+                          style={{ width: `${antioxidantScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Sensitivity Response */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Sensitivity Response</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
+                        onClick={() => setShowSensitivityExplanation(true)}
+                      >
+                        EXPLAIN
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+                          style={{ width: `${sensitivityScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Skin Firmness */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Skin Firmness</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
+                        onClick={() => setShowFirmnessExplanation(true)}
+                      >
+                        EXPLAIN
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-purple-500 rounded-full transition-all duration-300"
+                          style={{ width: `${firmnessScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Hydration (Pigmentation equivalent) */}
+              <Card className="w-full">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        </div>
+                        <h3 className="text-sm font-medium text-foreground">Hydration</h3>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
+                        onClick={() => setShowHydrationExplanation(true)}
+                      >
+                        EXPLAIN
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-amber-600 rounded-full transition-all duration-300"
+                          style={{ width: `${hydrationScore}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Non-Ideal</span>
+                        <span>Ideal</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
                 </div>
               </div>
             </CardContent>
@@ -1060,6 +1331,6 @@ export default function ReportPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }

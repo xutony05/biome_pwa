@@ -3,37 +3,44 @@
 import { useAuth } from '../context/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { MainHeader } from "@/components/ui/header";
 import Link from 'next/link';
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from 'react';
-import { getReportCount } from '../lib/supabase';
-import { logout } from '../lib/auth';
-import { useRouter } from 'next/navigation';
+import { getReportsWithDates } from '../lib/supabase';
+
+interface ReportWithDate {
+  created_at: string;
+  report_number: number;
+}
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
-  const [numberOfReports, setNumberOfReports] = useState(0);
-  const router = useRouter();
+  const [reports, setReports] = useState<ReportWithDate[]>([]);
 
   useEffect(() => {
     if (!loading && user?.email) {
-      async function fetchReportCount() {
+      async function fetchReports() {
         try {
           if (user?.email) {
-            const count = await getReportCount(user.email);
-            setNumberOfReports(count);
+            const reportsData = await getReportsWithDates(user.email);
+            setReports(reportsData);
           }
         } catch (error) {
-          console.error('Error fetching report count:', error);
+          console.error('Error fetching reports:', error);
         }
       }
-      fetchReportCount();
+      fetchReports();
     }
   }, [loading, user?.email]);
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/');
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   if (loading || !user?.email) {
@@ -41,61 +48,53 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen p-4 space-y-6">
-      {/* Logout Button */}
-      <div className="flex justify-end">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={handleLogout}
-          className="text-muted-foreground"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
-      </div>
-
-      {/* Test Kit Section */}
-      <Card className="relative overflow-hidden border-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50">
-        <CardContent className="relative z-10 pt-6">
-          <h2 className="text-2xl font-semibold mb-2">Got your test kit?</h2>
-          <p className="text-muted-foreground mb-4">
-            Activate your kit and follow the steps to get started.
-          </p>
-          <Button 
-            asChild
-            variant="default"
-            className="rounded-full"
-          >
-            <Link href="/activation">Start</Link>
-          </Button>
-        </CardContent>
-        {/* Decorative Gradient Blob */}
-        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-200/50 via-purple-200/50 to-green-200/50 blur-2xl rounded-full transform translate-x-10 -translate-y-10" />
-      </Card>
-
-      {/* Reports Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Past Reports</h2>
-        <div className="space-y-3">
-          {[...Array(numberOfReports)].map((_, index) => (
-            <Card key={index}>
-              <CardContent className="p-4">
-                <Link 
-                  href={`/profile/${numberOfReports - index}`} 
-                  className="flex justify-between items-center"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-blue-500">📄</span>
-                    <span>Report #{numberOfReports - index}</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+    <div className="bg-gray-50">
+      <MainHeader />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
+        {/* Test Kit Section */}
+        <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-600 via-blue-500 to-purple-500 p-4 sm:p-8">
+          <div className="relative z-10">
+            <div className="text-white text-xs sm:text-sm font-medium mb-1 sm:mb-2">Welcome</div>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3">Got your test kit?</h2>
+            <p className="text-white/90 mb-4 sm:mb-6 text-sm sm:text-base md:text-lg">
+              Activate your kit and follow the steps to get started.
+            </p>
+            <Button 
+              asChild
+              className="bg-white text-gray-900 hover:bg-gray-100 rounded-lg px-4 sm:px-6 py-2 sm:py-3 font-medium text-sm sm:text-base w-full sm:w-auto"
+            >
+              <Link href="/activation">Get Started</Link>
+            </Button>
+          </div>
         </div>
-      </section>
-    </main>
+
+        {/* Reports Section */}
+        <section>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Past Reports</h2>
+          <div className="space-y-2 sm:space-y-3">
+            {reports.map((report, index) => (
+              <Card key={`report-${report.report_number}-${index}`}>
+                <CardContent className="p-3 sm:p-4">
+                  <Link 
+                    href={`/profile/${report.report_number}`} 
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="text-blue-500 text-sm sm:text-base">📄</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm sm:text-base font-medium">Report #{report.report_number}</span>
+                        <span className="text-xs sm:text-sm text-gray-500">{formatDate(report.created_at)}</span>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }

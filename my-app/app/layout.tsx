@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthContextProvider } from './context/AuthContext';
 import { BacteriaProvider } from './context/BacteriaContext';
+import { Footer } from '@/components/ui/footer';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,12 +17,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Biomë",
-  description: "A Progressive Web App built with Next.js",
+  title: "PurelyBiome",
+  description: "PurelyBiome provides personalized, science-based skincare recommendations through facial microbiome testing.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Biomë",
+    title: "PurelyBiome",
     startupImage: [
       {
         url: "/splash/apple-splash-2048-2732.jpg",
@@ -41,7 +42,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthContextProvider>
           <BacteriaProvider>
-            {children}
+            <div className="min-h-screen flex flex-col">
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </BacteriaProvider>
         </AuthContextProvider>
       </body>
