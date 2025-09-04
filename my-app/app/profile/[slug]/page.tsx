@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Link from 'next/link';
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
   const bacteriaKey = bacteria
@@ -42,6 +43,42 @@ const getOptimalRangeStatus = (bacteria: string, value: number) => {
   if (value > range[1]) return 'above';
   if (value < range[0]) return 'below';
   return 'optimal';
+};
+
+const getFullBacteriaName = (bacteria: string) => {
+  const nameMap: { [key: string]: string } = {
+    'C.Acne': 'Cutibacterium acnes',
+    'C.Stri': 'Corynebacterium striatum',
+    'S.Cap': 'Staphylococcus capitis',
+    'S.Epi': 'Staphylococcus epidermidis',
+    'C.Avi': 'Corynebacterium avidum',
+    'C.gran': 'Cutibacterium granulosum',
+    'S.haem': 'Staphylococcus haemolyticus',
+    'S.Aur': 'Staphylococcus aureus',
+    'C.Tub': 'Corynebacterium tuberculostearicum',
+    'S.hom': 'Staphylococcus hominis',
+    'C.Krop': 'Corynebacterium kroppenstedtii'
+  };
+  
+  return nameMap[bacteria] || bacteria;
+};
+
+const getBacteriaRoute = (bacteria: string) => {
+  const routeMap: { [key: string]: string } = {
+    'C.Acne': 'acnes',
+    'C.Stri': 'striatum',
+    'S.Cap': 'capitis',
+    'S.Epi': 'epidermidis',
+    'C.Avi': 'avidum',
+    'C.gran': 'granulosum',
+    'S.haem': 'haemolyticus',
+    'S.Aur': 'aureus',
+    'C.Tub': 'tuberculostearicum',
+    'S.hom': 'hominis',
+    'C.Krop': 'kroppenstedtii'
+  };
+  
+  return routeMap[bacteria] || bacteria;
 };
 
 export default function ReportPage() {
@@ -392,19 +429,24 @@ export default function ReportPage() {
                       };
                       
                       return (
-                        <div key={bacteria} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`} />
-                            <span className="font-medium">{bacteria}</span>
-                            <span className="text-sm text-muted-foreground">{getStatusLabel(status)}</span>
+                        <Link 
+                          key={bacteria} 
+                          href={`/bacteria/${getBacteriaRoute(bacteria)}`}
+                          className="block"
+                        >
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`} />
+                              <span className="font-medium">{getFullBacteriaName(bacteria)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{value as number}%</span>
+                              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{value as number}%</span>
-                            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </div>
+                        </Link>
                       );
                     })}
                 </div>
