@@ -136,17 +136,6 @@ export default function ReportPage() {
                 {/* Header with icon and explain button */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {/* Microbiome icon - four dots in diamond shape */}
-                    <div className="flex flex-col items-center gap-1" aria-label="Microbiome balance indicator">
-                      <div className="flex gap-1">
-                        <div className="size-2 rounded-full bg-emerald-400" />
-                        <div className="size-2 rounded-full bg-emerald-400" />
-                      </div>
-                      <div className="flex gap-1">
-                        <div className="size-2 rounded-full bg-emerald-400" />
-                        <div className="size-2 rounded-full bg-emerald-400" />
-                      </div>
-                    </div>
                     <h2 className="text-lg font-medium text-foreground">
                       Microbiome Balance Score
                     </h2>
@@ -211,49 +200,51 @@ export default function ReportPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Environment Health</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowEnvExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium">Estimated Age</h2>
+                    <Button 
+                      variant="ghost" 
+                      className="text-sm text-blue-500 h-auto p-0"
+                      onClick={() => setShowAgeExplanation(true)}
+                    >
+                      EXPLAIN
+                    </Button>
+                  </div>
 
-                <div className="text-3xl font-bold">
-                  {report.env_score}
-                  <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                  <div className="text-3xl font-bold">
+                    {Math.round(estimatedAge)}
+                    <span className="text-base font-normal text-muted-foreground ml-1">years</span>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Estimated Age</h2>
-                  <Button 
-                    variant="ghost" 
-                    className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowAgeExplanation(true)}
-                  >
-                    EXPLAIN
-                  </Button>
-                </div>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium">Environment Health</h2>
+                    <Button 
+                      variant="ghost" 
+                      className="text-sm text-blue-500 h-auto p-0"
+                      onClick={() => setShowEnvExplanation(true)}
+                    >
+                      EXPLAIN
+                    </Button>
+                  </div>
 
-                <div className="text-3xl font-bold">
-                  {Math.round(estimatedAge)}
-                  <span className="text-base font-normal text-muted-foreground ml-1">years</span>
+                  <div className="text-3xl font-bold">
+                    {report.env_score}
+                    <span className="text-base font-normal text-muted-foreground ml-1">/100</span>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
           <Card>
             <CardContent className="pt-6">
