@@ -248,9 +248,11 @@ export default function ReportPage() {
 
           <Card>
             <CardContent className="pt-6">
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Key Microbes</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-medium">Key Microbes</h2>
+                  </div>
                   <Button 
                     variant="ghost" 
                     className="text-sm text-blue-500 h-auto p-0"
@@ -260,34 +262,149 @@ export default function ReportPage() {
                   </Button>
                 </div>
 
-                <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                    <span>Optimal Range</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <span>Above Optimal</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500" />
-                    <span>Below Optimal</span>
+                {/* Composition Bars */}
+                <div className="space-y-4">
+                  {(() => {
+                    // Calculate actual percentages for each category
+                    const bacteriaData = Object.entries(report)
+                      .filter(([key, value]) => key.includes('.') && value !== null)
+                      .map(([bacteria, value]) => ({
+                        bacteria,
+                        value: value as number,
+                        status: getOptimalRangeStatus(bacteria, value as number)
+                      }));
+
+                    const totalDisruptive = bacteriaData
+                      .filter(item => item.status === 'above')
+                      .reduce((sum, item) => sum + item.value, 0);
+                    
+                    const totalNeutral = bacteriaData
+                      .filter(item => item.status === 'below')
+                      .reduce((sum, item) => sum + item.value, 0);
+                    
+                    const totalHelpful = bacteriaData
+                      .filter(item => item.status === 'optimal')
+                      .reduce((sum, item) => sum + item.value, 0);
+
+                    const total = totalDisruptive + totalNeutral + totalHelpful;
+                    
+                    const disruptivePercent = total > 0 ? (totalDisruptive / total * 100) : 0;
+                    const neutralPercent = total > 0 ? (totalNeutral / total * 100) : 0;
+                    const helpfulPercent = total > 0 ? (totalHelpful / total * 100) : 0;
+
+                    return (
+                      <div className="flex justify-center gap-8">
+                        {/* Your Composition Bar */}
+                        <div className="flex flex-col items-center space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground">Your Composition</h3>
+                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                            {disruptivePercent > 0 && (
+                              <div 
+                                className="bg-red-500 flex items-center justify-center"
+                                style={{ height: `${disruptivePercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {disruptivePercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                            {neutralPercent > 0 && (
+                              <div 
+                                className="bg-sky-400 flex items-center justify-center"
+                                style={{ height: `${neutralPercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {neutralPercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                            {helpfulPercent > 0 && (
+                              <div 
+                                className="bg-emerald-400 flex items-center justify-center"
+                                style={{ height: `${helpfulPercent}%` }}
+                              >
+                                <span className="text-xs font-medium text-white">
+                                  {helpfulPercent.toFixed(1)}%
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Ideal Composition Bar */}
+                        <div className="flex flex-col items-center space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground">Ideal Composition</h3>
+                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                            <div className="flex-1 bg-red-500 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">20%</span>
+                            </div>
+                            <div className="flex-1 bg-sky-400 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">30%</span>
+                            </div>
+                            <div className="flex-1 bg-emerald-400 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white">50%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Color Legend */}
+                  <div className="flex justify-center gap-6 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <span>Disruptive</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-sky-400" />
+                      <span>Neutral</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                      <span>Helpful</span>
+                    </div>
                   </div>
                 </div>
 
+                {/* Microbe List */}
                 <div className="space-y-2">
                   {Object.entries(report)
                     .filter(([key, value]) => key.includes('.') && value !== null)
                     .sort((a, b) => a[0].localeCompare(b[0]))
                     .map(([bacteria, value]) => {
                       const status = getOptimalRangeStatus(bacteria, value as number);
+                      const getStatusColor = (status: string) => {
+                        switch (status) {
+                          case 'above': return 'bg-red-500';
+                          case 'optimal': return 'bg-emerald-400';
+                          case 'below': return 'bg-sky-400';
+                          default: return 'bg-sky-400';
+                        }
+                      };
+                      const getStatusLabel = (status: string) => {
+                        switch (status) {
+                          case 'above': return 'Disruptive';
+                          case 'optimal': return 'Helpful';
+                          case 'below': return 'Neutral';
+                          default: return 'Neutral';
+                        }
+                      };
+                      
                       return (
-                        <CollapsibleBacteria 
-                          key={bacteria}
-                          bacteria={bacteria}
-                          value={value as number}
-                          status={status}
-                        />
+                        <div key={bacteria} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`} />
+                            <span className="font-medium">{bacteria}</span>
+                            <span className="text-sm text-muted-foreground">{getStatusLabel(status)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{value as number}%</span>
+                            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
                       );
                     })}
                 </div>
