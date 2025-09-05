@@ -115,7 +115,7 @@ export function ProductRoutineTabs({ products }: ProductRoutineTabsProps) {
       {/* Product Display */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {currentProducts.map((product, index) => (
-          <div key={index} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+          <div key={index} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow h-full flex flex-col">
             {/* Product Image */}
             <div className="aspect-square mb-4 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
               {product.image ? (
@@ -132,8 +132,8 @@ export function ProductRoutineTabs({ products }: ProductRoutineTabsProps) {
             </div>
 
             {/* Product Info */}
-            <div className="space-y-2">
-              <h3 className="font-medium text-gray-900 text-sm leading-tight">
+            <div className="flex flex-col flex-grow space-y-2">
+              <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-3 min-h-[3.5rem]">
                 {product.name}
               </h3>
               
@@ -149,24 +149,26 @@ export function ProductRoutineTabs({ products }: ProductRoutineTabsProps) {
                 </p>
               )}
               
-              {product.url && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  asChild
-                >
-                  <a
-                    href={product.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1"
+              <div className="mt-auto">
+                {product.url && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    asChild
                   >
-                    View Product
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </Button>
-              )}
+                    <a
+                      href={product.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1"
+                    >
+                      View Product
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         ))}
