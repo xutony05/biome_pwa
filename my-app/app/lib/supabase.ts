@@ -183,6 +183,30 @@ export async function saveSurveyAnswers(email: string, answers: Record<string, a
   }
 }
 
+export async function getCompletedSurveyCount(email: string): Promise<number> {
+  try {
+    const { data, error } = await supabase
+      .from('surveys')
+      .select('kit_id, completed, last_question_answered')
+      .eq('email', email.toLowerCase());
+
+    if (error) {
+      console.error('Error fetching completed survey count:', error);
+      return 0;
+    }
+
+    // Filter for completed surveys - either completed=true OR last_question_answered is q10 (final question)
+    const completedSurveys = data?.filter(survey => 
+      survey.completed === true || survey.last_question_answered === 'q10'
+    ) || [];
+    
+    return completedSurveys.length;
+  } catch (e) {
+    console.error('Failed to fetch completed survey count:', e);
+    return 0;
+  }
+}
+
 export async function getSurveyCount(email: string): Promise<number> {
   try {
     const { data, error } = await supabase
