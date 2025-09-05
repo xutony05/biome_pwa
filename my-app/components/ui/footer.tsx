@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { TermsModal } from "./terms-modal";
+import { PrivacyModal } from "./privacy-modal";
 
 export function Footer() {
   return (
@@ -39,18 +41,16 @@ export function Footer() {
 
           {/* Legal Links */}
           <div className="flex items-center gap-6">
-            <Link 
-              href="/terms" 
-              className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
-            >
-              Terms of Service
-            </Link>
-            <Link 
-              href="/privacy" 
-              className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
-            >
-              Privacy Policy
-            </Link>
+            <TermsModal>
+              <button className="text-gray-600 hover:text-gray-900 transition-colors text-sm">
+                Terms of Service
+              </button>
+            </TermsModal>
+            <PrivacyModal>
+              <button className="text-gray-600 hover:text-gray-900 transition-colors text-sm">
+                Privacy Policy
+              </button>
+            </PrivacyModal>
           </div>
         </div>
       </div>
