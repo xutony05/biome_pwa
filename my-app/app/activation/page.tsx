@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { getSurveyCount, getReportCount, getLastSurvey, SurveyAnswers } from "../lib/supabase";
+import { getSurveyCount, getReportCount, getLastSurvey, getCompletedSurveyCount, SurveyAnswers } from "../lib/supabase";
 import { Header } from "@/components/ui/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { PlayCircle, FileText, CheckCircle2 } from "lucide-react";
 export default function ActivationPage() {
   const { user } = useAuth();
   const [surveyCount, setSurveyCount] = useState(0);
+  const [completedSurveyCount, setCompletedSurveyCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [lastSurvey, setLastSurvey] = useState<SurveyAnswers | null>(null);
 
@@ -20,11 +21,13 @@ export default function ActivationPage() {
     async function fetchCounts() {
       if (user?.email) {
         try {
-          const [surveys, reports] = await Promise.all([
+          const [surveys, completedSurveys, reports] = await Promise.all([
             getSurveyCount(user.email),
+            getCompletedSurveyCount(user.email),
             getReportCount(user.email)
           ]);
           setSurveyCount(surveys);
+          setCompletedSurveyCount(completedSurveys);
           setReportCount(reports);
 
           // Only fetch last survey if there are more surveys than reports
@@ -148,7 +151,7 @@ export default function ActivationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="text-sm text-blue-600 mb-1 font-medium">Kits Activated</div>
-                    <div className="text-2xl font-bold text-blue-700">{surveyCount}</div>
+                    <div className="text-2xl font-bold text-blue-700">{completedSurveyCount}</div>
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="text-sm text-green-600 mb-1 font-medium">Reports Received</div>

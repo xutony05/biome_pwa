@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
@@ -13,7 +13,16 @@ interface InputQuestionProps {
 }
 
 export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
-  const [value, setValue] = useState(previousAnswer || "");
+  const [value, setValue] = useState(typeof previousAnswer === 'string' ? previousAnswer : "");
+
+  // Update value when previousAnswer prop changes
+  useEffect(() => {
+    if (typeof previousAnswer === 'string') {
+      setValue(previousAnswer);
+    } else {
+      setValue("");
+    }
+  }, [previousAnswer]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
