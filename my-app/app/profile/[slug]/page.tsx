@@ -615,7 +615,7 @@ export default function ReportPage() {
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Recommended Products</h2>
+                  <h2 className="text-lg font-medium">Personalized Product Recommendations</h2>
                   <Button 
                     variant="ghost" 
                     className="text-sm text-blue-500 h-auto p-0"
@@ -876,7 +876,7 @@ export default function ReportPage() {
       <Dialog open={showProductsExplanation} onOpenChange={setShowProductsExplanation}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Recommended Products Explanation</DialogTitle>
+            <DialogTitle>Personalized Product Recommendations Explanation</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <p>
