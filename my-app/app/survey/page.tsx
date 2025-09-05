@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Header } from "@/components/ui/header";
 import { InputQuestion } from "./components/InputQuestion";
 import { SingleChoiceQuestion } from "./components/SingleChoiceQuestion";
 import { MultiChoiceQuestion } from "./components/MultiChoiceQuestion";
@@ -109,8 +110,8 @@ const questions: QuestionType[] = [
   }
 ];
 
-// Header component with back and save/exit buttons
-const Header = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boolean }) => {
+// Survey header component with back and save/exit buttons
+const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boolean }) => {
   const router = useRouter();
   
   return (
@@ -144,6 +145,7 @@ export default function SurveyPage() {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -160,15 +162,15 @@ export default function SurveyPage() {
             if (lastSurvey) {
               // Convert survey data to answers format
               const surveyAnswers = {
-                q1: lastSurvey.kit_id,
-                q3: lastSurvey.age,
-                q4: lastSurvey.gender,
-                q5: lastSurvey.city,
-                q6: lastSurvey.skin_type,
-                q7: lastSurvey.skin_conditions,
-                q8: lastSurvey.allergies,
-                q9: lastSurvey.skincare_brands,
-                q10: lastSurvey.additional_info
+                q1: lastSurvey.kit_id || "",
+                q3: lastSurvey.age || "",
+                q4: lastSurvey.gender || "",
+                q5: lastSurvey.city || "",
+                q6: lastSurvey.skin_type || "",
+                q7: lastSurvey.skin_conditions || [],
+                q8: lastSurvey.allergies || "",
+                q9: lastSurvey.skincare_brands || "",
+                q10: lastSurvey.additional_info || ""
               };
               setAnswers(surveyAnswers);
 
@@ -288,7 +290,10 @@ export default function SurveyPage() {
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
+    if (currentQuestionIndex === 0) {
+      // If on the first question (q1), go back to activation page
+      router.push('/activation');
+    } else if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
     }
   };
@@ -300,6 +305,21 @@ export default function SurveyPage() {
   const renderQuestion = () => {
     switch (currentQuestion.type) {
       case "input":
+        const answerValue = answers[currentQuestion.id];
+        
+        // More robust type checking
+        let previousAnswer = "";
+        if (answerValue !== null && answerValue !== undefined) {
+          if (typeof answerValue === 'string') {
+            previousAnswer = answerValue;
+          } else if (typeof answerValue === 'number') {
+            previousAnswer = String(answerValue);
+          } else if (Array.isArray(answerValue)) {
+            // This shouldn't happen for input questions, but handle it
+            previousAnswer = "";
+          }
+        }
+        
         return (
           <InputQuestion
             key={currentQuestion.id}
@@ -307,7 +327,7 @@ export default function SurveyPage() {
             onNext={handleNext}
             isLargeInput={currentQuestion.id === "q10" || currentQuestion.id === "q9"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
-            previousAnswer={answers[currentQuestion.id] as string}
+            previousAnswer={previousAnswer}
           />
         );
       case "single":
@@ -340,11 +360,12 @@ export default function SurveyPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Fixed header and progress bar */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-white"> {/* Safe area background */}
-          <div className="h-12 bg-white" /> {/* Safe area padding */}
-          <Header 
+      <Header />
+      
+      {/* Survey header and progress bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6">
+          <SurveyHeader 
             onBack={handleBack} 
             isFinal={currentQuestion.type === "final"}
           />
@@ -357,8 +378,8 @@ export default function SurveyPage() {
         </div>
       </div>
 
-      {/* Main content with padding for fixed header */}
-      <main className="flex-1 pt-32 px-6 pb-6">
+      {/* Main content */}
+      <main className="flex-1 px-6 py-8 max-w-4xl mx-auto w-full">
         {currentQuestion.type === "final" ? (
           <div className="flex flex-col items-center">
             <div className="relative w-20 h-20 mb-4 overflow-visible">
