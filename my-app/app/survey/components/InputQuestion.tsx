@@ -13,7 +13,7 @@ interface InputQuestionProps {
 }
 
 export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
-  const [value, setValue] = useState(previousAnswer || "");
+  const [value, setValue] = useState(typeof previousAnswer === 'string' ? previousAnswer : "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

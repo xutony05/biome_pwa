@@ -289,7 +289,10 @@ export default function SurveyPage() {
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
+    if (currentQuestionIndex === 0) {
+      // If on the first question (q1), go back to activation page
+      router.push('/activation');
+    } else if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
     }
   };
@@ -308,7 +311,7 @@ export default function SurveyPage() {
             onNext={handleNext}
             isLargeInput={currentQuestion.id === "q10" || currentQuestion.id === "q9"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
-            previousAnswer={answers[currentQuestion.id] as string}
+            previousAnswer={typeof answers[currentQuestion.id] === 'string' ? answers[currentQuestion.id] as string : ""}
           />
         );
       case "single":
