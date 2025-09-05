@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Header } from "@/components/ui/header";
 import { InputQuestion } from "./components/InputQuestion";
 import { SingleChoiceQuestion } from "./components/SingleChoiceQuestion";
 import { MultiChoiceQuestion } from "./components/MultiChoiceQuestion";
@@ -109,8 +110,8 @@ const questions: QuestionType[] = [
   }
 ];
 
-// Header component with back and save/exit buttons
-const Header = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boolean }) => {
+// Survey header component with back and save/exit buttons
+const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal?: boolean }) => {
   const router = useRouter();
   
   return (
@@ -340,11 +341,12 @@ export default function SurveyPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Fixed header and progress bar */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-white"> {/* Safe area background */}
-          <div className="h-12 bg-white" /> {/* Safe area padding */}
-          <Header 
+      <Header />
+      
+      {/* Survey header and progress bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6">
+          <SurveyHeader 
             onBack={handleBack} 
             isFinal={currentQuestion.type === "final"}
           />
@@ -357,8 +359,8 @@ export default function SurveyPage() {
         </div>
       </div>
 
-      {/* Main content with padding for fixed header */}
-      <main className="flex-1 pt-32 px-6 pb-6">
+      {/* Main content */}
+      <main className="flex-1 px-6 py-8 max-w-4xl mx-auto w-full">
         {currentQuestion.type === "final" ? (
           <div className="flex flex-col items-center">
             <div className="relative w-20 h-20 mb-4 overflow-visible">
