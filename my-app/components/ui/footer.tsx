@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -12,7 +12,7 @@ export function Footer() {
           {/* Social Media Icons */}
           <div className="flex items-center gap-4">
             <Link 
-              href="https://facebook.com" 
+              href="https://www.facebook.com/profile.php?id=61580186437838" 
               className="text-gray-600 hover:text-gray-900 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
@@ -20,15 +20,7 @@ export function Footer() {
               <Facebook className="h-5 w-5" />
             </Link>
             <Link 
-              href="https://twitter.com" 
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Twitter className="h-5 w-5" />
-            </Link>
-            <Link 
-              href="https://instagram.com" 
+              href="https://www.instagram.com/purelybiome/" 
               className="text-gray-600 hover:text-gray-900 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
@@ -36,7 +28,7 @@ export function Footer() {
               <Instagram className="h-5 w-5" />
             </Link>
             <Link 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/company/purelybiome" 
               className="text-gray-600 hover:text-gray-900 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
