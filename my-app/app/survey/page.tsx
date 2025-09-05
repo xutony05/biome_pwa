@@ -145,6 +145,7 @@ export default function SurveyPage() {
   const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -161,15 +162,15 @@ export default function SurveyPage() {
             if (lastSurvey) {
               // Convert survey data to answers format
               const surveyAnswers = {
-                q1: lastSurvey.kit_id,
-                q3: lastSurvey.age,
-                q4: lastSurvey.gender,
-                q5: lastSurvey.city,
-                q6: lastSurvey.skin_type,
-                q7: lastSurvey.skin_conditions,
-                q8: lastSurvey.allergies,
-                q9: lastSurvey.skincare_brands,
-                q10: lastSurvey.additional_info
+                q1: lastSurvey.kit_id || "",
+                q3: lastSurvey.age || "",
+                q4: lastSurvey.gender || "",
+                q5: lastSurvey.city || "",
+                q6: lastSurvey.skin_type || "",
+                q7: lastSurvey.skin_conditions || [],
+                q8: lastSurvey.allergies || "",
+                q9: lastSurvey.skincare_brands || "",
+                q10: lastSurvey.additional_info || ""
               };
               setAnswers(surveyAnswers);
 
@@ -304,6 +305,21 @@ export default function SurveyPage() {
   const renderQuestion = () => {
     switch (currentQuestion.type) {
       case "input":
+        const answerValue = answers[currentQuestion.id];
+        
+        // More robust type checking
+        let previousAnswer = "";
+        if (answerValue !== null && answerValue !== undefined) {
+          if (typeof answerValue === 'string') {
+            previousAnswer = answerValue;
+          } else if (typeof answerValue === 'number') {
+            previousAnswer = String(answerValue);
+          } else if (Array.isArray(answerValue)) {
+            // This shouldn't happen for input questions, but handle it
+            previousAnswer = "";
+          }
+        }
+        
         return (
           <InputQuestion
             key={currentQuestion.id}
@@ -311,7 +327,7 @@ export default function SurveyPage() {
             onNext={handleNext}
             isLargeInput={currentQuestion.id === "q10" || currentQuestion.id === "q9"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
-            previousAnswer={typeof answers[currentQuestion.id] === 'string' ? answers[currentQuestion.id] as string : ""}
+            previousAnswer={previousAnswer}
           />
         );
       case "single":
