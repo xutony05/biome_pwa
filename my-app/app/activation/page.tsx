@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { getSurveyCount, getReportCount, getLastSurvey, SurveyAnswers } from "../lib/supabase";
+import { getSurveyCount, getTotalSurveyCount, getReportCount, getLastSurvey, SurveyAnswers } from "../lib/supabase";
 import { Header } from "@/components/ui/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { PlayCircle, FileText, CheckCircle2 } from "lucide-react";
 export default function ActivationPage() {
   const { user } = useAuth();
   const [surveyCount, setSurveyCount] = useState(0);
+  const [totalSurveyCount, setTotalSurveyCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [lastSurvey, setLastSurvey] = useState<SurveyAnswers | null>(null);
 
@@ -20,15 +21,17 @@ export default function ActivationPage() {
     async function fetchCounts() {
       if (user?.email) {
         try {
-          const [surveys, reports] = await Promise.all([
+          const [surveys, totalSurveys, reports] = await Promise.all([
             getSurveyCount(user.email),
+            getTotalSurveyCount(user.email),
             getReportCount(user.email)
           ]);
           setSurveyCount(surveys);
+          setTotalSurveyCount(totalSurveys);
           setReportCount(reports);
 
-          // Only fetch last survey if there are more surveys than reports
-          if (surveys > reports) {
+          // Only fetch last survey if there are more total surveys than reports
+          if (totalSurveys > reports) {
             const lastSurveyData = await getLastSurvey(user.email);
             setLastSurvey(lastSurveyData);
           }
@@ -43,7 +46,7 @@ export default function ActivationPage() {
   const canViewGuide = surveyCount > reportCount && lastSurvey?.completed;
 
   const progressPercentage = (() => {
-    if (surveyCount > reportCount && lastSurvey) {
+    if (totalSurveyCount > reportCount && lastSurvey) {
       const questionIds = ['q1', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10'];
       const idx = questionIds.indexOf(lastSurvey.last_question_answered);
       return idx >= 0 ? ((idx + 1) / questionIds.length) * 100 : 0;
@@ -79,7 +82,7 @@ export default function ActivationPage() {
                 </p>
 
                 {/* Progress bar for Resume Activation */}
-                {surveyCount > reportCount && lastSurvey && (
+                {totalSurveyCount > reportCount && lastSurvey && (
                   <div className="space-y-2 mb-6">
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>Activation Progress</span>
@@ -90,9 +93,9 @@ export default function ActivationPage() {
                 )}
 
                 <div className="mt-2">
-                  <Link href={`/survey?mode=${surveyCount > reportCount ? 'resume' : 'new'}`}>
+                  <Link href={`/survey?mode=${totalSurveyCount > reportCount ? 'resume' : 'new'}`}>
                     <Button className="w-full sm:w-auto">
-                      {surveyCount > reportCount ? "Resume Activation" : "Start Activation"}
+                      {totalSurveyCount > reportCount ? "Resume Activation" : "Start Activation"}
                     </Button>
                   </Link>
                 </div>
