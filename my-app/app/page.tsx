@@ -1,35 +1,37 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useAuth } from "./context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
 
-  const routes = [
-    { name: "Login", path: "/login" },
-    { name: "Survey", path: "/survey" },
-    { name: "Instructions", path: "/instructions" },
-    { name: "Activation", path: "/activation" },
-    { name: "Profile", path: "/profile" },
-  ];
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        // User is logged in, redirect to profile
+        router.push("/profile");
+      } else {
+        // User is not logged in, redirect to login
+        router.push("/login");
+      }
+    }
+  }, [user, loading, router]);
 
-  return (
-    <main className="min-h-screen p-6 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-8">PurelyBiome</h1>
-      
-      <div className="w-full max-w-md space-y-4">
-        {routes.map((route) => (
-          <Button
-            key={route.path}
-            variant="outline"
-            className="w-full h-12 text-lg"
-            onClick={() => router.push(route.path)}
-          >
-            {route.name}
-          </Button>
-        ))}
-      </div>
-    </main>
-  );
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">PurelyBiome</h1>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </main>
+    );
+  }
+
+  // This should not render as we redirect immediately
+  return null;
 }
