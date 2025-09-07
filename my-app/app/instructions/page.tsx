@@ -77,10 +77,23 @@ const stepsData = [
       {
         step: 3,
         content: "Drop it off at the nearest shipping location."
+      }
+    ]
+  },
+  {
+    title: "Results",
+    instructions: [
+      {
+        step: 1,
+        content: "Your sample will be processed in our laboratory within 1-2 weeks."
       },
       {
-        step: 4,
-        content: "All done!"
+        step: 2,
+        content: "We will contact you via email when your personalized microbiome report is ready."
+      },
+      {
+        step: 3,
+        content: "You'll receive detailed insights about your skin's bacterial composition and personalized recommendations."
       }
     ]
   }

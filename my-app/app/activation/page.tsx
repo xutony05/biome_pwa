@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { getSurveyCount, getReportCount, getLastSurvey, getCompletedSurveyCount, SurveyAnswers } from "../lib/supabase";
+import { getSurveyCount, getTotalSurveyCount, getReportCount, getLastSurvey, SurveyAnswers } from "../lib/supabase";
 import { Header } from "@/components/ui/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { PlayCircle, FileText, CheckCircle2 } from "lucide-react";
 export default function ActivationPage() {
   const { user } = useAuth();
   const [surveyCount, setSurveyCount] = useState(0);
-  const [completedSurveyCount, setCompletedSurveyCount] = useState(0);
+  const [totalSurveyCount, setTotalSurveyCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [lastSurvey, setLastSurvey] = useState<SurveyAnswers | null>(null);
 
@@ -21,17 +21,17 @@ export default function ActivationPage() {
     async function fetchCounts() {
       if (user?.email) {
         try {
-          const [surveys, completedSurveys, reports] = await Promise.all([
+          const [surveys, totalSurveys, reports] = await Promise.all([
             getSurveyCount(user.email),
-            getCompletedSurveyCount(user.email),
+            getTotalSurveyCount(user.email),
             getReportCount(user.email)
           ]);
           setSurveyCount(surveys);
-          setCompletedSurveyCount(completedSurveys);
+          setTotalSurveyCount(totalSurveys);
           setReportCount(reports);
 
-          // Only fetch last survey if there are more surveys than reports
-          if (surveys > reports) {
+          // Only fetch last survey if there are more total surveys than reports
+          if (totalSurveys > reports) {
             const lastSurveyData = await getLastSurvey(user.email);
             setLastSurvey(lastSurveyData);
           }
@@ -46,7 +46,7 @@ export default function ActivationPage() {
   const canViewGuide = surveyCount > reportCount && lastSurvey?.completed;
 
   const progressPercentage = (() => {
-    if (surveyCount > reportCount && lastSurvey) {
+    if (totalSurveyCount > reportCount && lastSurvey) {
       const questionIds = ['q1', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10'];
       const idx = questionIds.indexOf(lastSurvey.last_question_answered);
       return idx >= 0 ? ((idx + 1) / questionIds.length) * 100 : 0;
@@ -82,7 +82,7 @@ export default function ActivationPage() {
                 </p>
 
                 {/* Progress bar for Resume Activation */}
-                {surveyCount > reportCount && lastSurvey && (
+                {totalSurveyCount > reportCount && lastSurvey && (
                   <div className="space-y-2 mb-6">
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>Activation Progress</span>
@@ -93,9 +93,9 @@ export default function ActivationPage() {
                 )}
 
                 <div className="mt-2">
-                  <Link href={`/survey?mode=${surveyCount > reportCount ? 'resume' : 'new'}`}>
+                  <Link href={`/survey?mode=${totalSurveyCount > reportCount ? 'resume' : 'new'}`}>
                     <Button className="w-full sm:w-auto">
-                      {surveyCount > reportCount ? "Resume Activation" : "Start Activation"}
+                      {totalSurveyCount > reportCount ? "Resume Activation" : "Start Activation"}
                     </Button>
                   </Link>
                 </div>
@@ -151,7 +151,7 @@ export default function ActivationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="text-sm text-blue-600 mb-1 font-medium">Kits Activated</div>
-                    <div className="text-2xl font-bold text-blue-700">{completedSurveyCount}</div>
+                    <div className="text-2xl font-bold text-blue-700">{surveyCount}</div>
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="text-sm text-green-600 mb-1 font-medium">Reports Received</div>

@@ -183,26 +183,21 @@ export async function saveSurveyAnswers(email: string, answers: Record<string, a
   }
 }
 
-export async function getCompletedSurveyCount(email: string): Promise<number> {
+export async function getTotalSurveyCount(email: string): Promise<number> {
   try {
     const { data, error } = await supabase
       .from('surveys')
-      .select('kit_id, completed, last_question_answered')
+      .select('kit_id')
       .eq('email', email.toLowerCase());
 
     if (error) {
-      console.error('Error fetching completed survey count:', error);
+      console.error('Error fetching total survey count:', error);
       return 0;
     }
 
-    // Filter for completed surveys - either completed=true OR last_question_answered is q10 (final question)
-    const completedSurveys = data?.filter(survey => 
-      survey.completed === true || survey.last_question_answered === 'q10'
-    ) || [];
-    
-    return completedSurveys.length;
+    return data?.length || 0;
   } catch (e) {
-    console.error('Failed to fetch completed survey count:', e);
+    console.error('Failed to fetch total survey count:', e);
     return 0;
   }
 }
@@ -212,7 +207,8 @@ export async function getSurveyCount(email: string): Promise<number> {
     const { data, error } = await supabase
       .from('surveys')
       .select('kit_id')
-      .eq('email', email.toLowerCase());
+      .eq('email', email.toLowerCase())
+      .eq('completed', true);
 
     if (error) {
       console.error('Error fetching survey count:', error);
@@ -246,4 +242,4 @@ export async function getLastSurvey(email: string): Promise<SurveyAnswers | null
     console.error('Failed to fetch last survey:', e);
     return null;
   }
-} 
+}
