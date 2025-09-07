@@ -9,6 +9,16 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Contact Section */}
+        <div className="mb-6 pb-6 border-b border-gray-200">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-gray-500 text-sm">💬</span>
+            <span className="text-sm text-gray-600">
+              Need assistance? Email us at <span className="font-medium text-gray-700">contact@purelybiome.com</span>
+            </span>
+          </div>
+        </div>
+
         {/* Bottom Section */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Social Media Icons */}
