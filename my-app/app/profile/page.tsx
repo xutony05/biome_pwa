@@ -101,7 +101,7 @@ export default function ProfilePage() {
 
         {/* Reports Section */}
         <section>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Past Reports</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Your Reports</h2>
           <div className="space-y-2 sm:space-y-3">
             {reports.map((report, index) => (
               <Card key={`report-${report.report_number}-${index}`}>
