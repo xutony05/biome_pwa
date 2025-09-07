@@ -151,7 +151,7 @@ export default function ActivationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="text-sm text-blue-600 mb-1 font-medium">Kits Activated</div>
-                    <div className="text-2xl font-bold text-blue-700">{completedSurveyCount}</div>
+                    <div className="text-2xl font-bold text-blue-700">{surveyCount}</div>
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="text-sm text-green-600 mb-1 font-medium">Reports Received</div>
