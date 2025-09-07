@@ -7,7 +7,7 @@ import { MainHeader } from "@/components/ui/header";
 import Link from 'next/link';
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from 'react';
-import { getReportsWithDates } from '../lib/supabase';
+import { getReportsWithDates, getSurveyCount, getReportCount } from '../lib/supabase';
 
 interface ReportWithDate {
   created_at: string;
@@ -17,14 +17,22 @@ interface ReportWithDate {
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [reports, setReports] = useState<ReportWithDate[]>([]);
+  const [surveyCount, setSurveyCount] = useState(0);
+  const [reportCount, setReportCount] = useState(0);
 
   useEffect(() => {
     if (!loading && user?.email) {
       async function fetchReports() {
         try {
           if (user?.email) {
-            const reportsData = await getReportsWithDates(user.email);
+            const [reportsData, surveys, reports] = await Promise.all([
+              getReportsWithDates(user.email),
+              getSurveyCount(user.email),
+              getReportCount(user.email)
+            ]);
             setReports(reportsData);
+            setSurveyCount(surveys);
+            setReportCount(reports);
           }
         } catch (error) {
           console.error('Error fetching reports:', error);
@@ -68,6 +76,28 @@ export default function ProfilePage() {
             </Button>
           </div>
         </div>
+
+        {/* Pending Reports Section */}
+        {surveyCount > reportCount && (
+          <section>
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Pending Reports</h2>
+            <Card className="border-l-4 border-l-yellow-500">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="text-yellow-500 text-sm sm:text-base">⏳</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm sm:text-base font-medium">
+                      {surveyCount - reportCount} {surveyCount - reportCount === 1 ? 'Report' : 'Reports'} Processing
+                    </span>
+                    <span className="text-xs sm:text-sm text-yellow-600 font-medium">
+                      Results expected in 1-2 weeks
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        )}
 
         {/* Reports Section */}
         <section>

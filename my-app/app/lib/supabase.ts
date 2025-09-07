@@ -222,4 +222,4 @@ export async function getLastSurvey(email: string): Promise<SurveyAnswers | null
     console.error('Failed to fetch last survey:', e);
     return null;
   }
-} 
+}
