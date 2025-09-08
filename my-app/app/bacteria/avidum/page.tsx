@@ -1,15 +1,12 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useBacteria } from '@/app/context/BacteriaContext';
 import optimalRanges from '@/dataAssets/optimal.json';
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { Header } from "@/components/ui/header";
 
 export default function AvidumPage() {
-  const router = useRouter();
   const { values } = useBacteria();
   const value = values?.['C.Avi'];
   const [min, max] = optimalRanges['C. avidum'];
@@ -17,39 +14,28 @@ export default function AvidumPage() {
   // Add loading state
   if (value === undefined) {
     return (
-      <main className="fixed inset-0 overflow-y-auto bg-background">
-        <div className="min-h-full p-4">
-          <Button 
-            variant="ghost" 
-            className="mb-4" 
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Report
-          </Button>
-          <Card className="max-w-2xl mx-auto">
-            <div className="p-6">
-              <p>Loading...</p>
-            </div>
-          </Card>
-        </div>
-      </main>
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header showBackButton={true} />
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <Card>
+              <div className="p-6">
+                <p>Loading...</p>
+              </div>
+            </Card>
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <main className="fixed inset-0 overflow-y-auto bg-background">
-      <div className="min-h-full p-4">
-        <Button 
-          variant="ghost" 
-          className="mb-4" 
-          onClick={() => router.back()}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Report
-        </Button>
-        <Card className="max-w-2xl mx-auto">
-          <div className="p-6 space-y-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header showBackButton={true} />
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Card>
+            <div className="p-6 space-y-8">
             {/* Title */}
             <h1 className="text-2xl font-bold">Corynebacterium avidum</h1>
 
@@ -147,9 +133,10 @@ export default function AvidumPage() {
                 </ul>
               </div>
             </section>
-          </div>
-        </Card>
-      </div>
-    </main>
+            </div>
+          </Card>
+        </div>
+      </main>
+    </div>
   );
 }
