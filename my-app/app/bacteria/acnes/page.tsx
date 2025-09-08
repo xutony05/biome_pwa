@@ -17,8 +17,8 @@ export default function AcnesPage() {
       <div className="min-h-screen flex flex-col bg-background">
         <Header showBackButton={true} />
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4">
-            <Card className="max-w-2xl mx-auto">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <Card>
               <div className="p-6">
                 <p>Loading...</p>
               </div>
@@ -33,8 +33,8 @@ export default function AcnesPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header showBackButton={true} />
       <main className="flex-1 overflow-y-auto">
-        <div className="p-4">
-          <Card className="max-w-2xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Card>
             <div className="p-6 space-y-8">
               {/* Title */}
               <h1 className="text-2xl font-bold">Cutibacterium acnes</h1>
