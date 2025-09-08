@@ -93,7 +93,7 @@ export default function AureusPage() {
             <section className="space-y-3">
               <h2 className="text-lg font-semibold">Healthy Range</h2>
               <div className="bg-green-100 rounded-lg p-4 space-y-2">
-                <p className="text-green-800">Optimal levels: 0-1%</p>
+                <p className="text-green-800">Optimal levels: {min.toFixed(1)}-{max.toFixed(1)}%</p>
                 <div className="text-green-700 text-sm">
                   When at healthy levels, S. aureus:
                 </div>
