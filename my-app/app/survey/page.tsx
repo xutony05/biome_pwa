@@ -136,7 +136,7 @@ const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal
 const ProgressBar = ({ current, total }: { current: number; total: number }) => (
   <Progress 
     value={(current / total) * 100} 
-    className="h-3 rounded-none bg-gray-100"
+    className="h-3 rounded-full bg-gray-100"
   />
 );
 
