@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
 import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,9 +85,11 @@ const getBacteriaRoute = (bacteria: string) => {
 
 export default function ReportPage() {
   const params = useParams();
+  const router = useRouter();
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
   const { setValues } = useBacteria();
+  const [isMobile, setIsMobile] = useState(false);
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
   const [showScoreExplanation, setShowScoreExplanation] = useState(false);
   const [showMicrobesExplanation, setShowMicrobesExplanation] = useState(false);
@@ -122,6 +125,56 @@ export default function ReportPage() {
     }
     fetchReport();
   }, [params.slug, user?.email, setValues]);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle explain button clicks
+  const handleExplainClick = (explanationType: string) => {
+    if (isMobile) {
+      router.push(`/explanations/${explanationType}`);
+    } else {
+      // Show dialog for desktop
+      switch (explanationType) {
+        case 'microbiome-balance':
+          setShowScoreExplanation(true);
+          break;
+        case 'estimated-age':
+          setShowAgeExplanation(true);
+          break;
+        case 'environment-health':
+          setShowEnvExplanation(true);
+          break;
+        case 'key-microbes':
+          setShowMicrobesExplanation(true);
+          break;
+        case 'antioxidant-capacity':
+          setShowAntioxidantExplanation(true);
+          break;
+        case 'sensitivity-response':
+          setShowSensitivityExplanation(true);
+          break;
+        case 'skin-firmness':
+          setShowFirmnessExplanation(true);
+          break;
+        case 'hydration':
+          setShowHydrationExplanation(true);
+          break;
+        case 'product-recommendations':
+          setShowProductsExplanation(true);
+          break;
+      }
+    }
+  };
 
   if (!report) return null;
 
@@ -182,7 +235,7 @@ export default function ReportPage() {
                     variant="ghost" 
                     size="sm"
                     className="h-auto p-0 text-sm text-blue-500 hover:text-blue-600"
-                    onClick={() => setShowScoreExplanation(true)}
+                    onClick={() => handleExplainClick('microbiome-balance')}
                     aria-label="Explain microbiome balance score"
                   >
                     EXPLAIN
@@ -247,7 +300,7 @@ export default function ReportPage() {
                     <Button 
                       variant="ghost" 
                       className="text-sm text-blue-500 h-auto p-0"
-                      onClick={() => setShowAgeExplanation(true)}
+                      onClick={() => handleExplainClick('estimated-age')}
                     >
                       EXPLAIN
                     </Button>
@@ -269,7 +322,7 @@ export default function ReportPage() {
                     <Button 
                       variant="ghost" 
                       className="text-sm text-blue-500 h-auto p-0"
-                      onClick={() => setShowEnvExplanation(true)}
+                      onClick={() => handleExplainClick('environment-health')}
                     >
                       EXPLAIN
                     </Button>
@@ -294,7 +347,7 @@ export default function ReportPage() {
                   <Button 
                     variant="ghost" 
                     className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowMicrobesExplanation(true)}
+                    onClick={() => handleExplainClick('key-microbes')}
                   >
                     EXPLAIN
                   </Button>
@@ -478,7 +531,7 @@ export default function ReportPage() {
                         variant="ghost" 
                         size="sm"
                         className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
-                        onClick={() => setShowAntioxidantExplanation(true)}
+                        onClick={() => handleExplainClick('antioxidant-capacity')}
                       >
                         EXPLAIN
                       </Button>
@@ -514,7 +567,7 @@ export default function ReportPage() {
                         variant="ghost" 
                         size="sm"
                         className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
-                        onClick={() => setShowSensitivityExplanation(true)}
+                        onClick={() => handleExplainClick('sensitivity-response')}
                       >
                         EXPLAIN
                       </Button>
@@ -550,7 +603,7 @@ export default function ReportPage() {
                         variant="ghost" 
                         size="sm"
                         className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
-                        onClick={() => setShowFirmnessExplanation(true)}
+                        onClick={() => handleExplainClick('skin-firmness')}
                       >
                         EXPLAIN
                       </Button>
@@ -586,7 +639,7 @@ export default function ReportPage() {
                         variant="ghost" 
                         size="sm"
                         className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
-                        onClick={() => setShowHydrationExplanation(true)}
+                        onClick={() => handleExplainClick('hydration')}
                       >
                         EXPLAIN
                       </Button>
@@ -619,7 +672,7 @@ export default function ReportPage() {
                   <Button 
                     variant="ghost" 
                     className="text-sm text-blue-500 h-auto p-0"
-                    onClick={() => setShowProductsExplanation(true)}
+                    onClick={() => handleExplainClick('product-recommendations')}
                   >
                     EXPLAIN
                   </Button>
