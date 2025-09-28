@@ -19,6 +19,9 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "PurelyBiome",
   description: "PurelyBiome provides personalized, science-based skincare recommendations through facial microbiome testing.",
+  icons: {
+    icon: '/Logo Cropped-Photoroom.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
