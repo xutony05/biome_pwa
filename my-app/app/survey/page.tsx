@@ -121,10 +121,10 @@ const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal
           <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="text-base leading-[18px] hover:bg-transparent"
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/activation')}
       >
         {isFinal ? "Exit" : "Save & Exit"}
       </Button>
