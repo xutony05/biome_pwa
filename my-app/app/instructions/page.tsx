@@ -132,7 +132,7 @@ export default function InstructionsPage() {
             <button 
               key={step.title}
               onClick={() => handleTabClick(index)}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 py-2 px-1 sm:px-4 text-xs sm:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                 index === currentStep
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
@@ -154,14 +154,14 @@ export default function InstructionsPage() {
                 <h2 className="text-xl font-semibold text-gray-900">{stepsData[currentStep].title}</h2>
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-4 sm:space-y-8">
                 {stepsData[currentStep].instructions.map((instruction) => (
-                  <div key={instruction.step} className="flex items-start space-x-6">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg font-bold border-2 border-green-200">
+                  <div key={instruction.step} className="flex items-start space-x-3 sm:space-x-6">
+                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm sm:text-lg font-bold border-2 border-green-200">
                       {instruction.step}
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="text-gray-800 leading-7 text-lg">
+                      <p className="text-gray-800 leading-6 sm:leading-7 text-sm sm:text-lg">
                         {instruction.content}
                       </p>
                     </div>
@@ -170,7 +170,7 @@ export default function InstructionsPage() {
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+              <div className="flex justify-between items-center mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
                 <Button
                   variant="outline"
                   onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}

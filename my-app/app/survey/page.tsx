@@ -121,10 +121,10 @@ const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal
           <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="text-base leading-[18px] hover:bg-transparent"
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/activation')}
       >
         {isFinal ? "Exit" : "Save & Exit"}
       </Button>
@@ -136,7 +136,7 @@ const SurveyHeader = ({ onBack, isFinal = false }: { onBack: () => void; isFinal
 const ProgressBar = ({ current, total }: { current: number; total: number }) => (
   <Progress 
     value={(current / total) * 100} 
-    className="h-3 rounded-none bg-gray-100"
+    className="h-3 rounded-full bg-gray-100"
   />
 );
 
