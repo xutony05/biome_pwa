@@ -84,12 +84,116 @@ const BACTERIA_NAME_MAPPING = {
     'S.Aur': 'S. aureus',
 };
 
+// --- Age Estimation Configuration Constants ---
+
+const MAX_DEVIATION_YEARS = 10;
+const AGE_MIN_INTERPOLATION = 18; // Start age for biomarker interpolation
+const AGE_MAX_INTERPOLATION = 88; // End age for biomarker interpolation
+const AGE_MIN_CONSTRAINT_THRESHOLD = 16;
+
+// Core markers for age prediction with their percentage ranges at different ages
+const CORE_MARKERS = [
+    // Marker configuration: { min_pct (at 18 yrs), max_pct (at 88 yrs) }
+    { key: 'cAcnes', min_pct: 85, max_pct: 30 },
+    { key: 'sEpidermidis', min_pct: 3, max_pct: 23 },
+    { key: 'cKroppenstedtii', min_pct: 1, max_pct: 25 }
+];
+
+// Diversity Adjustment Algorithm (DAA) constants
+const DAA_CONSTANTS = {
+    H_MIN: 1.0, 
+    H_MAX: 1.8,
+    DAA_MIN: -5,
+    DAA_MAX: 5 
+};
+
+// Mapping from existing bacteria names to age estimation algorithm names
+const AGE_BACTERIA_MAPPING = {
+    'C.Acne': 'cAcnes',
+    'S.Epi': 'sEpidermidis',
+    'C.Krop': 'cKroppenstedtii',
+    'S.hom': 'sHominis',
+    'S.Cap': 'sCapitis',
+    'S.Aur': 'sAureus',
+    'C.Stri': 'cStriatum',
+    'C.Tub': 'cTuberculostearicum',
+    'C.Avi': 'cAvidum',
+    'C.gran': 'cGranulosum',
+    'S.haem': 'sHaemolyticus',
+};
+
 /**
  * Checks if a value is within a range (inclusive).
  * This helper function determines if a bacterial abundance falls within the optimal range.
  */
 const isWithinRange = (value: number, minVal: number, maxVal: number): boolean => {
     return value >= minVal && value <= maxVal;
+};
+
+/**
+ * Calculates the Shannon Diversity Index (H).
+ * This measures the diversity of bacterial species in the microbiome.
+ * Higher values indicate more diverse bacterial populations.
+ * 
+ * @param proportions - Array of all 11 bacterial abundances (percentages)
+ * @returns The calculated Shannon Index (H), rounded to two decimal places
+ */
+const calculateShannonIndex = (proportions: number[]): number => {
+    let H = 0;
+    // Convert percentages to proportions and filter out zeros
+    const P_i = proportions
+        .map(p => {
+            const parsed = parseFloat(p.toString());
+            return isNaN(parsed) ? 0 : parsed / 100.0;
+        })
+        .filter(p => p > 0);
+
+    const sumP = P_i.reduce((sum, p) => sum + p, 0);
+
+    if (sumP === 0 || P_i.length === 0) return 0.00; 
+
+    // Calculate H = -Σ(p_i * ln(p_i))
+    for (const p of P_i) {
+        // Use normalized proportion if the sum is not 1.0 (due to missing species)
+        const normalized_p = p / sumP; 
+        // Prevent Math.log(0) which would cause NaN
+        if (normalized_p > 0) {
+            H += normalized_p * Math.log(normalized_p);
+        }
+    }
+    
+    const result = -H;
+    return isNaN(result) ? 0.00 : parseFloat(result.toFixed(2));
+};
+
+/**
+ * Performs linear interpolation to map a value from one range to another.
+ * This is used to convert bacterial percentages to age estimates.
+ * 
+ * @param value - The input value (e.g., marker percentage or H index)
+ * @param range1Min - Source range minimum
+ * @param range1Max - Source range maximum  
+ * @param range2Min - Target range minimum (e.g., age min or DAA min)
+ * @param range2Max - Target range maximum (e.g., age max or DAA max)
+ * @returns The interpolated value
+ */
+const interpolateLinear = (value: number, range1Min: number, range1Max: number, range2Min: number, range2Max: number): number => {
+    // Handle invalid inputs
+    if (isNaN(value) || isNaN(range1Min) || isNaN(range1Max) || isNaN(range2Min) || isNaN(range2Max)) {
+        return range2Min;
+    }
+
+    // Clamp input value to the source range
+    const clampedValue = Math.max(Math.min(value, Math.max(range1Min, range1Max)), Math.min(range1Min, range1Max));
+
+    const range1Span = range1Max - range1Min;
+    const range2Span = range2Max - range2Min;
+
+    if (range1Span === 0) return range2Min;
+
+    // Linear scaling formula: TargetMin + TargetSpan * ((Value - SourceMin) / SourceSpan)
+    const result = range2Min + range2Span * ((clampedValue - range1Min) / range1Span);
+    return isNaN(result) ? range2Min : result;
 };
 
 /**
@@ -302,56 +406,155 @@ export const classifySkinType = (score: number): string => {
   }
 };
 
-export const estimateAge = (bacteriaPercentages: Record<string, number>): number => {
-  // Midpoints from reference ranges
-  const ageAnchors = {
-    'C.Acne': { young: 74, old: 37 },
-    'S.Epi': { young: 5, old: 12 },
-    'C.Krop': { young: 2, old: 13 },
-    'C.Tub': { young: 0.3, old: 0.5 },
-    'C.gran': { young: 0.8, old: 0.2 }
-  };
-
-  // Age weights (how much each shifts the predicted age)
-  const ageWeights = {
-    'C.Acne': -3.5,
-    'S.Epi': +3.0,
-    'C.Krop': +2.5,
-    'C.Tub': +2.0,
-    'C.gran': -1.5
-  };
-
-  let totalShift = 0;
-  let totalWeight = 0;
-  const baselineAge = 40; // neutral midpoint
-
-  for (const [bacterium, anchors] of Object.entries(ageAnchors)) {
-    const weight = ageWeights[bacterium as keyof typeof ageWeights];
-    const observed = bacteriaPercentages[bacterium] || 0;
-    const youngVal = anchors.young;
-    const oldVal = anchors.old;
-
-    // Expected range delta
-    const expectedRange = Math.abs(oldVal - youngVal);
-    if (expectedRange === 0) {
-      continue; // avoid divide-by-zero
+/**
+ * Calculates the predicted skin age using a 3-phase algorithm:
+ * 1. Weighted Core Age prediction using C. acnes, S. epidermidis, and C. kroppenstedtii
+ * 2. Diversity Adjustment (DAA) using the Shannon Index calculated from all 11 inputs
+ * 3. Custom Constraint rules based on the Input Age
+ * 
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param inputAge - The self-reported age of the user (optional, defaults to 40)
+ * @returns Detailed prediction results including final age and breakdown
+ */
+export const estimateAge = (bacteriaPercentages: Record<string, number>, inputAge: number = 40) => {
+    const A_input = parseFloat(inputAge.toString());
+    
+    if (isNaN(A_input) || A_input < 1) {
+        return { final_age: 'Error', error_message: 'Invalid Input Age.' };
     }
 
-    // Directional deviation: -1 = like young, +1 = like old
-    let deviation = (observed - youngVal) / expectedRange;
-    deviation = Math.max(Math.min(deviation, 1), -1); // clamp between -1 and 1
+    // Convert bacteria names from existing format to age estimation algorithm format
+    const allBacteriaPercents: Record<string, number> = {};
+    for (const [oldName, percentage] of Object.entries(bacteriaPercentages)) {
+        const newName = AGE_BACTERIA_MAPPING[oldName as keyof typeof AGE_BACTERIA_MAPPING];
+        if (newName && percentage !== undefined && percentage !== null) {
+            const parsed = parseFloat(percentage.toString());
+            allBacteriaPercents[newName] = isNaN(parsed) ? 0.0 : parsed;
+        }
+    }
 
-    // Multiply by weight and sum
-    const shift = deviation * weight;
-    totalShift += shift;
-    totalWeight += Math.abs(weight);
-  }
+    // Debug: Check if we have any valid data
+    const hasValidData = Object.values(allBacteriaPercents).some(val => val > 0);
+    if (!hasValidData) {
+        return { 
+            final_age: 'Error', 
+            error_message: 'No valid bacterial data provided. All values are missing or zero.' 
+        };
+    }
 
-  // Normalize and apply to baseline
-  const ageEstimate = baselineAge + (totalShift / totalWeight) * 25; // 25 = max age deviation from 40
+    // --- PHASE 1: Core Age Prediction (Weighted Average) ---
+    let totalImpliedAge = 0;
+    
+    // Determine the effective minimum age for interpolation
+    const effectiveAgeMin = Math.min(A_input, AGE_MIN_INTERPOLATION);
+    
+    CORE_MARKERS.forEach(marker => {
+        const percent = parseFloat((allBacteriaPercents[marker.key] || 0).toString()); // Use 0 if marker is missing
+        
+        // Linear interpolation to find the Implied Age for this marker
+        const impliedAge = interpolateLinear(
+            percent, 
+            marker.min_pct, marker.max_pct, 
+            effectiveAgeMin, AGE_MAX_INTERPOLATION 
+        );
+        
+        // Safety check for NaN
+        if (!isNaN(impliedAge)) {
+            totalImpliedAge += impliedAge;
+        }
+    });
 
-  // Clamp result
-  return Math.max(10, Math.min(85, Math.round(ageEstimate * 10) / 10));
+    const coreWeightedAge = totalImpliedAge / CORE_MARKERS.length;
+    
+    // Safety check for NaN in core age
+    if (isNaN(coreWeightedAge)) {
+        return { 
+            final_age: 'Error', 
+            error_message: 'Core age calculation resulted in NaN. Check bacterial data quality.' 
+        };
+    }
+
+    // --- PHASE 2: Diversity Adjustment (DAA) ---
+    
+    // Calculate Shannon Index (H) using all input proportions
+    const allProportions = Object.values(allBacteriaPercents);
+    const shannonIndex = calculateShannonIndex(allProportions);
+
+    let diversityAdjustment;
+    
+    if (shannonIndex <= DAA_CONSTANTS.H_MIN) {
+        diversityAdjustment = DAA_CONSTANTS.DAA_MIN; // -5
+    } else if (shannonIndex >= DAA_CONSTANTS.H_MAX) {
+        diversityAdjustment = DAA_CONSTANTS.DAA_MAX; // +5
+    } else {
+        // Linear Interpolation for DAA based on H index
+        diversityAdjustment = interpolateLinear(
+            shannonIndex, 
+            DAA_CONSTANTS.H_MIN, DAA_CONSTANTS.H_MAX,
+            DAA_CONSTANTS.DAA_MIN, DAA_CONSTANTS.DAA_MAX
+        );
+    }
+    
+    const diversityAdjustedAge = coreWeightedAge + diversityAdjustment;
+    const unconstrainedAgeDetail = parseFloat(diversityAdjustedAge.toFixed(1));
+    
+    // Safety check for NaN in diversity adjusted age
+    if (isNaN(unconstrainedAgeDetail)) {
+        return { 
+            final_age: 'Error', 
+            error_message: 'Diversity adjustment resulted in NaN. Check bacterial data quality.' 
+        };
+    }
+
+    // --- PHASE 3: Final Constraint (Custom Lower Bound + Fixed Upper Bound) ---
+    
+    // Calculate the custom Lower Bound
+    let lowerBound;
+    let lowerBoundRuleText;
+    if (A_input >= AGE_MIN_CONSTRAINT_THRESHOLD) {
+        // Rule 1: If Input Age >= 16, lowest possible age is 16
+        lowerBound = AGE_MIN_CONSTRAINT_THRESHOLD; // 16
+        lowerBoundRuleText = `16 years (Absolute Minimum for ages ${AGE_MIN_CONSTRAINT_THRESHOLD}+).`;
+    } else {
+        // Rule 2: If Input Age < 16, lowest possible age is Input Age - 2
+        lowerBound = A_input - 2;
+        // Ensure age doesn't go below 1, even for tiny input ages
+        if (lowerBound < 1) lowerBound = 1; 
+        lowerBoundRuleText = `${lowerBound.toFixed(0)} years (Input Age - 2).`;
+    }
+
+    // Upper bound is always Input Age + 10 years
+    const upperBound = A_input + MAX_DEVIATION_YEARS; 
+
+    const isConstrained = diversityAdjustedAge > upperBound || diversityAdjustedAge < lowerBound;
+    
+    let finalSkinAgeRounded;
+    let constraintAction;
+
+    if (isConstrained) {
+        // Clamp the age using the calculated bounds
+        const finalSkinAgeClamped = Math.max(lowerBound, Math.min(upperBound, diversityAdjustedAge));
+        finalSkinAgeRounded = parseFloat(finalSkinAgeClamped.toFixed(1));
+        
+        if (diversityAdjustedAge > upperBound) {
+            constraintAction = `Adjusted DOWN. Raw age (${unconstrainedAgeDetail} yrs) exceeded max allowed age (${upperBound} yrs = Input Age + 10).`;
+        } else {
+            constraintAction = `Adjusted UP. Raw age (${unconstrainedAgeDetail} yrs) was below the minimum allowed age (${finalSkinAgeClamped.toFixed(1)} yrs). Lower bound rule applied: ${lowerBoundRuleText}`;
+        }
+    } else {
+        finalSkinAgeRounded = unconstrainedAgeDetail;
+        constraintAction = "No constraint applied. Result is within the custom age range.";
+    }
+
+    // Return the detailed breakdown
+    return {
+        final_age: finalSkinAgeRounded,
+        shannon_index: shannonIndex,
+        core_age: parseFloat(coreWeightedAge.toFixed(1)),
+        daa: parseFloat(diversityAdjustment.toFixed(1)),
+        unconstrained_age: unconstrainedAgeDetail,
+        constraint_status: constraintAction 
+    };
 };
 
 export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentages): number {

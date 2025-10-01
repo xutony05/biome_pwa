@@ -192,7 +192,7 @@ export default function ReportPage() {
     'C.Krop': report['C.Krop']
   };
 
-  const estimatedAge = estimateAge(bacteriaPercentages);
+  const estimatedAge = estimateAge(bacteriaPercentages, report.age);
   const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
   const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
@@ -307,7 +307,9 @@ export default function ReportPage() {
                   </div>
 
                   <div className="text-3xl font-bold">
-                    {Math.round(estimatedAge)}
+                    {typeof estimatedAge === 'object' && typeof estimatedAge.final_age === 'number'
+                      ? Math.round(estimatedAge.final_age) 
+                      : 'N/A'}
                     <span className="text-base font-normal text-muted-foreground ml-1">years</span>
                   </div>
                 </div>
