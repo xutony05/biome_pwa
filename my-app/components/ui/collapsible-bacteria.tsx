@@ -13,11 +13,11 @@ const bacteriaNameMap: Record<string, string> = {
   'S.Cap': 'S. capitis',
   'S.Epi': 'S. epidermidis',
   'C.Avi': 'C. avidum',
-  'C.gran': 'C. granulosum',
-  'S.haem': 'S. haemolyticus',
+  'C.Gran': 'C. granulosum',
+  'S.Haem': 'S. haemolyticus',
   'S.Aur': 'S. aureus',
   'C.Tub': 'C. tuberculostearicum',
-  'S.hom': 'S. hominis',
+  'S.Hom': 'S. hominis',
   'C.Krop': 'C. kroppenstedtii'
 };
 
@@ -38,11 +38,11 @@ export function CollapsibleBacteria({ bacteria, value, status }: CollapsibleBact
       'S.Cap': 'capitis',
       'S.Epi': 'epidermidis',
       'C.Avi': 'avidum',
-      'C.gran': 'granulosum',
-      'S.haem': 'haemolyticus',
+      'C.Gran': 'granulosum',
+      'S.Haem': 'haemolyticus',
       'S.Aur': 'aureus',
       'C.Tub': 'tuberculostearicum',
-      'S.hom': 'hominis',
+      'S.Hom': 'hominis',
       'C.Krop': 'kroppenstedtii'
     };
 

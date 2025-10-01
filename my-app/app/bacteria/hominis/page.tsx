@@ -8,7 +8,7 @@ import { Header } from "@/components/ui/header";
 
 export default function HominisPage() {
   const { values } = useBacteria();
-  const value = values?.['S.hom'];
+  const value = values?.['S.Hom'];
   const [min, max] = optimalRanges['S. hominis'];
 
   // Add loading state

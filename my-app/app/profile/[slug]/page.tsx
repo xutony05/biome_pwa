@@ -32,11 +32,11 @@ const getOptimalRangeStatus = (bacteria: string, value: number) => {
     .replace('S.Cap', 'S. capitis')
     .replace('S.Epi', 'S. epidermidis')
     .replace('C.Avi', 'C. avidum')
-    .replace('C.gran', 'C. granulosum')
-    .replace('S.haem', 'S. haemolyticus')
+    .replace('C.Gran', 'C. granulosum')
+    .replace('S.Haem', 'S. haemolyticus')
     .replace('S.Aur', 'S. aureus')
     .replace('C.Tub', 'C. tuberculostearicum')
-    .replace('S.hom', 'S. hominis')
+    .replace('S.Hom', 'S. hominis')
     .replace('C.Krop', 'C. kroppenstedtii');
   
   const range = optimalRanges[bacteriaKey as keyof typeof optimalRanges];
@@ -54,11 +54,11 @@ const getFullBacteriaName = (bacteria: string) => {
     'S.Cap': 'Staphylococcus capitis',
     'S.Epi': 'Staphylococcus epidermidis',
     'C.Avi': 'Corynebacterium avidum',
-    'C.gran': 'Cutibacterium granulosum',
-    'S.haem': 'Staphylococcus haemolyticus',
+    'C.Gran': 'Cutibacterium granulosum',
+    'S.Haem': 'Staphylococcus haemolyticus',
     'S.Aur': 'Staphylococcus aureus',
     'C.Tub': 'Corynebacterium tuberculostearicum',
-    'S.hom': 'Staphylococcus hominis',
+    'S.Hom': 'Staphylococcus hominis',
     'C.Krop': 'Corynebacterium kroppenstedtii'
   };
   
@@ -72,11 +72,11 @@ const getBacteriaRoute = (bacteria: string) => {
     'S.Cap': 'capitis',
     'S.Epi': 'epidermidis',
     'C.Avi': 'avidum',
-    'C.gran': 'granulosum',
-    'S.haem': 'haemolyticus',
+    'C.Gran': 'granulosum',
+    'S.Haem': 'haemolyticus',
     'S.Aur': 'aureus',
     'C.Tub': 'tuberculostearicum',
-    'S.hom': 'hominis',
+    'S.Hom': 'hominis',
     'C.Krop': 'kroppenstedtii'
   };
   
@@ -113,11 +113,11 @@ export default function ReportPage() {
             'S.Cap': reportData['S.Cap'],
             'S.Epi': reportData['S.Epi'],
             'C.Avi': reportData['C.Avi'],
-            'C.gran': reportData['C.gran'],
-            'S.haem': reportData['S.haem'],
+            'C.Gran': reportData['C.Gran'],
+            'S.Haem': reportData['S.Haem'],
             'S.Aur': reportData['S.Aur'],
             'C.Tub': reportData['C.Tub'],
-            'S.hom': reportData['S.hom'],
+            'S.Hom': reportData['S.Hom'],
             'C.Krop': reportData['C.Krop']
           });
         }
@@ -184,11 +184,11 @@ export default function ReportPage() {
     'S.Cap': report['S.Cap'],
     'S.Epi': report['S.Epi'],
     'C.Avi': report['C.Avi'],
-    'C.gran': report['C.gran'],
-    'S.haem': report['S.haem'],
+    'C.Gran': report['C.Gran'],
+    'S.Haem': report['S.Haem'],
     'S.Aur': report['S.Aur'],
     'C.Tub': report['C.Tub'],
-    'S.hom': report['S.hom'],
+    'S.Hom': report['S.Hom'],
     'C.Krop': report['C.Krop']
   };
 

@@ -4,11 +4,11 @@ export type BacteriaPercentages = {
   'S.Cap': number;
   'S.Epi': number;
   'C.Avi': number;
-  'C.gran': number;
-  'S.haem': number;
+  'C.Gran': number;
+  'S.Haem': number;
   'S.Aur': number;
   'C.Tub': number;
-  'S.hom': number;
+  'S.Hom': number;
   'C.Krop': number;
 };
 
@@ -72,13 +72,13 @@ const HYDRATION_COMPLEX_SCORING_RULES = {
 // Mapping from existing bacteria names to new algorithm names
 const BACTERIA_NAME_MAPPING = {
     'S.Epi': 'S. epidermidis',
-    'S.hom': 'S. hominis', 
+    'S.Hom': 'S. hominis', 
     'C.Acne': 'C. acnes',
     'S.Cap': 'S. capitis',
-    'S.haem': 'S. haemolyticus',
+    'S.Haem': 'S. haemolyticus',
     'C.Stri': 'C. striatum',
     'C.Avi': 'C. avidum',
-    'C.gran': 'C. granulosum',
+    'C.Gran': 'C. granulosum',
     'C.Tub': 'C. tuberculostearicum',
     'C.Krop': 'C. kroppenstedtii',
     'S.Aur': 'S. aureus',
@@ -112,14 +112,14 @@ const AGE_BACTERIA_MAPPING = {
     'C.Acne': 'cAcnes',
     'S.Epi': 'sEpidermidis',
     'C.Krop': 'cKroppenstedtii',
-    'S.hom': 'sHominis',
+    'S.Hom': 'sHominis',
     'S.Cap': 'sCapitis',
     'S.Aur': 'sAureus',
     'C.Stri': 'cStriatum',
     'C.Tub': 'cTuberculostearicum',
     'C.Avi': 'cAvidum',
-    'C.gran': 'cGranulosum',
-    'S.haem': 'sHaemolyticus',
+    'C.Gran': 'cGranulosum',
+    'S.Haem': 'sHaemolyticus',
 };
 
 /**
@@ -363,9 +363,9 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
     'C.Stri': [0, 5],
     'C.Tub': [0, 0.5],
     'C.Avi': [0, 5],
-    'C.gran': [0, 1],
-    'S.haem': [0, 1],
-    'S.hom': [0, 1],
+    'C.Gran': [0, 1],
+    'S.Haem': [0, 1],
+    'S.Hom': [0, 1],
   };
 
   let totalPenalty = 0;
@@ -568,9 +568,9 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
     'C.Stri': -1.5,
     'C.Tub': -1.0,
     'C.Avi': 0.0,
-    'C.gran': 0.5,
-    'S.haem': -2.0,
-    'S.hom': 0.5
+    'C.Gran': 0.5,
+    'S.Haem': -2.0,
+    'S.Hom': 0.5
   };
 
   // Normalize by scaling bacteria % (0–100) into contribution to antioxidant score
@@ -593,11 +593,11 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
 export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {
   const weights = {
     'S.Epi': 2.0,
-    'C.gran': 1.0,
+    'C.Gran': 1.0,
     'C.Krop': -2.0,
     'S.Aur': -2.0,
     'C.Tub': -1.5,
-    'S.haem': -1.5
+    'S.Haem': -1.5
   };
 
   let score = 0;
@@ -619,10 +619,10 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
 export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages): number {
   const weights = {
     'S.Aur': -2.5,
-    'S.haem': -2.0,
+    'S.Haem': -2.0,
     'C.Krop': -1.5,
     'C.Stri': -1.0,
-    'S.hom': 1.5,
+    'S.Hom': 1.5,
     'S.Epi': 2.0
   };
 

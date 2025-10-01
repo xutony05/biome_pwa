@@ -8,7 +8,7 @@ import { Header } from "@/components/ui/header";
 
 export default function HaemolyticusPage() {
   const { values } = useBacteria();
-  const value = values?.['S.haem'];
+  const value = values?.['S.Haem'];
   const [min, max] = optimalRanges['S. haemolyticus'];
 
   // Add loading state

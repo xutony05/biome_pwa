@@ -58,11 +58,11 @@ export type Report = {
   'S.Cap': number;
   'S.Epi': number;
   'C.Avi': number;
-  'C.gran': number;
-  'S.haem': number;
+  'C.Gran': number;
+  'S.Haem': number;
   'S.Aur': number;
   'C.Tub': number;
-  'S.hom': number;
+  'S.Hom': number;
   'C.Krop': number;
   env_score: number;
   age: number;

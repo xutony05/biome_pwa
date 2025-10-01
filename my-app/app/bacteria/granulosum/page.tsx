@@ -8,7 +8,7 @@ import { Header } from "@/components/ui/header";
 
 export default function GranulosumPage() {
   const { values } = useBacteria();
-  const value = values?.['C.gran'];
+  const value = values?.['C.Gran'];
   const [min, max] = optimalRanges['C. granulosum'];
 
   // Add loading state
