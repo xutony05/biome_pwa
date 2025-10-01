@@ -363,7 +363,7 @@ export default function SurveyPage() {
       <Header />
       
       {/* Survey header and progress bar */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white">
         <div className="max-w-4xl mx-auto px-6">
           <SurveyHeader 
             onBack={handleBack} 
