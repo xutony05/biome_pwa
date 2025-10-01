@@ -111,7 +111,7 @@ export const calculateHydrationScore = (age: number, bacteriaPercentages: Record
     const abundances: Record<string, number> = {};
     for (const [oldName, percentage] of Object.entries(bacteriaPercentages)) {
         const newName = BACTERIA_NAME_MAPPING[oldName as keyof typeof BACTERIA_NAME_MAPPING];
-        if (newName) {
+        if (newName && percentage !== undefined && percentage !== null) {
             abundances[newName] = parseFloat(percentage.toString()) || 0.0;
         }
     }
