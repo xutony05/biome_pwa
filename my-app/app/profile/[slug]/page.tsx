@@ -428,13 +428,25 @@ export default function ReportPage() {
                         <div className="flex flex-col items-center space-y-2">
                           <h3 className="text-sm font-medium text-muted-foreground">Ideal Composition</h3>
                           <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
-                            <div className="flex-1 bg-red-500 flex items-center justify-center">
+                            {/* Disruptive section - 20% of total height */}
+                            <div 
+                              className="bg-red-500 flex items-center justify-center"
+                              style={{ height: '20%' }}
+                            >
                               <span className="text-xs font-medium text-white">20%</span>
                             </div>
-                            <div className="flex-1 bg-sky-400 flex items-center justify-center">
+                            {/* Neutral section - 30% of total height */}
+                            <div 
+                              className="bg-sky-400 flex items-center justify-center"
+                              style={{ height: '30%' }}
+                            >
                               <span className="text-xs font-medium text-white">30%</span>
                             </div>
-                            <div className="flex-1 bg-emerald-400 flex items-center justify-center">
+                            {/* Helpful section - 50% of total height */}
+                            <div 
+                              className="bg-emerald-400 flex items-center justify-center"
+                              style={{ height: '50%' }}
+                            >
                               <span className="text-xs font-medium text-white">50%</span>
                             </div>
                           </div>
