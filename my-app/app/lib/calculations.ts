@@ -12,6 +12,54 @@ export type BacteriaPercentages = {
   'C.Krop': number;
 };
 
+/**
+ * Normalizes bacteria percentages to sum to 100, excluding "other" bacteria.
+ * This function ensures that all bacteria percentages are proportionally scaled
+ * to total 100% while maintaining their relative ratios.
+ * 
+ * @param bacteriaData - Object containing bacterial species percentages
+ * @returns Normalized bacteria percentages that sum to 100
+ */
+export const normalizeBacteriaPercentages = (bacteriaData: Record<string, number>): Record<string, number> => {
+  // Create a copy of the input data to avoid mutating the original
+  const normalizedData: Record<string, number> = {};
+  
+  // Calculate the total percentage excluding "other" bacteria
+  let totalPercentage = 0;
+  const bacteriaKeys = Object.keys(bacteriaData);
+  
+  // Sum all bacteria percentages except "other" (case-insensitive)
+  for (const [key, value] of Object.entries(bacteriaData)) {
+    const normalizedKey = key.toLowerCase();
+    // Skip "other" bacteria from normalization
+    if (normalizedKey !== 'other' && normalizedKey !== 'others') {
+      const percentage = parseFloat(value.toString()) || 0;
+      totalPercentage += percentage;
+      normalizedData[key] = percentage;
+    }
+  }
+  
+  // If total is 0 or very small, return zeros to avoid division by zero
+  if (totalPercentage <= 0.01) {
+    for (const key of bacteriaKeys) {
+      const normalizedKey = key.toLowerCase();
+      if (normalizedKey !== 'other' && normalizedKey !== 'others') {
+        normalizedData[key] = 0;
+      }
+    }
+    return normalizedData;
+  }
+  
+  // Normalize each bacteria percentage to sum to 100
+  for (const [key, value] of Object.entries(normalizedData)) {
+    const percentage = parseFloat(value.toString()) || 0;
+    // Scale each percentage proportionally to make total = 100
+    normalizedData[key] = Math.round((percentage / totalPercentage) * 100 * 100) / 100; // Round to 2 decimal places
+  }
+  
+  return normalizedData;
+};
+
 // --- Configuration Constants for Hydration Score ---
 
 // Maximum points (weights) for each species in the new algorithm
@@ -211,9 +259,12 @@ export const calculateHydrationScore = (age: number, bacteriaPercentages: Record
     // Determine age group for scoring rules
     const ageGroup = age < 40 ? 'young' : 'old';
     
+    // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+    const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+    
     // Convert bacteria names from existing format to new algorithm format
     const abundances: Record<string, number> = {};
-    for (const [oldName, percentage] of Object.entries(bacteriaPercentages)) {
+    for (const [oldName, percentage] of Object.entries(normalizedBacteria)) {
         const newName = BACTERIA_NAME_MAPPING[oldName as keyof typeof BACTERIA_NAME_MAPPING];
         if (newName && percentage !== undefined && percentage !== null) {
             abundances[newName] = parseFloat(percentage.toString()) || 0.0;
@@ -353,6 +404,9 @@ export const calculateHydrationScore = (age: number, bacteriaPercentages: Record
 };
 
 export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Record<string, number>) => {
+  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+  
   // Use the same optimal ranges as hydration score
   const optimalRanges = {
     'C.Acne': age < 40 ? [65, 85] : [30, 50],
@@ -371,7 +425,7 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
   let totalPenalty = 0;
   let diversityPenalty = 0;
 
-  for (const [bacterium, percent] of Object.entries(bacteriaPercentages)) {
+  for (const [bacterium, percent] of Object.entries(normalizedBacteria)) {
     // Calculate diversity penalty for any bacteria over 80%
     if (percent > 80) {
       diversityPenalty += percent - 80;
@@ -423,9 +477,12 @@ export const estimateAge = (bacteriaPercentages: Record<string, number>, inputAg
         return { final_age: 'Error', error_message: 'Invalid Input Age.' };
     }
 
+    // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+    const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+
     // Convert bacteria names from existing format to age estimation algorithm format
     const allBacteriaPercents: Record<string, number> = {};
-    for (const [oldName, percentage] of Object.entries(bacteriaPercentages)) {
+    for (const [oldName, percentage] of Object.entries(normalizedBacteria)) {
         const newName = AGE_BACTERIA_MAPPING[oldName as keyof typeof AGE_BACTERIA_MAPPING];
         if (newName && percentage !== undefined && percentage !== null) {
             const parsed = parseFloat(percentage.toString());
@@ -558,6 +615,9 @@ export const estimateAge = (bacteriaPercentages: Record<string, number>, inputAg
 };
 
 export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentages): number {
+  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+  
   // Antioxidant weights based on direction and magnitude of effect
   const antioxidantWeights = {
     'C.Acne': -0.5,
@@ -578,7 +638,7 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
   let maxScore = 0;
 
   for (const [bacterium, weight] of Object.entries(antioxidantWeights)) {
-    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    const percent = normalizedBacteria[bacterium] || 0;
     // Cap influence of each microbe at 10% abundance for scoring
     const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
     score += cappedPercent * weight;
@@ -591,6 +651,9 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
 }
 
 export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {
+  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+  
   const weights = {
     'S.Epi': 2.0,
     'C.Gran': 1.0,
@@ -604,7 +667,7 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
   let maxScore = 0;
 
   for (const [bacterium, weight] of Object.entries(weights)) {
-    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    const percent = normalizedBacteria[bacterium] || 0;
     // Cap influence of each microbe at 10% abundance for scoring
     const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
     score += cappedPercent * weight;
@@ -617,6 +680,9 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
 }
 
 export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages): number {
+  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+  
   const weights = {
     'S.Aur': -2.5,
     'S.Haem': -2.0,
@@ -630,7 +696,7 @@ export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentag
   let maxScore = 0;
 
   for (const [bacterium, weight] of Object.entries(weights)) {
-    const percent = bacteriaPercentages[bacterium as keyof BacteriaPercentages] || 0;
+    const percent = normalizedBacteria[bacterium] || 0;
     // Cap influence of each microbe at 10% abundance for scoring
     const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
     score += cappedPercent * weight;
