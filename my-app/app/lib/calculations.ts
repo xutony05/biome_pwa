@@ -679,31 +679,214 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
   return Math.round(normalized);  // Return integer
 }
 
-export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages): number {
-  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
-  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
-  
-  const weights = {
-    'S.Aur': -2.5,
-    'S.Haem': -2.0,
-    'C.Krop': -1.5,
-    'C.Stri': -1.0,
-    'S.Hom': 1.5,
-    'S.Epi': 2.0
-  };
+// --- Sensitivity Score Configuration Constants ---
 
-  let score = 0;
-  let maxScore = 0;
+// Weights for Pro-Inflammatory Species (Sensitivity Points)
+const SENSITIVITY_WEIGHTS = {
+    'S. aureus': 35,
+    'S. haemolyticus': 25,
+    'S. epidermidis': 0, // Ignored in sensitivity calc, handled in deduction
+    'C. acnes': 0, // Ignored in sensitivity calc, handled in deduction
+    'S. hominis': 0, // Ignored in sensitivity calc, handled in deduction
+    'C. kroppenstedtii': 10,
+    'C. striatum': 8,
+    'S. capitis': 7,
+    'C. avidum': 5,
+    'C. granulosum': 5,
+    'C. tuberculostearicum': 5,
+};
 
-  for (const [bacterium, weight] of Object.entries(weights)) {
-    const percent = normalizedBacteria[bacterium] || 0;
-    // Cap influence of each microbe at 10% abundance for scoring
-    const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
-    score += cappedPercent * weight;
-    maxScore += Math.abs(weight);  // For normalization
-  }
+// Maximum Abundance Thresholds for Pro-Inflammatory Species (age-dependent)
+const SENSITIVITY_THRESHOLDS = {
+    'young': { // Under 40
+        'S. aureus': { max: 1.0 },
+        'S. haemolyticus': { max: 1.0 },
+        'C. kroppenstedtii': { max: 5.0 },
+        'S. capitis': { max: 5.0 },
+        'C. striatum': { max: 5.0 },
+        'C. avidum': { max: 5.0 },
+        'C. granulosum': { max: 1.0 },
+        'C. tuberculostearicum': { max: 0.5 },
+    },
+    'old': { // 40 and older
+        'S. aureus': { max: 1.0 },
+        'S. haemolyticus': { max: 1.0 },
+        'C. kroppenstedtii': { max: 15.0 },
+        'S. capitis': { max: 5.0 },
+        'C. striatum': { max: 5.0 },
+        'C. avidum': { max: 5.0 },
+        'C. granulosum': { max: 1.0 },
+        'C. tuberculostearicum': { max: 0.5 },
+    },
+};
 
-  // Normalize to 0–100 score
-  const normalized = (score + maxScore) / (2 * maxScore) * 100;
-  return Math.round(normalized);  // Return integer
+// Rules for Protective Species (Deduction Points)
+const DEDUCTION_RULES = {
+    'young': {
+        'S. epidermidis': { weight: 35, optimal: 5.0, capBelow: 1.0, capAbove: 30.0 },
+        'C. acnes': { weight: 30, optimal: 74.0, capBelow: 40.0, capAbove: 90.0 },
+        'S. hominis': { weight: 5, optimal: 1.0, capBelow: 0.1, capAbove: 10.0 },
+    },
+    'old': {
+        'S. epidermidis': { weight: 35, optimal: 12.0, capBelow: 5.0, capAbove: 35.0 },
+        'C. acnes': { weight: 30, optimal: 40.0, capBelow: 20.0, capAbove: 70.0 },
+        'S. hominis': { weight: 5, optimal: 1.0, capBelow: 0.1, capAbove: 10.0 },
+    },
+};
+        
+// --- Scoring Constants ---
+const BASELINE_SCORE = 50;
+
+/**
+ * Calculates the Skin Sensitivity Score using a complex algorithm that considers:
+ * - Pro-inflammatory species that contribute sensitivity points when above thresholds
+ * - Protective species that provide deduction points based on optimal ranges
+ * - Age-dependent thresholds and optimal ranges
+ * 
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param ageGroup - The age group ('young' for under 40, 'old' for 40 and older)
+ * @returns An object containing the final score and detailed breakdown
+ */
+export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages, ageGroup: 'young' | 'old'): {
+    final_score: number;
+    sensitivity_points_earned: number;
+    total_deduction: number;
+    score_details: Record<string, { points: number; calculation: string }>;
+} {
+    // Validate age group input
+    if (ageGroup !== 'young' && ageGroup !== 'old') {
+        console.error("ageGroup must be 'young' or 'old'");
+        return { final_score: 0, sensitivity_points_earned: 0, total_deduction: 0, score_details: {} };
+    }
+        
+    let sensitivityPoints = 0; 
+    let totalDeduction = 0;    
+    const currentST = SENSITIVITY_THRESHOLDS[ageGroup];
+    const currentDR = DEDUCTION_RULES[ageGroup];
+    const scoreDetails: Record<string, { points: number; calculation: string }> = {};
+
+    // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+    const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+    
+    // Convert bacteria names from existing format to new algorithm format
+    const abundances: Record<string, number> = {};
+    for (const [oldName, percentage] of Object.entries(normalizedBacteria)) {
+        const newName = BACTERIA_NAME_MAPPING[oldName as keyof typeof BACTERIA_NAME_MAPPING];
+        if (newName && percentage !== undefined && percentage !== null) {
+            abundances[newName] = parseFloat(percentage.toString()) || 0.0;
+        }
+    }
+
+    // --- SENSITIVITY POINTS (Pro-Inflammatory Species) ---
+    // Get all species that have positive weights (contribute to sensitivity)
+    const sensitivitySpecies = Object.keys(SENSITIVITY_WEIGHTS).filter(
+        name => SENSITIVITY_WEIGHTS[name as keyof typeof SENSITIVITY_WEIGHTS] > 0
+    );
+
+    for (const name of sensitivitySpecies) {
+        const weight = SENSITIVITY_WEIGHTS[name as keyof typeof SENSITIVITY_WEIGHTS];
+        const actual = abundances[name] || 0.0;
+        const maxThreshold = currentST[name as keyof typeof currentST].max;
+
+        let points = 0;
+        let calculation = "";
+
+        if (actual > maxThreshold) {
+            // Full points if above threshold
+            points = weight;
+            calculation = `Actual ${actual.toFixed(4)}% > Threshold ${maxThreshold}%. Full Points: ${points}`;
+        } else if (actual > 0) {
+            // Scaled points if below threshold
+            const scalingFactor = actual / maxThreshold;
+            points = weight * scalingFactor;
+            calculation = `Weight (${weight}) * (${actual.toFixed(4)} / ${maxThreshold}) = ${points.toFixed(4)} pts`;
+        } else {
+            calculation = `Actual ${actual.toFixed(4)}%. Points: 0`;
+        }
+        
+        sensitivityPoints += points;
+        scoreDetails[name] = { points: points, calculation: calculation };
+    }
+
+    // --- DEDUCTIONS (Anti-Inflammatory/Barrier-Protective Species) ---
+    const deductionSpecies = ['S. epidermidis', 'C. acnes', 'S. hominis'];
+
+    for (const name of deductionSpecies) {
+        const rules = currentDR[name as keyof typeof currentDR];
+        const actual = abundances[name] || 0.0;
+        const optimal = rules.optimal;
+        const weight = rules.weight;
+
+        let deduction = 0;
+        let hardCapExceeded = false;
+        let effectiveDenominator = 0;
+        const deviation = Math.abs(actual - optimal);
+        
+        let calculation = "";
+
+        // S. epidermidis and S. hominis: Optimal is low. Below optimal is worse (less deduction), above optimal is also worse.
+        if (name === 'S. epidermidis' || name === 'S. hominis') {
+            // Check hard caps
+            if (actual < rules.capBelow || actual > rules.capAbove) { 
+                hardCapExceeded = true;
+            } else if (actual < optimal) {
+                 // Denominator is optimal value (steeper penalty for being too low)
+                effectiveDenominator = optimal;
+            } else {
+                // Denominator is the capAbove value (flatter penalty for being too high)
+                effectiveDenominator = rules.capAbove;
+            }
+        
+        } 
+        
+        // C. acnes: Optimal is high. Below optimal is worse, but too high is also bad.
+        else if (name === 'C. acnes') {
+            // Check hard caps
+            if (actual < rules.capBelow || actual > rules.capAbove) {
+                hardCapExceeded = true;
+            } else if (actual < optimal) {
+                // Denominator is capBelow (steeper penalty for being too low)
+                effectiveDenominator = rules.capBelow;
+            } else {
+                // Denominator is optimal value (flatter penalty for being too high)
+                effectiveDenominator = optimal;
+            }
+        }
+
+        if (effectiveDenominator === 0 && !hardCapExceeded) {
+             deduction = 0; 
+        } else if (hardCapExceeded) {
+            // Loss of all deduction points if outside the hard cap range
+            deduction = 0; 
+            calculation = `Hard Cap exceeded (Actual: ${actual.toFixed(4)}%, Cap Range: ${rules.capBelow}-${rules.capAbove}%) -> Deduction: 0`;
+        } else {
+            // Calculate proportional deduction
+            const penaltyFactor = deviation / effectiveDenominator; 
+            deduction = Math.max(0, weight * (1 - penaltyFactor));
+            calculation = (
+                `Weight (${weight}) * Math.max(0, 1 - (|${actual.toFixed(4)} - ${optimal.toFixed(4)}| / ${effectiveDenominator.toFixed(4)})) `
+                + `= ${deduction.toFixed(4)} pts`
+            );
+        }
+
+        totalDeduction += deduction;
+        scoreDetails[name] = { 
+            points: -deduction, 
+            calculation: `Deduction: -${deduction.toFixed(4)} pts | ${calculation}` 
+        };
+    }
+
+    // --- Final Score Calculation ---
+    // Start at 50, add sensitivity points, subtract deduction points.
+    const rawScore = BASELINE_SCORE + sensitivityPoints - totalDeduction;
+    
+    // Clamp the score between 0 and 100
+    const finalScore = Math.min(100, Math.max(0, rawScore)); 
+
+    return { 
+        final_score: parseFloat(finalScore.toFixed(4)),
+        sensitivity_points_earned: parseFloat(sensitivityPoints.toFixed(4)),
+        total_deduction: parseFloat(totalDeduction.toFixed(4)),
+        score_details: scoreDetails
+    };
 }

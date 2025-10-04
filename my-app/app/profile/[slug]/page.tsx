@@ -197,7 +197,8 @@ export default function ReportPage() {
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
   const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
   const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
-  const sensitivityScore = calculateSensitivityScore(bacteriaPercentages);
+  const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, report.age < 40 ? 'young' : 'old');
+  const sensitivityScore = sensitivityScoreResult.final_score;
   const skinType = classifySkinType(hydrationScore);
 
   return (
