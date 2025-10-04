@@ -11,16 +11,49 @@ interface MultiChoiceQuestionProps {
 }
 
 export function MultiChoiceQuestion({ options, onNext, previousAnswers }: MultiChoiceQuestionProps) {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(previousAnswers || []);
+  // Initialize state with previous answers
+  const initializeState = () => {
+    const answers = previousAnswers || [];
+    const hasOtherInput = answers.some(answer => !options.includes(answer));
+    const otherValue = hasOtherInput ? answers.find(answer => !options.includes(answer)) || "" : "";
+    const selectedOpts = answers.filter(answer => options.includes(answer));
+    
+    // If there's a custom input, add "None/Other" to selected options
+    if (hasOtherInput) {
+      selectedOpts.push("None/Other");
+    }
+    
+    return { selectedOptions: selectedOpts, otherInput: otherValue };
+  };
+
+  const initialState = initializeState();
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(initialState.selectedOptions);
+  const [otherInput, setOtherInput] = useState<string>(initialState.otherInput);
 
   const toggleOption = (option: string) => {
     setSelectedOptions((prev) => {
       if (prev.includes(option)) {
+        // If deselecting "None/Other", clear the input
+        if (option === "None/Other") {
+          setOtherInput("");
+        }
         return prev.filter((item) => item !== option);
       } else {
         return [...prev, option];
       }
     });
+  };
+
+  const handleNext = () => {
+    let finalAnswers = [...selectedOptions];
+    
+    // If "None/Other" is selected and there's input, replace "None/Other" with the input
+    if (selectedOptions.includes("None/Other") && otherInput.trim()) {
+      finalAnswers = finalAnswers.filter(option => option !== "None/Other");
+      finalAnswers.push(otherInput.trim());
+    }
+    
+    onNext(finalAnswers);
   };
 
   const container = {
@@ -74,6 +107,29 @@ export function MultiChoiceQuestion({ options, onNext, previousAnswers }: MultiC
           );
         })}
       </motion.div>
+      
+      {/* Input field for "None/Other" option */}
+      {selectedOptions.includes("None/Other") && (
+        <motion.div 
+          className="w-full max-w-md mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            delay: 0.2,
+            duration: 0.3,
+            ease: "easeOut"
+          }}
+        >
+          <input
+            type="text"
+            value={otherInput}
+            onChange={(e) => setOtherInput(e.target.value)}
+            placeholder="Please specify..."
+            className="w-full px-4 py-3 text-base border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          />
+        </motion.div>
+      )}
+      
       <motion.div 
         className="flex justify-end"
         initial={{ opacity: 0, y: 10 }}
@@ -85,7 +141,7 @@ export function MultiChoiceQuestion({ options, onNext, previousAnswers }: MultiC
         }}
       >
         <button
-          onClick={() => onNext(selectedOptions)}
+          onClick={handleNext}
           disabled={selectedOptions.length === 0}
           className={cn(
             "inline-flex px-8 py-3.5 text-base leading-[1.125rem] rounded-full min-h-0 h-auto transition-colors",
