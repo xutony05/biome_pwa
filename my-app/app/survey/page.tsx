@@ -78,6 +78,7 @@ const questions: QuestionType[] = [
       "Rosacea",
       "Psoriasis",
       "Eczema",
+      "Sensitive skin",
       "Uneven pigmentation",
       "Wrinkles",
       "None/Other"
