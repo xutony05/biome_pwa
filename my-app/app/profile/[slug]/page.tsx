@@ -590,8 +590,8 @@ export default function ReportPage() {
                         />
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Non-Ideal</span>
-                        <span>Ideal</span>
+                        <span>Not sensitive</span>
+                        <span>Sensitive</span>
                       </div>
                     </div>
                   </div>
