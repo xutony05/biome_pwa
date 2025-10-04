@@ -67,7 +67,7 @@ const questions: QuestionType[] = [
     id: "q6",
     type: "single",
     text: "How would you describe your skin?",
-    options: ["Combination"]
+    options: ["Dry", "Oily", "Combination", "Balanced"]
   },
   {
     id: "q7",
