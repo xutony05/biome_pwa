@@ -614,40 +614,212 @@ export const estimateAge = (bacteriaPercentages: Record<string, number>, inputAg
     };
 };
 
-export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentages): number {
-  // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
-  const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
-  
-  // Antioxidant weights based on direction and magnitude of effect
-  const antioxidantWeights = {
-    'C.Acne': -0.5,
-    'S.Epi': 2.0,
-    'C.Krop': -2.0,
-    'S.Cap': -0.5,
-    'S.Aur': -2.0,
-    'C.Stri': -1.5,
-    'C.Tub': -1.0,
-    'C.Avi': 0.0,
-    'C.Gran': 0.5,
-    'S.Haem': -2.0,
-    'S.Hom': 0.5
-  };
+// --- Antioxidant Capacity Score Configuration Constants ---
 
-  // Normalize by scaling bacteria % (0–100) into contribution to antioxidant score
-  let score = 0;
-  let maxScore = 0;
+// The optimal ranges are fixed to the "Young" configuration (age < 40) for ALL ages.
+// The 'min' for smaller bacteria is set to 0.0 to reflect that concentrations "less than X%" 
+// (i.e., from 0% up to the maximum) are considered optimal.
+const FIXED_OPTIMAL_RANGES = {
+    // Proportional Scores (Optimal/Cap fixed to Young values)
+    sEpidermidis: { optimal: 5, cap_over: 30 }, // Optimal 5%, Cap 30%
+    cAcnes: { optimal: 74, cap_under: 40 }, // Optimal 74%, Cap 40% (Penalized below optimal)
+    sHominis: { optimal: 1, cap_over: 10 }, // Optimal 1%, Cap 10%
 
-  for (const [bacterium, weight] of Object.entries(antioxidantWeights)) {
-    const percent = normalizedBacteria[bacterium] || 0;
-    // Cap influence of each microbe at 10% abundance for scoring
-    const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
-    score += cappedPercent * weight;
-    maxScore += Math.abs(weight);  // For normalization
-  }
+    // Full/Zero Score (Optimal range is 0 to Max)
+    sCapitis: { min: 0.0, max: 5 }, // Optimal 0% to 5%
+    cStriatum: { min: 0.0, max: 5 }, // Optimal 0% to 5%
+    cAvidum: { min: 0.0, max: 5 }, // Optimal 0% to 5%
+    cGranulosum: { min: 0.0, max: 1 }, // Optimal 0% to 1%
+    cTuberculostearicum: { min: 0.0, max: 0.5 }, // Optimal 0% to 0.5%
 
-  // Normalize to 0–100 score
-  const normalized = (score + maxScore) / (2 * maxScore) * 100;
-  return Math.round(normalized);  // Return integer
+    // Penalty-Only (Penalty applied if outside 0 to Max range)
+    cKroppenstedtii: { min: 0.0, max: 5 }, // Optimal 0% to 5%
+    sHaemolyticus: { min: 0.0, max: 1 }, // Optimal 0% to 1%
+    sAureus: { min: 0.0, max: 1 } // Optimal 0% to 1%
+};
+
+// Defines the points and penalties for each bacteria type
+const SCORING_MATRIX = {
+    sEpidermidis: { points: 35, type: 'proportional' },
+    cAcnes: { points: 35, type: 'proportional' },
+    sHominis: { points: 15, type: 'proportional' },
+    sCapitis: { points: 3, type: 'full_zero' },
+    cStriatum: { points: 3, type: 'full_zero' },
+    cAvidum: { points: 3, type: 'full_zero' },
+    cGranulosum: { points: 3, type: 'full_zero' },
+    cTuberculostearicum: { points: 3, type: 'full_zero' },
+    cKroppenstedtii: { penalty: 10, type: 'penalty' },
+    sAureus: { penalty: 20, type: 'penalty' },
+    sHaemolyticus: { penalty: 15, type: 'penalty' }
+} as const;
+
+/**
+ * Helper function to check if a value is within a specified range (inclusive).
+ * This function determines if a bacterial abundance falls within the optimal range.
+ * 
+ * @param value - The percentage value to check
+ * @param min - The minimum of the range
+ * @param max - The maximum of the range
+ * @returns True if value is in range, false otherwise
+ */
+const isInRange = (value: number, min: number, max: number): boolean => value >= min && value <= max;
+
+/**
+ * Calculates the Antioxidant Capacity Score based on bacterial percentages and age.
+ * This function implements a complex scoring algorithm that considers:
+ * - Proportional scoring for major species (S. epidermidis, C. acnes, S. hominis)
+ * - Full/zero scoring for secondary species (3 points if in optimal range, 0 otherwise)
+ * - Flat penalty deductions for harmful species (C. kroppenstedtii, S. aureus, S. haemolyticus)
+ * 
+ * NOTE: The age input only affects the 'age_group' output for context; it does NOT
+ * affect the actual scoring calculation, which is fixed to the 'Young' ranges.
+ * 
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param age - The subject's age (used for contextual output only)
+ * @returns An object containing the final score and detailed breakdown
+ */
+export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentages, age: number): {
+    final_score: number;
+    score_before_clamp: number;
+    age_group: string;
+    breakdown: Record<string, number>;
+    total_penalty: number;
+} {
+    // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+    const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+    
+    // Convert bacteria names from existing format to new algorithm format
+    const percentages: Record<string, number> = {};
+    for (const [oldName, percentage] of Object.entries(normalizedBacteria)) {
+        const newName = AGE_BACTERIA_MAPPING[oldName as keyof typeof AGE_BACTERIA_MAPPING];
+        if (newName && percentage !== undefined && percentage !== null) {
+            percentages[newName] = parseFloat(percentage.toString()) || 0.0;
+        }
+    }
+
+    let finalScore = 0;
+    const isOld = age >= 40;
+    const optimalConfig = FIXED_OPTIMAL_RANGES;
+    const breakdown: Record<string, number> = {};
+
+    // --- 1. Proportional Scoring (S. epi, C. acnes, S. hominis) ---
+
+    // S. epidermidis (Max 35 points)
+    const epiPct = parseFloat(percentages.sEpidermidis?.toString()) || 0;
+    const epiOptimal = optimalConfig.sEpidermidis.optimal; // 5
+    const epiCap = optimalConfig.sEpidermidis.cap_over; // 30
+    let epiScore;
+
+    if (epiPct <= epiOptimal) {
+        // Under optimal (0-5%): Score is proportional
+        epiScore = SCORING_MATRIX.sEpidermidis.points * (epiPct / epiOptimal);
+    } else if (epiPct <= epiCap) {
+        // Between optimal and cap (5-30%): Score is penalized relative to the distance from optimal, scaled by cap
+        const penaltyRatio = Math.abs(epiPct - epiOptimal) / epiCap;
+        epiScore = SCORING_MATRIX.sEpidermidis.points * (1 - penaltyRatio);
+    } else {
+        // Over hard cap: 0 points
+        epiScore = 0;
+    }
+    epiScore = Math.max(0, epiScore);
+    breakdown.sEpidermidis = parseFloat(epiScore.toFixed(2));
+    finalScore += epiScore;
+
+    // C. acnes (Max 35 points)
+    const acnesPct = parseFloat(percentages.cAcnes?.toString()) || 0;
+    const acnesOptimal = optimalConfig.cAcnes.optimal; // 74
+    const acnesCap = optimalConfig.cAcnes.cap_under; // 40
+    let acnesScore;
+
+    if (acnesPct >= acnesOptimal) {
+        // Over optimal (74-100%): Penalized by distance from optimal, scaled by optimal
+        const penaltyRatio = Math.abs(acnesPct - acnesOptimal) / acnesOptimal;
+        acnesScore = SCORING_MATRIX.cAcnes.points * (1 - penaltyRatio);
+    } else if (acnesPct >= acnesCap) {
+        // Between optimal and cap (40-74%): Penalized by distance from optimal, scaled to cap
+        const penaltyRatio = Math.abs(acnesPct - acnesOptimal) / acnesCap;
+        acnesScore = SCORING_MATRIX.cAcnes.points * (1 - penaltyRatio);
+    } else {
+        // Below hard cap: 0 points
+        acnesScore = 0;
+    }
+    acnesScore = Math.max(0, acnesScore);
+    breakdown.cAcnes = parseFloat(acnesScore.toFixed(2));
+    finalScore += acnesScore;
+
+    // S. hominis (Max 15 points)
+    const hominisPct = parseFloat(percentages.sHominis?.toString()) || 0;
+    const hominisOptimal = optimalConfig.sHominis.optimal; // 1
+    const hominisCap = optimalConfig.sHominis.cap_over; // 10
+    let hominisScore;
+    
+    if (hominisPct <= hominisOptimal) {
+        // Under optimal (0-1%): Score is proportional to ratio
+        const penaltyRatio = Math.abs(hominisPct - hominisOptimal) / hominisOptimal;
+        hominisScore = SCORING_MATRIX.sHominis.points * (1 - penaltyRatio);
+    } else if (hominisPct <= hominisCap) {
+        // Between optimal and cap (1-10%): Penalized by distance from optimal, scaled to cap
+        const penaltyRatio = Math.abs(hominisPct - hominisOptimal) / hominisCap;
+        hominisScore = SCORING_MATRIX.sHominis.points * (1 - penaltyRatio);
+    } else {
+        // Over hard cap: 0 points
+        hominisScore = 0;
+    }
+    hominisScore = Math.max(0, hominisScore);
+    breakdown.sHominis = parseFloat(hominisScore.toFixed(2));
+    finalScore += hominisScore;
+
+    // --- 2. Full/Zero Scoring (5 species, Max 15 Pts) ---
+    const fullZeroScoringKeys = ['sCapitis', 'cStriatum', 'cAvidum', 'cGranulosum', 'cTuberculostearicum'];
+    
+    fullZeroScoringKeys.forEach(key => {
+        const pct = parseFloat(percentages[key]?.toString()) || 0;
+        const range = optimalConfig[key as keyof typeof optimalConfig] as { min: number; max: number };
+        const scoringEntry = SCORING_MATRIX[key as keyof typeof SCORING_MATRIX] as { points: number; type: string };
+        const points = scoringEntry.points;
+        let score = 0;
+
+        if (isInRange(pct, range.min, range.max)) {
+            score = points; // Full points awarded
+        } else {
+            score = 0; // Zero points awarded (over max)
+        }
+        breakdown[key] = parseFloat(score.toFixed(2));
+        finalScore += score;
+    });
+
+    // --- 3. Flat Penalty Deductions (3 species, Max -45 Pts) ---
+    const penaltyKeys = ['cKroppenstedtii', 'sAureus', 'sHaemolyticus'];
+    let totalPenalty = 0;
+
+    penaltyKeys.forEach(key => {
+        const pct = parseFloat(percentages[key]?.toString()) || 0;
+        const scoringEntry = SCORING_MATRIX[key as keyof typeof SCORING_MATRIX] as { penalty: number; type: string };
+        const penaltyValue = scoringEntry.penalty;
+        let penalty = 0;
+        const range = optimalConfig[key as keyof typeof optimalConfig] as { min: number; max: number };
+        
+        // Penalty applies if the percentage is OUT of the optimal range (i.e., above the max)
+        if (!isInRange(pct, range.min, range.max)) {
+            penalty = penaltyValue;
+        }
+        
+        breakdown[key + '_penalty'] = penalty;
+        totalPenalty += penalty;
+    });
+    
+    finalScore -= totalPenalty;
+    
+    // --- 4. Final Clamp and Return ---
+    const finalScoreClamped = Math.min(100, Math.max(0, finalScore));
+
+    return {
+        final_score: parseFloat(finalScoreClamped.toFixed(1)),
+        score_before_clamp: parseFloat(finalScore.toFixed(2)),
+        age_group: isOld ? 'Old (≥ 40)' : 'Young (< 40)',
+        breakdown: breakdown,
+        total_penalty: totalPenalty
+    };
 }
 
 export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {

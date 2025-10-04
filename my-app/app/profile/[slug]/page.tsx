@@ -195,7 +195,8 @@ export default function ReportPage() {
   const estimatedAge = estimateAge(bacteriaPercentages, report.age);
   const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
-  const antioxidantScore = calculateAntioxidantScore(bacteriaPercentages);
+  const antioxidantScoreResult = calculateAntioxidantScore(bacteriaPercentages, report.age);
+  const antioxidantScore = antioxidantScoreResult.final_score;
   const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
   const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, report.age < 40 ? 'young' : 'old');
   const sensitivityScore = sensitivityScoreResult.final_score;
