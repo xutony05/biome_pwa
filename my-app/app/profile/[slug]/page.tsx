@@ -5,7 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, classifySkinType, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -200,7 +200,6 @@ export default function ReportPage() {
   const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
   const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, report.age < 40 ? 'young' : 'old');
   const sensitivityScore = sensitivityScoreResult.final_score;
-  const skinType = classifySkinType(hydrationScore);
 
   return (
     <div className="bg-gray-50">
@@ -282,12 +281,7 @@ export default function ReportPage() {
                     />
                   </div>
 
-                  {/* Skin type labels */}
-                  <div className="flex justify-between text-sm font-medium text-muted-foreground">
-                    <span>OILY</span>
-                    <span>BALANCED</span>
-                    <span>DRY</span>
-                  </div>
+                  {/* Skin type labels removed - no longer displaying oily, balanced, dry labels */}
                 </div>
               </div>
             </CardContent>

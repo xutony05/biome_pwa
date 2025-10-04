@@ -436,9 +436,9 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
     const [minOpt, maxOpt] = optRange;
 
     if (percent < minOpt) {
-      totalPenalty += (minOpt - percent) / 2.5;
+      totalPenalty += (minOpt - percent) / 2;
     } else if (percent > maxOpt) {
-      totalPenalty += (percent - maxOpt) / 2.5;
+      totalPenalty += (percent - maxOpt) / 2;
     }
   }
 
@@ -448,17 +448,6 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
   return Math.round(microbiomeScore);
 };
 
-export const classifySkinType = (score: number): string => {
-  if (score < 35) {
-    return "Dry";
-  } else if (score < 55) {
-    return "Combination";
-  } else if (score < 75) {
-    return "Healthy";
-  } else {
-    return "Oily";
-  }
-};
 
 /**
  * Calculates the predicted skin age using a 3-phase algorithm:
