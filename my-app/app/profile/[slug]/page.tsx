@@ -5,7 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getReportByNumber, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateFirmnessScore, calculateSensitivityScore } from '@/app/lib/calculations';
+import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateSebumIndex, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -163,7 +163,7 @@ export default function ReportPage() {
         case 'sensitivity-response':
           setShowSensitivityExplanation(true);
           break;
-        case 'skin-firmness':
+        case 'sebum-index':
           setShowFirmnessExplanation(true);
           break;
         case 'hydration':
@@ -197,7 +197,7 @@ export default function ReportPage() {
   const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
   const antioxidantScoreResult = calculateAntioxidantScore(bacteriaPercentages, report.age);
   const antioxidantScore = antioxidantScoreResult.final_score;
-  const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
+  const sebumIndex = calculateSebumIndex(bacteriaPercentages, report.age);
   const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, report.age < 40 ? 'young' : 'old');
   const sensitivityScore = sensitivityScoreResult.final_score;
 
@@ -598,7 +598,7 @@ export default function ReportPage() {
                 </CardContent>
               </Card>
 
-              {/* Skin Firmness */}
+              {/* Sebum Index */}
               <Card className="w-full">
                 <CardContent className="p-4">
                   <div className="space-y-3">
@@ -607,13 +607,13 @@ export default function ReportPage() {
                         <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-white"></div>
                         </div>
-                        <h3 className="text-sm font-medium text-foreground">Skin Firmness</h3>
+                        <h3 className="text-sm font-medium text-foreground">Sebum Index</h3>
                       </div>
                       <Button 
                         variant="ghost" 
                         size="sm"
                         className="h-auto p-0 text-xs text-blue-500 hover:text-blue-600"
-                        onClick={() => handleExplainClick('skin-firmness')}
+                        onClick={() => handleExplainClick('sebum-index')}
                       >
                         EXPLAIN
                       </Button>
@@ -622,12 +622,12 @@ export default function ReportPage() {
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-purple-500 rounded-full transition-all duration-300"
-                          style={{ width: `${firmnessScore}%` }}
+                          style={{ width: `${sebumIndex}%` }}
                         />
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Non-Ideal</span>
-                        <span>Ideal</span>
+                        <span>Matte</span>
+                        <span>Oily</span>
                       </div>
                     </div>
                   </div>
@@ -1121,40 +1121,41 @@ export default function ReportPage() {
       <Dialog open={showFirmnessExplanation} onOpenChange={setShowFirmnessExplanation}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Skin Firmness Score Explanation</DialogTitle>
+            <DialogTitle>Sebum Index Explanation</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <p>
-              Your Skin Firmness Score measures your skin's structural integrity and elasticity based on your 
-              microbiome composition. This score takes into account the presence and abundance of bacteria 
-              that either contribute to or reduce skin firmness.
+              Your Sebum Index measures your skin's oil production potential based on your microbiome composition. 
+              This score takes into account the presence and abundance of bacteria that influence sebum production 
+              and regulation in your skin.
             </p>
+
             <p>
               The score is calculated using a weighted system that considers:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <span className="font-medium">Positive Contributors:</span> Bacteria like Staphylococcus epidermidis 
-                and Cutibacterium granulosum that enhance skin firmness
+                <span className="font-medium">Positive Contributors:</span> Bacteria like Cutibacterium acnes 
+                and Cutibacterium granulosum that thrive in oily environments and are associated with higher sebum production
               </li>
               <li>
                 <span className="font-medium">Negative Contributors:</span> Bacteria like Staphylococcus aureus, 
-                Corynebacterium kroppenstedtii, and Staphylococcus haemolyticus that may reduce skin firmness
+                Corynebacterium kroppenstedtii, and Staphylococcus epidermidis that prefer drier environments 
+                and are associated with lower sebum production
               </li>
             </ul>
             <p>
-              A higher score indicates:
+              The score ranges from 0-100, where:
             </p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Better skin elasticity and resilience</li>
-              <li>Enhanced structural integrity</li>
-              <li>Reduced sagging and loss of firmness</li>
-              <li>More youthful skin appearance</li>
+              <li><span className="font-medium">0-30:</span> Very dry skin with low sebum production</li>
+              <li><span className="font-medium">31-60:</span> Normal sebum production with balanced oil levels</li>
+              <li><span className="font-medium">61-100:</span> Oily skin with high sebum production</li>
             </ul>
             <p>
-              The score is normalized to a 0-100 scale, where higher scores indicate better skin firmness 
-              potential. This score can help guide your skincare choices and help you understand how your 
-              skin's microbiome composition affects its structural integrity.
+              Understanding your sebum index can help you choose appropriate skincare products and routines. 
+              Those with higher scores may benefit from oil-controlling ingredients, while those with lower scores 
+              may need more hydrating and moisturizing products to maintain skin barrier function.
             </p>
           </div>
         </DialogContent>
@@ -1204,3 +1205,4 @@ export default function ReportPage() {
     </div>
   );
 }
+

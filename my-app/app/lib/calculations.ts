@@ -811,6 +811,167 @@ export function calculateAntioxidantScore(bacteriaPercentages: BacteriaPercentag
     };
 }
 
+/**
+ * Microbiome Skin Type Scorer
+ * ----------------------------
+ * Calculates a skin type score based on 11 bacterial abundances and age.
+ * Score: 0 = Most Dry, 100 = Most Oily.
+ * Logic includes age-dependent optimal targets and contribution caps to ensure
+ * no single bacterium can push the score to 0 or 100 alone.
+ */
+
+// --- Scoring Constants and Targets ---
+
+const OPTIMAL_MICROBIOME = {
+    // Age < 40 targets
+    young: { 
+        'C.Acne': 74, 'S.Epi': 5, 'C.Krop': 2, 'S.Hom': 1, 'S.Cap': 3, 'S.Haem': 0.5, 'C.Stri': 3, 'C.Avi': 3, 'C.Gran': 0.5, 'C.Tub': 0.3, 'S.Aur': 0.5
+    },
+    // Age >= 40 targets
+    old: { 
+        'C.Acne': 40, 'S.Epi': 12, 'C.Krop': 13, 'S.Hom': 1, 'S.Cap': 3, 'S.Haem': 0.5, 'C.Stri': 3, 'C.Avi': 3, 'C.Gran': 0.5, 'C.Tub': 0.3, 'S.Aur': 0.5
+    }
+};
+
+// Weights determine how strongly a 1% deviation impacts the score.
+const SCORING_WEIGHTS = {
+    'C.Acne': 2.0,            // C. acnes: Primary oily driver
+    'S.Aur': 5.0,             // S. aureus: Critical dry driver
+    'S.Epi_low': 1.5,         // S. epidermidis decrease (oily push)
+    'S.Epi_high_pull': 0.3,   // S. epidermidis excess (pull towards 50)
+    'C.Krop': 1.5,            // C. kroppenstedtii: Significant dry/aging indicator
+    Oily_Minor: 1.5,          // C. avidum, C. tuberculostearicum, C. granulosum
+    Dry_Minor: 1.0,           // S. hominis, S. capitis, S. haemolyticus, C. striatum
+};
+
+// Maximum Contribution Caps (Absolute Score Change from 50)
+// This ensures no single factor dominates the 0-100 range.
+const CAPS = {
+    MAJOR_DRIVER: 30,  // C. acnes, S. aureus (max swing to 20 or 80)
+    MODERATE_DRIVER: 15, // C. kroppenstedtii, S. epidermidis (low)
+    MINOR_GROUP_SUM: 15 // Sum of all minor oily/dry drivers
+}
+
+/**
+ * Determines the optimal target profile based on age.
+ * @param age - The user's age.
+ * @returns The optimal microbiome target percentages.
+ */
+function getOptimalTargets(age: number) {
+    return age >= 40 ? OPTIMAL_MICROBIOME.old : OPTIMAL_MICROBIOME.young;
+}
+
+/**
+ * Calculates the Sebum Index based on bacterial composition and age.
+ * This score measures the skin's oil production potential using a sophisticated
+ * algorithm that considers age-dependent optimal targets and contribution caps.
+ * 
+ * Higher scores indicate higher sebum production potential (oily skin), while 
+ * lower scores indicate drier skin with reduced oil production (matte skin).
+ * 
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param age - The user's age (used to determine optimal targets)
+ * @returns A score from 0-100 representing sebum production potential
+ */
+export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, age: number = 30): number {
+    // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
+    const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+    
+    const targets = getOptimalTargets(age);
+    
+    // Start the cumulative adjustment from 50 (Balanced)
+    let score_adjustment = 0; 
+    let se_excess = 0; // S. epidermidis excess for final pull
+
+    // --- 1. C. acnes (Primary Driver: Deviation = Oily/Dry) ---
+    const Ca_diff = normalizedBacteria['C.Acne'] - targets['C.Acne'];
+    let ca_contrib = Ca_diff * SCORING_WEIGHTS['C.Acne'];
+    // Cap contribution: max 30 point swing (+30 or -30)
+    ca_contrib = Math.max(-CAPS.MAJOR_DRIVER, Math.min(CAPS.MAJOR_DRIVER, ca_contrib));
+    score_adjustment += ca_contrib;
+    
+    // --- 2. S. aureus (Critical Dryness Indicator: Higher = More Dry) ---
+    let sa_contrib = 0;
+    if (normalizedBacteria['S.Aur'] > targets['S.Aur']) {
+        const Sa_diff = normalizedBacteria['S.Aur'] - targets['S.Aur'];
+        sa_contrib = -Sa_diff * SCORING_WEIGHTS['S.Aur'];
+    }
+    // Cap contribution: max 30 point swing (negative only)
+    sa_contrib = Math.max(-CAPS.MAJOR_DRIVER, sa_contrib); 
+    score_adjustment += sa_contrib;
+
+    // --- 3. S. epidermidis (Complex Rule) ---
+    const Se_diff = normalizedBacteria['S.Epi'] - targets['S.Epi'];
+    if (Se_diff < 0) {
+        // Decrease from optimal means skin is more oily (positive adjustment)
+        let se_contrib = Math.abs(Se_diff) * SCORING_WEIGHTS['S.Epi_low'];
+        // Cap positive contribution: max 15 point swing
+        se_contrib = Math.min(CAPS.MODERATE_DRIVER, se_contrib); 
+        score_adjustment += se_contrib;
+    } else if (Se_diff > 0) {
+        // S. epidermidis is above optimal, save for the final pull towards 50
+        se_excess = Se_diff;
+    }
+
+    // --- 4. C. kroppenstedtii (Dry/Aging Driver: Higher = More Dry) ---
+    let ck_contrib = 0;
+    if (normalizedBacteria['C.Krop'] > targets['C.Krop']) {
+        const Ck_diff = normalizedBacteria['C.Krop'] - targets['C.Krop'];
+        ck_contrib = -Ck_diff * SCORING_WEIGHTS['C.Krop'];
+    }
+    // Cap negative contribution: max 15 point swing
+    ck_contrib = Math.max(-CAPS.MODERATE_DRIVER, ck_contrib);
+    score_adjustment += ck_contrib;
+
+    // --- 5. Minor Oily Drivers (C. avidum, C. tuberculostearicum, C. granulosum) ---
+    let minor_oily_sum = 0;
+    const oilyDrivers: (keyof BacteriaPercentages)[] = ['C.Avi', 'C.Tub', 'C.Gran'];
+    oilyDrivers.forEach(key => {
+        if (normalizedBacteria[key] > targets[key]) {
+            const diff = normalizedBacteria[key] - targets[key];
+            minor_oily_sum += diff * SCORING_WEIGHTS.Oily_Minor;
+        }
+    });
+    // Cap minor oily group sum: max 15 point swing (positive only)
+    minor_oily_sum = Math.min(CAPS.MINOR_GROUP_SUM, minor_oily_sum); 
+    score_adjustment += minor_oily_sum;
+
+    // --- 6. Minor Dry Drivers (S. hominis, S. capitis, S. haemolyticus, C. striatum) ---
+    let minor_dry_sum = 0;
+    const dryDrivers: (keyof BacteriaPercentages)[] = ['S.Hom', 'S.Cap', 'S.Haem', 'C.Stri'];
+    dryDrivers.forEach(key => {
+        if (normalizedBacteria[key] > targets[key]) {
+            const diff = normalizedBacteria[key] - targets[key];
+            minor_dry_sum -= diff * SCORING_WEIGHTS.Dry_Minor; // Subtracts points
+        }
+    });
+    // Cap minor dry group sum: max 15 point swing (negative only)
+    minor_dry_sum = Math.max(-CAPS.MINOR_GROUP_SUM, minor_dry_sum);
+    score_adjustment += minor_dry_sum;
+    
+    // Apply all primary adjustments to the starting score
+    let score = 50.0 + score_adjustment;
+    
+    // --- 7. Final S. epidermidis Neutralizing Pull ---
+    // If S.Epi is high, pull the score back toward 50 (neutral).
+    if (se_excess > 0) {
+        const pull_magnitude = se_excess * SCORING_WEIGHTS['S.Epi_high_pull'];
+        
+        if (score > 50) {
+            // Oily score, pull down towards 50
+            score -= pull_magnitude;
+        } else if (score < 50) {
+            // Dry score, pull up towards 50
+            score += pull_magnitude;
+        }
+    }
+    
+    // Final Clamp to 0-100
+    score = Math.max(0, Math.min(100, score));
+
+    return Math.round(score);
+}
+
 export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages): number {
   // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
   const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
