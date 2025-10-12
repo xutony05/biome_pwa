@@ -48,7 +48,7 @@ export function Header({
       <div className="max-w-7xl mx-auto px-4 px-safe-left px-safe-right">
         <div className="flex items-center justify-between h-14">
           {/* Left section */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pl-2 sm:pl-0">
             {showBackButton && (
               <Button 
                 variant="ghost" 
