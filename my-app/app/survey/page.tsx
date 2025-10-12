@@ -149,6 +149,25 @@ export default function SurveyPage() {
   
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper function to scroll to top with mobile compatibility
+  const scrollToTop = () => {
+    // Small delay to ensure DOM has updated, especially important on mobile
+    setTimeout(() => {
+      // Use smooth scrolling if supported, otherwise instant scroll
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        // Fallback for browsers that don't support smooth scrolling
+        window.scrollTo(0, 0);
+      }
+    }, 50); // 50ms delay to ensure smooth operation on mobile
+  };
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    scrollToTop();
+  }, []);
+
   useEffect(() => {
     async function loadLastSurvey() {
       if (user?.email) {
@@ -182,6 +201,8 @@ export default function SurveyPage() {
                 // Go to the next question, but don't exceed the questions array length
                 setCurrentQuestionIndex(Math.min(lastQuestionIndex + 1, questions.length - 1));
               }
+              // Scroll to top when resuming survey
+              scrollToTop();
             }
           }
         } catch (error) {
@@ -287,6 +308,8 @@ export default function SurveyPage() {
     
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
+      // Scroll to top of page when moving to next question
+      scrollToTop();
     }
   };
 
@@ -296,6 +319,8 @@ export default function SurveyPage() {
       router.push('/activation');
     } else if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
+      // Scroll to top of page when moving to previous question
+      scrollToTop();
     }
   };
 
