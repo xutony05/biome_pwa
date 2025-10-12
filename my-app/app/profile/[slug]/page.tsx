@@ -65,6 +65,24 @@ const getFullBacteriaName = (bacteria: string) => {
   return nameMap[bacteria] || bacteria;
 };
 
+const getShortBacteriaName = (bacteria: string) => {
+  const nameMap: { [key: string]: string } = {
+    'C.Acne': 'C. acnes',
+    'C.Stri': 'C. striatum',
+    'S.Cap': 'S. capitis',
+    'S.Epi': 'S. epidermidis',
+    'C.Avi': 'C. avidum',
+    'C.Gran': 'C. granulosum',
+    'S.Haem': 'S. haemolyticus',
+    'S.Aur': 'S. aureus',
+    'C.Tub': 'C. tuberculostearicum',
+    'S.Hom': 'S. hominis',
+    'C.Krop': 'C. kroppenstedtii'
+  };
+  
+  return nameMap[bacteria] || bacteria;
+};
+
 const getBacteriaRoute = (bacteria: string) => {
   const routeMap: { [key: string]: string } = {
     'C.Acne': 'acnes',
@@ -501,7 +519,10 @@ export default function ReportPage() {
                           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                             <div className="flex items-center gap-3">
                               <div className={`w-3 h-3 rounded-full ${getStatusColor(status)} flex-shrink-0`} />
-                              <span className="font-medium">{getFullBacteriaName(bacteria)}</span>
+                              <span className="font-medium">
+                                <span className="sm:hidden">{getShortBacteriaName(bacteria)}</span>
+                                <span className="hidden sm:inline">{getFullBacteriaName(bacteria)}</span>
+                              </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{(value as number) < 0.1 ? '<0.1%' : `${(value as number).toFixed(1)}%`}</span>
