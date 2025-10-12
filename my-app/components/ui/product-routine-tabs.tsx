@@ -142,13 +142,7 @@ export function ProductRoutineTabs({ products }: ProductRoutineTabsProps) {
                   {product.brand}
                 </p>
               )}
-              
-              {product.price && (
-                <p className="text-sm font-semibold text-gray-900">
-                  ${product.price.toFixed(2)}
-                </p>
-              )}
-              
+
               <div className="mt-auto">
                 {product.url && (
                   <Button
