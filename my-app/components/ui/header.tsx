@@ -42,10 +42,10 @@ export function Header({
 
   return (
     <header className={`sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-200 ${className}`}>
-      {/* Safe area padding for mobile */}
-      <div className="h-safe-area-inset-top bg-white" />
+      {/* Safe area padding for mobile devices with notches/dynamic islands */}
+      <div className="h-safe-top bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60" />
       
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 px-safe-left px-safe-right">
         <div className="flex items-center justify-between h-14">
           {/* Left section */}
           <div className="flex items-center gap-3">
