@@ -329,6 +329,7 @@ export default function SurveyPage() {
             isLargeInput={currentQuestion.id === "q10" || currentQuestion.id === "q9"}
             isOptional={currentQuestion.id === "q8" || currentQuestion.id === "q9" || currentQuestion.id === "q10"}
             previousAnswer={previousAnswer}
+            questionId={currentQuestion.id} // Pass the question ID to identify specific questions
           />
         );
       case "single":

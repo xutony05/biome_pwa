@@ -10,9 +10,10 @@ interface InputQuestionProps {
   isLargeInput?: boolean;
   isOptional?: boolean;
   previousAnswer?: string;
+  questionId?: string; // Add questionId to identify specific questions
 }
 
-export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, previousAnswer }: InputQuestionProps) {
+export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, previousAnswer, questionId }: InputQuestionProps) {
   const [value, setValue] = useState(typeof previousAnswer === 'string' ? previousAnswer : "");
 
   // Update value when previousAnswer prop changes
@@ -69,7 +70,12 @@ export function InputQuestion({ placeholder, onNext, isLargeInput, isOptional, p
             placeholder={placeholder}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-2xl min-h-[120px] resize-none"
+            className={`w-full px-4 py-3.5 text-base leading-[1.1875rem] rounded-2xl min-h-[120px] resize-none ${
+              // Add border styling for skincare brands (q9) and additional info (q10) questions
+              questionId === "q9" || questionId === "q10" 
+                ? "border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
+                : ""
+            }`}
             style={{ boxSizing: 'border-box' }}
           />
         ) : (
