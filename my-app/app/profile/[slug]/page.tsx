@@ -382,11 +382,11 @@ export default function ReportPage() {
                     const helpfulPercent = total > 0 ? (totalHelpful / total * 100) : 0;
 
                     return (
-                      <div className="flex justify-center gap-8">
+                      <div className="flex justify-center gap-4 sm:gap-8 px-2 sm:px-0">
                         {/* Your Composition Bar */}
                         <div className="flex flex-col items-center space-y-2">
-                          <h3 className="text-sm font-medium text-muted-foreground">Your Composition</h3>
-                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                          <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Your Composition</h3>
+                          <div className="w-32 h-56 sm:w-40 sm:h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
                             {disruptivePercent > 0 && (
                               <div 
                                 className="bg-red-500 flex items-center justify-center"
@@ -422,8 +422,8 @@ export default function ReportPage() {
 
                         {/* Ideal Composition Bar */}
                         <div className="flex flex-col items-center space-y-2">
-                          <h3 className="text-sm font-medium text-muted-foreground">Ideal Composition</h3>
-                          <div className="w-40 h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
+                          <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Ideal Composition</h3>
+                          <div className="w-32 h-56 sm:w-40 sm:h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
                             {/* Disruptive section - 20% of total height */}
                             <div 
                               className="bg-red-500 flex items-center justify-center"
@@ -452,7 +452,7 @@ export default function ReportPage() {
                   })()}
 
                   {/* Color Legend */}
-                  <div className="flex justify-center gap-6 text-sm">
+                  <div className="flex justify-center gap-3 sm:gap-6 text-xs sm:text-sm px-2 sm:px-0">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500" />
                       <span>Disruptive</span>
