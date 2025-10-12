@@ -393,7 +393,7 @@ export default function ReportPage() {
                                 style={{ height: `${disruptivePercent}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
-                                  {disruptivePercent.toFixed(1)}%
+                                  {disruptivePercent < 0.1 ? '<0.1%' : `${disruptivePercent.toFixed(1)}%`}
                                 </span>
                               </div>
                             )}
@@ -403,7 +403,7 @@ export default function ReportPage() {
                                 style={{ height: `${neutralPercent}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
-                                  {neutralPercent.toFixed(1)}%
+                                  {neutralPercent < 0.1 ? '<0.1%' : `${neutralPercent.toFixed(1)}%`}
                                 </span>
                               </div>
                             )}
@@ -413,7 +413,7 @@ export default function ReportPage() {
                                 style={{ height: `${helpfulPercent}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
-                                  {helpfulPercent.toFixed(1)}%
+                                  {helpfulPercent < 0.1 ? '<0.1%' : `${helpfulPercent.toFixed(1)}%`}
                                 </span>
                               </div>
                             )}
@@ -504,7 +504,7 @@ export default function ReportPage() {
                               <span className="font-medium">{getFullBacteriaName(bacteria)}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{value as number}%</span>
+                              <span className="font-medium">{(value as number) < 0.1 ? '<0.1%' : `${(value as number).toFixed(1)}%`}</span>
                               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
