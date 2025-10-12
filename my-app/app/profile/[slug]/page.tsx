@@ -500,7 +500,7 @@ export default function ReportPage() {
                         >
                           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                             <div className="flex items-center gap-3">
-                              <div className={`w-3 h-3 rounded-full ${getStatusColor(status)}`} />
+                              <div className={`w-3 h-3 rounded-full ${getStatusColor(status)} flex-shrink-0`} />
                               <span className="font-medium">{getFullBacteriaName(bacteria)}</span>
                             </div>
                             <div className="flex items-center gap-2">
