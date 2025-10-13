@@ -408,7 +408,7 @@ export default function ReportPage() {
                             {disruptivePercent > 0 && (
                               <div 
                                 className="bg-red-500 flex items-center justify-center"
-                                style={{ height: `${disruptivePercent}%` }}
+                                style={{ height: `${Math.max(disruptivePercent, 5)}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
                                   {disruptivePercent < 0.1 ? '<0.1%' : `${disruptivePercent.toFixed(1)}%`}
@@ -418,7 +418,7 @@ export default function ReportPage() {
                             {neutralPercent > 0 && (
                               <div 
                                 className="bg-sky-400 flex items-center justify-center"
-                                style={{ height: `${neutralPercent}%` }}
+                                style={{ height: `${Math.max(neutralPercent, 5)}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
                                   {neutralPercent < 0.1 ? '<0.1%' : `${neutralPercent.toFixed(1)}%`}
@@ -428,7 +428,7 @@ export default function ReportPage() {
                             {helpfulPercent > 0 && (
                               <div 
                                 className="bg-emerald-400 flex items-center justify-center"
-                                style={{ height: `${helpfulPercent}%` }}
+                                style={{ height: `${Math.max(helpfulPercent, 5)}%` }}
                               >
                                 <span className="text-xs font-medium text-white">
                                   {helpfulPercent < 0.1 ? '<0.1%' : `${helpfulPercent.toFixed(1)}%`}
