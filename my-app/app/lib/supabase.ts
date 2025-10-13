@@ -8,45 +8,54 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Product = {
   id: number;
-  // Value products
-  value_1_name: string;
-  value_1_price: number;
-  value_1_image: string;
-  value_1_url: string;
-  value_2_name: string;
-  value_2_price: number;
-  value_2_image: string;
-  value_2_url: string;
-  value_3_name: string;
-  value_3_price: number;
-  value_3_image: string;
-  value_3_url: string;
-  // Quality products
-  quality_1_name: string;
-  quality_1_price: number;
-  quality_1_image: string;
-  quality_1_url: string;
-  quality_2_name: string;
-  quality_2_price: number;
-  quality_2_image: string;
-  quality_2_url: string;
-  quality_3_name: string;
-  quality_3_price: number;
-  quality_3_image: string;
-  quality_3_url: string;
-  // Luxury products
-  luxury_1_name: string;
-  luxury_1_price: number;
-  luxury_1_image: string;
-  luxury_1_url: string;
-  luxury_2_name: string;
-  luxury_2_price: number;
-  luxury_2_image: string;
-  luxury_2_url: string;
-  luxury_3_name: string;
-  luxury_3_price: number;
-  luxury_3_image: string;
-  luxury_3_url: string;
+  // Value tier products
+  value_cleanser_name?: string;
+  value_cleanser_url?: string;
+  value_cleanser_image?: string;
+  value_toner_name?: string;
+  value_toner_url?: string;
+  value_toner_image?: string;
+  value_serum_name?: string;
+  value_serum_url?: string;
+  value_serum_image?: string;
+  value_moisturizer_name?: string;
+  value_moisturizer_url?: string;
+  value_moisturizer_image?: string;
+  value_sunscreen_name?: string;
+  value_sunscreen_url?: string;
+  value_sunscreen_image?: string;
+  // Quality tier products
+  quality_cleanser_name?: string;
+  quality_cleanser_url?: string;
+  quality_cleanser_image?: string;
+  quality_toner_name?: string;
+  quality_toner_url?: string;
+  quality_toner_image?: string;
+  quality_serum_name?: string;
+  quality_serum_url?: string;
+  quality_serum_image?: string;
+  quality_moisturizer_name?: string;
+  quality_moisturizer_url?: string;
+  quality_moisturizer_image?: string;
+  quality_sunscreen_name?: string;
+  quality_sunscreen_url?: string;
+  quality_sunscreen_image?: string;
+  // Luxury tier products
+  luxury_cleanser_name?: string;
+  luxury_cleanser_url?: string;
+  luxury_cleanser_image?: string;
+  luxury_toner_name?: string;
+  luxury_toner_url?: string;
+  luxury_toner_image?: string;
+  luxury_serum_name?: string;
+  luxury_serum_url?: string;
+  luxury_serum_image?: string;
+  luxury_moisturizer_name?: string;
+  luxury_moisturizer_url?: string;
+  luxury_moisturizer_image?: string;
+  luxury_sunscreen_name?: string;
+  luxury_sunscreen_url?: string;
+  luxury_sunscreen_image?: string;
 }
 
 export type Report = {
