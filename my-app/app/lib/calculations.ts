@@ -17,10 +17,10 @@ export type BacteriaPercentages = {
  * This function ensures that all bacteria percentages are proportionally scaled
  * to total 100% while maintaining their relative ratios.
  * 
- * @param bacteriaData - Object containing bacterial species percentages
+ * @param bacteriaData - Object containing bacterial species percentages (can include null/undefined values)
  * @returns Normalized bacteria percentages that sum to 100
  */
-export const normalizeBacteriaPercentages = (bacteriaData: Record<string, number>): Record<string, number> => {
+export const normalizeBacteriaPercentages = (bacteriaData: Record<string, number | null | undefined>): Record<string, number> => {
   // Create a copy of the input data to avoid mutating the original
   const normalizedData: Record<string, number> = {};
   
@@ -33,7 +33,8 @@ export const normalizeBacteriaPercentages = (bacteriaData: Record<string, number
     const normalizedKey = key.toLowerCase();
     // Skip "other" bacteria from normalization
     if (normalizedKey !== 'other' && normalizedKey !== 'others') {
-      const percentage = parseFloat(value.toString()) || 0;
+      // Handle null, undefined, or invalid values by treating them as 0
+      const percentage = (value === null || value === undefined) ? 0 : parseFloat(value.toString()) || 0;
       totalPercentage += percentage;
       normalizedData[key] = percentage;
     }
