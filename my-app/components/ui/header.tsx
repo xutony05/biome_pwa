@@ -7,6 +7,7 @@ import { logout } from "@/app/lib/auth";
 import { ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
   title?: string;
@@ -30,6 +31,55 @@ export function Header({
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection and scroll-based header visibility
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Scroll-based header visibility (mobile only)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const updateHeaderVisibility = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show header when scrolling up or at the top
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setIsHeaderVisible(true);
+      } 
+      // Hide header when scrolling down (but not at the very top)
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsHeaderVisible(false);
+      }
+      
+      lastScrollY = currentScrollY;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateHeaderVisibility);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
 
   const handleBack = () => {
     if (onBack) {
@@ -47,9 +97,18 @@ export function Header({
   const isHomePage = pathname === '/' || pathname === '/profile';
 
   return (
-    <header className={`sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-200 ${className}`}>
+    <header className={`sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
+      isMobile && !isHeaderVisible ? '-translate-y-full' : 'translate-y-0'
+    } ${className}`}>
       {/* Safe area padding for mobile devices with notches/dynamic islands */}
-      <div className="h-safe-top bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60" />
+      <div className={`h-safe-top transition-colors duration-300 ${
+        isMobile && !isHeaderVisible ? 'bg-transparent' : 'bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60'
+      }`} />
+      
+      {/* Main header content */}
+      <div className={`bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-200 transition-colors duration-300 ${
+        isMobile && !isHeaderVisible ? 'bg-transparent border-transparent' : ''
+      }`}>
       
       <div className="max-w-7xl mx-auto px-4 px-safe-left px-safe-right">
         <div className="flex items-center justify-between h-14">
@@ -112,6 +171,7 @@ export function Header({
             )}
           </div>
         </div>
+      </div>
       </div>
     </header>
   );
