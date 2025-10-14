@@ -15,6 +15,7 @@ interface HeaderProps {
   showUserActions?: boolean;
   customActions?: React.ReactNode;
   className?: string;
+  onBack?: () => void; // Custom back handler
 }
 
 export function Header({ 
@@ -23,14 +24,19 @@ export function Header({
   showLogo = true,
   showUserActions = true,
   customActions,
-  className = ""
+  className = "",
+  onBack
 }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
 
   const handleBack = () => {
-    router.back();
+    if (onBack) {
+      onBack();
+    } else {
+      router.back();
+    }
   };
 
   const handleLogout = async () => {

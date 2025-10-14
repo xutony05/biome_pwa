@@ -153,6 +153,18 @@ export default function ReportPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Restore scroll position when returning from bacteria pages
+  useEffect(() => {
+    const savedScrollPosition = sessionStorage.getItem('profileScrollPosition');
+    if (savedScrollPosition && report) {
+      // Simple, fast scroll restoration
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(savedScrollPosition));
+        sessionStorage.removeItem('profileScrollPosition');
+      }, 50);
+    }
+  }, [report]);
+
   // Handle explain button clicks
   const handleExplainClick = (explanationType: string) => {
     if (isMobile) {
@@ -508,10 +520,15 @@ export default function ReportPage() {
                       };
                       
                       return (
-                        <Link 
+                        <div 
                           key={bacteria} 
-                          href={`/bacteria/${getBacteriaRoute(bacteria)}`}
-                          className="block"
+                          className="block cursor-pointer"
+                          onClick={() => {
+                            // Store current scroll position before navigating to bacteria page
+                            sessionStorage.setItem('profileScrollPosition', window.scrollY.toString());
+                            // Navigate to bacteria page
+                            router.push(`/bacteria/${getBacteriaRoute(bacteria)}`);
+                          }}
                         >
                           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                             <div className="flex items-center gap-3">
@@ -528,7 +545,7 @@ export default function ReportPage() {
                               </svg>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       );
                     })}
                 </div>

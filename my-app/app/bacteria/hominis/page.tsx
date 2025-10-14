@@ -5,17 +5,24 @@ import { cn } from "@/lib/utils";
 import { useBacteria } from '@/app/context/BacteriaContext';
 import optimalRanges from '@/dataAssets/optimal.json';
 import { Header } from "@/components/ui/header";
+import { useRouter } from 'next/navigation';
 
 export default function HominisPage() {
   const { values } = useBacteria();
+  const router = useRouter();
   const value = values?.['S.Hom'];
   const [min, max] = optimalRanges['S. hominis'];
+
+  // Simple back handler - let the profile page handle scroll restoration
+  const handleBack = () => {
+    router.back();
+  };
 
   // Add loading state
   if (value === undefined) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <Header showBackButton={true} />
+        <Header showBackButton={true} onBack={handleBack} />
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto px-4 py-8">
             <Card>
@@ -31,7 +38,7 @@ export default function HominisPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header showBackButton={true} />
+      <Header showBackButton={true} onBack={handleBack} />
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Card>
