@@ -26,25 +26,22 @@ import {
 import Link from 'next/link';
 
 const getOptimalRangeStatus = (bacteria: string, value: number) => {
-  const bacteriaKey = bacteria
-    .replace('C.Acne', 'C. acnes')
-    .replace('C.Stri', 'C. striatum')
-    .replace('S.Cap', 'S. capitis')
-    .replace('S.Epi', 'S. epidermidis')
-    .replace('C.Avi', 'C. avidum')
-    .replace('C.Gran', 'C. granulosum')
-    .replace('S.Haem', 'S. haemolyticus')
-    .replace('S.Aur', 'S. aureus')
-    .replace('C.Tub', 'C. tuberculostearicum')
-    .replace('S.Hom', 'S. hominis')
-    .replace('C.Krop', 'C. kroppenstedtii');
+  // Define bacteria categories based on their inherent nature
+  const beneficialBacteria = ['S.Epi', 'S.Hom', 'C.Gran']; // S. epidermidis, S. hominis, C. granulosum
+  const neutralBacteria = ['C.Acne', 'C.Krop', 'C.Avi', 'S.Cap', 'C.Stri']; // C. acnes, C. kroppenstedtii, C. avidum, S. capitis, C. striatum
+  const harmfulBacteria = ['S.Aur', 'S.Haem', 'C.Tub']; // S. aureus, S. haemolyticus, C. tuberculostearicum
   
-  const range = optimalRanges[bacteriaKey as keyof typeof optimalRanges];
-  if (!range) return 'optimal'; // default to optimal if no range found
-
-  if (value > range[1]) return 'above';
-  if (value < range[0]) return 'below';
-  return 'optimal';
+  // Return category based on bacteria type
+  if (beneficialBacteria.includes(bacteria)) {
+    return 'optimal'; // Beneficial bacteria are always considered helpful
+  } else if (harmfulBacteria.includes(bacteria)) {
+    return 'above'; // Harmful bacteria are always considered disruptive
+  } else if (neutralBacteria.includes(bacteria)) {
+    return 'below'; // Neutral bacteria are considered neutral
+  }
+  
+  // Fallback for any unmapped bacteria
+  return 'below';
 };
 
 const getFullBacteriaName = (bacteria: string) => {
