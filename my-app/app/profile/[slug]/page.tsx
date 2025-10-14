@@ -442,26 +442,26 @@ export default function ReportPage() {
                         <div className="flex flex-col items-center space-y-2">
                           <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Ideal Composition</h3>
                           <div className="w-32 h-56 sm:w-40 sm:h-80 bg-gray-200 rounded-lg overflow-hidden flex flex-col">
-                            {/* Disruptive section - 20% of total height */}
+                            {/* Disruptive section - 5% of total height (but labeled as 2%) */}
                             <div 
                               className="bg-red-500 flex items-center justify-center"
-                              style={{ height: '20%' }}
+                              style={{ height: '5%' }}
                             >
-                              <span className="text-xs font-medium text-white">20%</span>
+                              <span className="text-xs font-medium text-white">2%</span>
                             </div>
-                            {/* Neutral section - 30% of total height */}
+                            {/* Neutral section - 87% of total height */}
                             <div 
                               className="bg-sky-400 flex items-center justify-center"
-                              style={{ height: '30%' }}
+                              style={{ height: '87%' }}
                             >
-                              <span className="text-xs font-medium text-white">30%</span>
+                              <span className="text-xs font-medium text-white">87%</span>
                             </div>
-                            {/* Helpful section - 50% of total height */}
+                            {/* Helpful section - 11% of total height */}
                             <div 
                               className="bg-emerald-400 flex items-center justify-center"
-                              style={{ height: '50%' }}
+                              style={{ height: '11%' }}
                             >
-                              <span className="text-xs font-medium text-white">50%</span>
+                              <span className="text-xs font-medium text-white">11%</span>
                             </div>
                           </div>
                         </div>
