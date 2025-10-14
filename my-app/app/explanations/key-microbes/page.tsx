@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { MainHeader } from "@/components/ui/header";
 import { ChevronLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter } from 'next/navigation';
 
 export default function KeyMicrobesExplanation() {
+  const router = useRouter();
+
+  // Simple back handler - let the profile page handle scroll restoration
+  const handleBack = () => {
+    router.back();
+  };
   return (
     <div className="bg-gray-50 min-h-screen">
       <MainHeader />
@@ -16,7 +23,7 @@ export default function KeyMicrobesExplanation() {
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => window.history.back()}
+            onClick={handleBack}
             className="h-10 w-10"
           >
             <ChevronLeft className="h-5 w-5" />

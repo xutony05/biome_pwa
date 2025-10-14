@@ -153,7 +153,7 @@ export default function ReportPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Restore scroll position when returning from bacteria pages
+  // Restore scroll position when returning from bacteria pages or explanation pages
   useEffect(() => {
     const savedScrollPosition = sessionStorage.getItem('profileScrollPosition');
     if (savedScrollPosition && report) {
@@ -165,9 +165,29 @@ export default function ReportPage() {
     }
   }, [report]);
 
+  // Additional scroll restoration on page visibility change (fallback for explanation pages)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const savedScrollPosition = sessionStorage.getItem('profileScrollPosition');
+        if (savedScrollPosition && report) {
+          setTimeout(() => {
+            window.scrollTo(0, parseInt(savedScrollPosition));
+            sessionStorage.removeItem('profileScrollPosition');
+          }, 200);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [report]);
+
   // Handle explain button clicks
   const handleExplainClick = (explanationType: string) => {
     if (isMobile) {
+      // Store current scroll position before navigating to explanation page
+      sessionStorage.setItem('profileScrollPosition', window.scrollY.toString());
       router.push(`/explanations/${explanationType}`);
     } else {
       // Show dialog for desktop
