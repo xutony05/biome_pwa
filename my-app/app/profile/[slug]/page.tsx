@@ -777,7 +777,7 @@ export default function ReportPage() {
                           <h4 className="text-sm font-medium text-emerald-500">Recommended Ingredients</h4>
                         </div>
                         <div className="grid gap-3">
-                          {report.good_ingredients?.map((ingredient: string, index: number) => (
+                          {report.good_ingredients?.slice(0, 10).map((ingredient: string, index: number) => (
                             <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
                               <span className="font-medium text-emerald-500">{ingredient}</span>
                               <p className="mt-1 text-sm text-muted-foreground">
