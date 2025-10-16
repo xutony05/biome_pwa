@@ -62,6 +62,7 @@ export type Report = {
   id: number;
   email: string;
   created_at: string;
+  kit_id?: string;
   'C.Acne': number;
   'C.Stri': number;
   'S.Cap': number;
@@ -125,23 +126,24 @@ export async function getReportByNumber(email: string, reportNumber: number): Pr
   }
 }
 
-export async function getReportsWithDates(email: string): Promise<Array<{ created_at: string; report_number: number }>> {
+export async function getReportsWithDates(email: string): Promise<Array<{ created_at: string; report_number: number; kit_id?: string }>> {
   try {
     const { data, error } = await supabase
       .from('reports')
-      .select('created_at')
+      .select('created_at, kit_id')
       .eq('email', email)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
 
     if (error) {
       console.error('Supabase error in getReportsWithDates:', error.message);
       return [];
     }
 
-    // Add report numbers (most recent = 1, oldest = last)
+    // Add report numbers (oldest = 1, newest = last)
     return data?.map((report, index) => ({
       created_at: report.created_at,
-      report_number: index + 1
+      report_number: index + 1,
+      kit_id: report.kit_id
     })) || [];
   } catch (e) {
     console.error('Failed to fetch reports with dates:', e);

@@ -12,6 +12,7 @@ import { getReportsWithDates, getSurveyCount, getReportCount } from '../lib/supa
 interface ReportWithDate {
   created_at: string;
   report_number: number;
+  kit_id?: string;
 }
 
 export default function ProfilePage() {
@@ -114,7 +115,12 @@ export default function ProfilePage() {
                       <span className="text-blue-500 text-sm sm:text-base">📄</span>
                       <div className="flex flex-col">
                         <span className="text-sm sm:text-base font-medium">Report #{report.report_number}</span>
-                        <span className="text-xs sm:text-sm text-gray-500">{formatDate(report.created_at)}</span>
+                        <div className="flex flex-col sm:flex-row sm:gap-2">
+                          <span className="text-xs sm:text-sm text-gray-500">{formatDate(report.created_at)}</span>
+                          {report.kit_id && (
+                            <span className="text-xs sm:text-sm text-gray-500">Kit ID: {report.kit_id}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
