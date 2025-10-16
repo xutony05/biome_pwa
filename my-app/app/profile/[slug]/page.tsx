@@ -401,14 +401,21 @@ export default function ReportPage() {
                 {/* Composition Bars */}
                 <div className="space-y-4">
                   {(() => {
+                    // Define all bacteria types that should be included
+                    const bacteriaKeys = ['C.Acne', 'C.Stri', 'S.Cap', 'S.Epi', 'C.Avi', 'C.Gran', 'S.Haem', 'S.Aur', 'C.Tub', 'S.Hom', 'C.Krop'];
+                    
                     // Calculate actual percentages for each category
-                    const bacteriaData = Object.entries(report)
-                      .filter(([key, value]) => key.includes('.') && value !== null)
-                      .map(([bacteria, value]) => ({
-                        bacteria,
-                        value: value as number,
-                        status: getOptimalRangeStatus(bacteria, value as number)
-                      }));
+                    const bacteriaData = bacteriaKeys
+                      .map(bacteria => {
+                        const value = report[bacteria as keyof typeof report];
+                        // Handle NaN values by setting them to 0 for bacteria calculations
+                        const safeValue = (value !== null && value !== undefined && !isNaN(value as number)) ? value as number : 0;
+                        return {
+                          bacteria,
+                          value: safeValue,
+                          status: getOptimalRangeStatus(bacteria, safeValue)
+                        };
+                      });
 
                     const totalDisruptive = bacteriaData
                       .filter(item => item.status === 'above')
@@ -517,11 +524,17 @@ export default function ReportPage() {
 
                 {/* Microbe List */}
                 <div className="space-y-2">
-                  {Object.entries(report)
-                    .filter(([key, value]) => key.includes('.') && value !== null)
-                    .sort((a, b) => a[0].localeCompare(b[0]))
-                    .map(([bacteria, value]) => {
-                      const status = getOptimalRangeStatus(bacteria, value as number);
+                  {(() => {
+                    // Define all bacteria types that should be included
+                    const bacteriaKeys = ['C.Acne', 'C.Stri', 'S.Cap', 'S.Epi', 'C.Avi', 'C.Gran', 'S.Haem', 'S.Aur', 'C.Tub', 'S.Hom', 'C.Krop'];
+                    
+                    return bacteriaKeys
+                      .sort((a, b) => a.localeCompare(b))
+                      .map(bacteria => {
+                        const value = report[bacteria as keyof typeof report];
+                        // Handle NaN values by setting them to 0 for bacteria calculations
+                        const safeValue = (value !== null && value !== undefined && !isNaN(value as number)) ? value as number : 0;
+                        const status = getOptimalRangeStatus(bacteria, safeValue);
                       const getStatusColor = (status: string) => {
                         switch (status) {
                           case 'above': return 'bg-red-500';
@@ -559,7 +572,7 @@ export default function ReportPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{(value as number) < 0.1 ? '<0.1%' : `${(value as number).toFixed(1)}%`}</span>
+                              <span className="font-medium">{safeValue < 0.1 ? '<0.1%' : `${safeValue.toFixed(1)}%`}</span>
                               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
@@ -567,7 +580,8 @@ export default function ReportPage() {
                           </div>
                         </div>
                       );
-                    })}
+                    });
+                  })()}
                 </div>
               </div>
             </CardContent>

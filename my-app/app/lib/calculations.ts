@@ -427,19 +427,22 @@ export const calculateMicrobiomeScore = (age: number, bacteriaPercentages: Recor
   let diversityPenalty = 0;
 
   for (const [bacterium, percent] of Object.entries(normalizedBacteria)) {
+    // Handle NaN values by setting them to 0 for bacteria calculations
+    const safePercent = isNaN(percent) ? 0 : percent;
+    
     // Calculate diversity penalty for any bacteria over 80%
-    if (percent > 80) {
-      diversityPenalty += percent - 80;
+    if (safePercent > 80) {
+      diversityPenalty += safePercent - 80;
     }
 
     // Calculate optimal range penalties
     const optRange = optimalRanges[bacterium as keyof typeof optimalRanges] || [0, 0];
     const [minOpt, maxOpt] = optRange;
 
-    if (percent < minOpt) {
-      totalPenalty += (minOpt - percent) / 2;
-    } else if (percent > maxOpt) {
-      totalPenalty += (percent - maxOpt) / 2;
+    if (safePercent < minOpt) {
+      totalPenalty += (minOpt - safePercent) / 2;
+    } else if (safePercent > maxOpt) {
+      totalPenalty += (safePercent - maxOpt) / 2;
     }
   }
 
@@ -885,7 +888,9 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
     let se_excess = 0; // S. epidermidis excess for final pull
 
     // --- 1. C. acnes (Primary Driver: Deviation = Oily/Dry) ---
-    const Ca_diff = normalizedBacteria['C.Acne'] - targets['C.Acne'];
+    // Handle NaN values by setting them to 0 for bacteria calculations
+    const Ca_value = isNaN(normalizedBacteria['C.Acne']) ? 0 : normalizedBacteria['C.Acne'];
+    const Ca_diff = Ca_value - targets['C.Acne'];
     let ca_contrib = Ca_diff * SCORING_WEIGHTS['C.Acne'];
     // Cap contribution: max 30 point swing (+30 or -30)
     ca_contrib = Math.max(-CAPS.MAJOR_DRIVER, Math.min(CAPS.MAJOR_DRIVER, ca_contrib));
@@ -893,8 +898,9 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
     
     // --- 2. S. aureus (Critical Dryness Indicator: Higher = More Dry) ---
     let sa_contrib = 0;
-    if (normalizedBacteria['S.Aur'] > targets['S.Aur']) {
-        const Sa_diff = normalizedBacteria['S.Aur'] - targets['S.Aur'];
+    const Sa_value = isNaN(normalizedBacteria['S.Aur']) ? 0 : normalizedBacteria['S.Aur'];
+    if (Sa_value > targets['S.Aur']) {
+        const Sa_diff = Sa_value - targets['S.Aur'];
         sa_contrib = -Sa_diff * SCORING_WEIGHTS['S.Aur'];
     }
     // Cap contribution: max 30 point swing (negative only)
@@ -902,7 +908,8 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
     score_adjustment += sa_contrib;
 
     // --- 3. S. epidermidis (Complex Rule) ---
-    const Se_diff = normalizedBacteria['S.Epi'] - targets['S.Epi'];
+    const Se_value = isNaN(normalizedBacteria['S.Epi']) ? 0 : normalizedBacteria['S.Epi'];
+    const Se_diff = Se_value - targets['S.Epi'];
     if (Se_diff < 0) {
         // Decrease from optimal means skin is more oily (positive adjustment)
         let se_contrib = Math.abs(Se_diff) * SCORING_WEIGHTS['S.Epi_low'];
@@ -916,8 +923,9 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
 
     // --- 4. C. kroppenstedtii (Dry/Aging Driver: Higher = More Dry) ---
     let ck_contrib = 0;
-    if (normalizedBacteria['C.Krop'] > targets['C.Krop']) {
-        const Ck_diff = normalizedBacteria['C.Krop'] - targets['C.Krop'];
+    const Ck_value = isNaN(normalizedBacteria['C.Krop']) ? 0 : normalizedBacteria['C.Krop'];
+    if (Ck_value > targets['C.Krop']) {
+        const Ck_diff = Ck_value - targets['C.Krop'];
         ck_contrib = -Ck_diff * SCORING_WEIGHTS['C.Krop'];
     }
     // Cap negative contribution: max 15 point swing
@@ -928,8 +936,10 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
     let minor_oily_sum = 0;
     const oilyDrivers: (keyof BacteriaPercentages)[] = ['C.Avi', 'C.Tub', 'C.Gran'];
     oilyDrivers.forEach(key => {
-        if (normalizedBacteria[key] > targets[key]) {
-            const diff = normalizedBacteria[key] - targets[key];
+        // Handle NaN values by setting them to 0 for bacteria calculations
+        const bacteriaValue = isNaN(normalizedBacteria[key]) ? 0 : normalizedBacteria[key];
+        if (bacteriaValue > targets[key]) {
+            const diff = bacteriaValue - targets[key];
             minor_oily_sum += diff * SCORING_WEIGHTS.Oily_Minor;
         }
     });
@@ -941,8 +951,10 @@ export function calculateSebumIndex(bacteriaPercentages: BacteriaPercentages, ag
     let minor_dry_sum = 0;
     const dryDrivers: (keyof BacteriaPercentages)[] = ['S.Hom', 'S.Cap', 'S.Haem', 'C.Stri'];
     dryDrivers.forEach(key => {
-        if (normalizedBacteria[key] > targets[key]) {
-            const diff = normalizedBacteria[key] - targets[key];
+        // Handle NaN values by setting them to 0 for bacteria calculations
+        const bacteriaValue = isNaN(normalizedBacteria[key]) ? 0 : normalizedBacteria[key];
+        if (bacteriaValue > targets[key]) {
+            const diff = bacteriaValue - targets[key];
             minor_dry_sum -= diff * SCORING_WEIGHTS.Dry_Minor; // Subtracts points
         }
     });
@@ -990,7 +1002,9 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
   let maxScore = 0;
 
   for (const [bacterium, weight] of Object.entries(weights)) {
-    const percent = normalizedBacteria[bacterium] || 0;
+    // Handle NaN values by setting them to 0 for bacteria calculations
+    const rawPercent = normalizedBacteria[bacterium] || 0;
+    const percent = isNaN(rawPercent) ? 0 : rawPercent;
     // Cap influence of each microbe at 10% abundance for scoring
     const cappedPercent = Math.min(percent, 10) / 10.0;  // Normalize to 0–1
     score += cappedPercent * weight;
