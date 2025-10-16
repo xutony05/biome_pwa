@@ -415,7 +415,6 @@ export default function SurveyPage() {
                 alt="Orb"
                 fill
                 className="object-contain"
-                style={{ filter: 'drop-shadow(0px 11.203px 12px rgba(0, 0, 0, 0.08))' }}
               />
             </div>
             <h1 
@@ -437,7 +436,6 @@ export default function SurveyPage() {
                   alt="Orb"
                   fill
                   className="object-contain"
-                  style={{ filter: 'drop-shadow(0px 11.203px 12px rgba(0, 0, 0, 0.08))' }}
                 />
               </div>
               <h1 
