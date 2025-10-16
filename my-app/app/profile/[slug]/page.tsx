@@ -416,7 +416,7 @@ export default function ReportPage() {
                     // Define all bacteria types that should be included
                     const bacteriaKeys = ['C.Acne', 'C.Stri', 'S.Cap', 'S.Epi', 'C.Avi', 'C.Gran', 'S.Haem', 'S.Aur', 'C.Tub', 'S.Hom', 'C.Krop'];
                     
-                    // Calculate actual percentages for each category
+                    // Calculate actual percentages for each category with normalization
                     const bacteriaData = bacteriaKeys
                       .map(bacteria => {
                         const value = report[bacteria as keyof typeof report];
@@ -429,23 +429,31 @@ export default function ReportPage() {
                         };
                       });
 
-                    const totalDisruptive = bacteriaData
-                      .filter(item => item.status === 'above')
-                      .reduce((sum, item) => sum + item.value, 0);
+                    // Calculate total of all bacteria values for normalization
+                    const totalBacteriaValue = bacteriaData.reduce((sum, item) => sum + item.value, 0);
                     
-                    const totalNeutral = bacteriaData
-                      .filter(item => item.status === 'below')
-                      .reduce((sum, item) => sum + item.value, 0);
-                    
-                    const totalHelpful = bacteriaData
-                      .filter(item => item.status === 'optimal')
-                      .reduce((sum, item) => sum + item.value, 0);
+                    // Normalize each bacteria value to sum to 100%
+                    const normalizedBacteriaData = bacteriaData.map(item => ({
+                      ...item,
+                      normalizedValue: totalBacteriaValue > 0 ? (item.value / totalBacteriaValue * 100) : 0
+                    }));
 
-                    const total = totalDisruptive + totalNeutral + totalHelpful;
+                    const totalDisruptive = normalizedBacteriaData
+                      .filter(item => item.status === 'above')
+                      .reduce((sum, item) => sum + item.normalizedValue, 0);
                     
-                    const disruptivePercent = total > 0 ? (totalDisruptive / total * 100) : 0;
-                    const neutralPercent = total > 0 ? (totalNeutral / total * 100) : 0;
-                    const helpfulPercent = total > 0 ? (totalHelpful / total * 100) : 0;
+                    const totalNeutral = normalizedBacteriaData
+                      .filter(item => item.status === 'below')
+                      .reduce((sum, item) => sum + item.normalizedValue, 0);
+                    
+                    const totalHelpful = normalizedBacteriaData
+                      .filter(item => item.status === 'optimal')
+                      .reduce((sum, item) => sum + item.normalizedValue, 0);
+
+                    // These percentages should now sum to 100%
+                    const disruptivePercent = totalDisruptive;
+                    const neutralPercent = totalNeutral;
+                    const helpfulPercent = totalHelpful;
 
                     return (
                       <div className="flex justify-center gap-4 sm:gap-8 px-2 sm:px-0">
@@ -540,7 +548,7 @@ export default function ReportPage() {
                     // Define all bacteria types that should be included
                     const bacteriaKeys = ['C.Acne', 'C.Stri', 'S.Cap', 'S.Epi', 'C.Avi', 'C.Gran', 'S.Haem', 'S.Aur', 'C.Tub', 'S.Hom', 'C.Krop'];
                     
-                    // Create bacteria data with values for sorting
+                    // Create bacteria data with normalized values for sorting
                     const bacteriaData = bacteriaKeys.map(bacteria => {
                       const value = report[bacteria as keyof typeof report];
                       // Handle NaN values by setting them to 0 for bacteria calculations
@@ -550,12 +558,21 @@ export default function ReportPage() {
                         value: safeValue
                       };
                     });
+
+                    // Calculate total for normalization (same logic as composition bars)
+                    const totalBacteriaValue = bacteriaData.reduce((sum, item) => sum + item.value, 0);
                     
-                    // Sort by percentage from largest to smallest
-                    return bacteriaData
-                      .sort((a, b) => b.value - a.value)
-                      .map(({ bacteria, value: safeValue }) => {
-                        const status = getOptimalRangeStatus(bacteria, safeValue);
+                    // Normalize each bacteria value to sum to 100%
+                    const normalizedBacteriaData = bacteriaData.map(item => ({
+                      ...item,
+                      normalizedValue: totalBacteriaValue > 0 ? (item.value / totalBacteriaValue * 100) : 0
+                    }));
+                    
+                    // Sort by normalized percentage from largest to smallest
+                    return normalizedBacteriaData
+                      .sort((a, b) => b.normalizedValue - a.normalizedValue)
+                      .map(({ bacteria, normalizedValue }) => {
+                        const status = getOptimalRangeStatus(bacteria, normalizedValue);
                       const getStatusColor = (status: string) => {
                         switch (status) {
                           case 'above': return 'bg-red-500';
@@ -593,7 +610,7 @@ export default function ReportPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{safeValue < 0.1 ? '<0.1%' : `${safeValue.toFixed(1)}%`}</span>
+                              <span className="font-medium">{normalizedValue < 0.1 ? '<0.1%' : `${normalizedValue.toFixed(1)}%`}</span>
                               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
