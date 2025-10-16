@@ -16,6 +16,7 @@ import { CollapsibleBacteria } from "@/components/ui/collapsible-bacteria";
 import { ProductRoutineTabs } from "@/components/ui/product-routine-tabs";
 import optimalRanges from '@/dataAssets/optimal.json';
 import codex from '@/dataAssets/codex.json';
+import goodIngredientCodex from '@/dataAssets/good_ingredient_codex.json';
 import { useBacteria } from '@/app/context/BacteriaContext';
 import {
   Dialog,
@@ -96,6 +97,17 @@ const getBacteriaRoute = (bacteria: string) => {
   };
   
   return routeMap[bacteria] || bacteria;
+};
+
+// Mapping function to handle ingredient name inconsistencies between database and good_ingredient_codex.json
+// Most ingredients match exactly, but this function allows for future mapping needs
+const mapIngredientName = (ingredientName: string): string => {
+  const nameMap: { [key: string]: string } = {
+    // Add any ingredient name mappings here if needed
+    // For now, most ingredients match exactly between database and codex
+  };
+  
+  return nameMap[ingredientName] || ingredientName;
 };
 
 export default function ReportPage() {
@@ -800,14 +812,17 @@ export default function ReportPage() {
                           <h4 className="text-sm font-medium text-emerald-500">Recommended Ingredients</h4>
                         </div>
                         <div className="grid gap-3">
-                          {report.good_ingredients?.slice(0, 10).map((ingredient: string, index: number) => (
-                            <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
-                              <span className="font-medium text-emerald-500">{ingredient}</span>
-                              <p className="mt-1 text-sm text-muted-foreground">
-                                {codex.ingredients[ingredient as keyof typeof codex.ingredients]}
-                              </p>
-                            </div>
-                          ))}
+                          {report.good_ingredients?.slice(0, 10).map((ingredient: string, index: number) => {
+                            const mappedIngredient = mapIngredientName(ingredient);
+                            return (
+                              <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
+                                <span className="font-medium text-emerald-500">{ingredient}</span>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                  {goodIngredientCodex[mappedIngredient as keyof typeof goodIngredientCodex]?.description || 'No description available'}
+                                </p>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                       <div>

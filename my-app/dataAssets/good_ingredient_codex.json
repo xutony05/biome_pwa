@@ -26,7 +26,7 @@
     ]
   },
   "Squalane": {
-    "description": "Squalane is a naturally occurring lipid that helps maintain the skin’s barrier function, reducing moisture loss. It’s lightweight and non-comedogenic, making it suitable for all skin types.",
+    "description": "Squalane is a naturally occurring lipid that mimics the skin’s own sebum to strengthen the barrier and prevent moisture loss. Its lightweight, non-comedogenic texture absorbs easily without clogging pores, helping to balance hydration and support smooth, supple skin.",
     "bacteria": [
       "C. acnes",
       "C. granulosum",
@@ -75,7 +75,7 @@
     ]
   },
   "Ceramides": {
-    "description": "Ceramides are a type of lipid that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "description": "Ceramides are essential lipids that strengthen the skin’s natural barrier, locking in moisture and protecting against environmental stressors. They help restore smoothness, improve texture, and reduce redness by supporting the skin’s ability to retain hydration and defend against dryness.",
     "bacteria": [
       "C. acnes",
       "C. granulosum",
@@ -89,7 +89,7 @@
     ]
   },
   "Azelaic Acid": {
-    "description": "Azelaic acid is a naturally occurring acid that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "description": "Azelaic acid is a naturally occurring acid that helps refine skin texture and visibly reduce redness. It supports a healthy skin barrier by minimizing irritation, balancing oil production, and promoting even tone and smoothness for a clearer, more resilient complexion.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -109,7 +109,7 @@
     ]
   },
   "Zinc Oxide": {
-    "description": "Zinc oxide is a naturally occurring mineral that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "description": "Zinc oxide is a naturally occurring mineral known for its soothing and protective properties. It helps calm redness, refine texture, and strengthen the skin’s natural barrier. By forming a gentle shield against environmental stressors, it helps lock in moisture and reduce dryness for a balanced, healthy complexion.",
     "bacteria": [
       "C. acnes",
       "C. granulosum",
@@ -121,6 +121,7 @@
     ]
   },
   "Tocopherol": {
+    "description": "Tocopherol, a potent form of vitamin E, acts as a powerful antioxidant that protects skin cells from oxidative stress and environmental damage. It helps minimize the appearance of fine lines and wrinkles while improving overall skin texture. By reinforcing cell membranes and boosting the skin’s natural barrier function, tocopherol enhances moisture retention, leaving the complexion smoother, softer, and more resilient.",
     "bacteria": [
       "C. acnes",
       "C. granulosum",
@@ -131,6 +132,7 @@
     ]
   },
   "Green Tea Extract": {
+    "description": "Green tea extract is packed with powerful antioxidants that shield skin cells from oxidative stress and environmental damage. It helps smooth the appearance of fine lines and wrinkles while refining texture for a more even complexion. By strengthening cell membranes and supporting the skin’s natural barrier, green tea extract boosts hydration and resilience, leaving skin softer, smoother, and visibly healthier.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -139,6 +141,7 @@
     ]
   },
   "Benzoyl Peroxide": {
+    "description": "Benzoyl peroxide is a powerful antimicrobial that eliminates acne-causing bacteria and helps regulate excess oil. It clears existing breakouts, smooths skin texture, and prevents future blemishes by addressing the root cause of acne. By purifying pores and restoring balance, benzoyl peroxide promotes a clearer, healthier complexion.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -152,6 +155,7 @@
     ]
   },
   "Tea Tree Oil": {
+    "description": "Tea tree oil is a natural antiseptic with strong antimicrobial and anti-inflammatory properties. It helps regulate excess oil, eliminate acne-causing bacteria, and calm redness or irritation. By purifying pores and soothing the skin, tea tree oil promotes a clearer, more balanced, and healthier-looking complexion.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -165,11 +169,13 @@
     ]
   },
   "Blackcurrant Extract": {
+    "description": "Blackcurrant extract is packed with potent antioxidants that defend skin cells against oxidative stress and environmental aggressors. It helps minimize the appearance of fine lines and wrinkles while refining texture for a smoother, more even complexion. By reinforcing the skin’s natural barrier and enhancing hydration, blackcurrant extract leaves the skin supple, resilient, and visibly healthier.",
     "bacteria": [
       "S. aureus"
     ]
   },
   "Ethylhexylglycerin": {
+    "description": "Ethylhexylglycerin is a mild humectant that attracts and retains moisture to keep the skin hydrated and smooth. It supports the skin’s natural barrier, helping to lock in hydration and reduce dryness for a softer, more supple complexion.",
     "bacteria": [
       "C. avidum",
       "C. granulosum",
@@ -181,6 +187,7 @@
     ]
   },
   "Sodium Anisate": {
+    "description": "Sodium anisate is a natural, plant-derived preservative that helps protect the skin from harmful microbes while maintaining its natural balance. It supports the skin’s barrier function, helping to lock in moisture and prevent dryness. By keeping the skin hydrated and safeguarded, sodium anisate promotes a smoother, healthier, and more resilient complexion.",
     "bacteria": [
       "C. avidum",
       "C. kroppenstedtii",
@@ -189,6 +196,7 @@
     ]
   },
   "Oregano Oil": {
+    "description": "Oregano oil is a powerful natural antimicrobial that targets acne-causing bacteria and helps regulate excess oil production. It works to clear existing blemishes, refine skin texture, and prevent future breakouts by addressing the underlying causes of acne. By purifying pores and restoring the skin’s natural balance, oregano oil promotes a smoother, clearer, and healthier-looking complexion.",
     "bacteria": [
       "C. avidum",
       "C. granulosum",
@@ -200,6 +208,7 @@
     ]
   },
   "Colloidal Oatmeal": {
+    "description": "Colloidal oatmeal is a soothing, gentle exfoliant that helps remove dead skin cells to reveal a smoother, more refined texture. Rich in nourishing compounds, it strengthens the skin’s natural barrier, locks in moisture, and alleviates dryness and irritation. The result is softer, calmer, and more hydrated skin with improved resilience and comfort.",
     "bacteria": [
       "C. kroppenstedtii",
       "C. tuberculostearicum",
@@ -208,6 +217,7 @@
     ]
   },
   "Madecassoside": {
+    "description": "Madecassoside is a powerful antioxidant that helps protect skin cells from oxidative stress and environmental damage. It helps smooth the appearance of fine lines and wrinkles while improving texture for a more even complexion. By strengthening cell membranes and supporting the skin’s natural barrier, madecassoside boosts hydration and resilience, leaving skin softer, smoother, and visibly healthier.",
     "bacteria": [
       "C. kroppenstedtii",
       "S. aureus",
@@ -215,6 +225,7 @@
     ]
   },
   "Salicylic Acid": {
+    "description": "Salicylic acid is a beta hydroxy acid (BHA) that helps exfoliate the skin, unclogging pores and reducing inflammation. It works by penetrating deep into the pores to break down sebum and dead skin cells, leaving the skin smoother, clearer, and more even-toned. By regulating oil production and promoting cell turnover, salicylic acid supports a healthier, more resilient complexion.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -224,6 +235,7 @@
     ]
   },
   "Zinc PCA": {
+    "description": "Zinc PCA is a bioavailable form of zinc that helps regulate sebum production and minimize excess oil. It strengthens the skin’s natural barrier to maintain hydration and prevent dryness. By balancing oil levels and calming the skin, Zinc PCA helps keep the complexion fresh and comfortable.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -231,6 +243,7 @@
     ]
   },
   "Witch Hazel Extract": {
+    "description": "Witch hazel extract is a natural astringent that helps refine pores, control excess oil, and soothe irritation. Astringents work by gently tightening the skin and reducing excess sebum, which helps minimize the appearance of pores and leave the skin feeling firm and refreshed. Witch hazel also supports the skin’s protective barrier, helping to balance hydration and prevent dryness for a smooth, toned, and comfortable complexion.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -238,6 +251,7 @@
     ]
   },
   "Sodium Benzoate": {
+    "description": "Sodium benzoate is a natural preservative that helps protect the skin from harmful microbes while maintaining its natural balance. It supports the skin’s barrier function, helping to lock in moisture and prevent dryness. By keeping the skin hydrated and safeguarded, sodium benzoate promotes a smoother, healthier, and more resilient complexion.",
     "bacteria": [
       "C. acnes",
       "C. granulosum",
@@ -245,6 +259,7 @@
     ]
   },
   "Aloe Vera": {
+    "description": "Aloe vera is a natural moisturizer known for its soothing and hydrating properties. Rich in antioxidants, enzymes, and vitamins, it helps protect the skin from environmental stress and calm irritation. By replenishing moisture and supporting the skin’s natural healing process, aloe vera leaves the skin soft, refreshed, and comfortably hydrated.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -252,12 +267,14 @@
     ]
   },
   "Resveratrol": {
+    "description": "Resveratrol is a powerful antioxidant that helps protect skin cells from oxidative stress and environmental damage. It helps smooth the appearance of fine lines and wrinkles while improving texture for a more even complexion. By strengthening cell membranes and supporting the skin’s natural barrier, resveratrol boosts hydration and resilience, leaving skin softer, smoother, and visibly healthier.",
     "bacteria": [
       "C. acnes",
       "C. avidum"
     ]
   },
   "Centella Asiatica": {
+    "description": "Centella asiatica is a potent antioxidant and skin-soothing botanical known for its ability to protect against oxidative stress and environmental damage. It helps smooth fine lines, refine texture, and promote a more even, revitalized complexion. By reinforcing the skin’s natural barrier and enhancing hydration, Centella asiatica improves elasticity and leaves the skin calm, supple, and resilient.",
     "bacteria": [
       "C. acnes",
       "C. avidum",
@@ -266,6 +283,7 @@
     ]
   },
   "Phenoxyethanol": {
+    "description": "Phenoxyethanol is a gentle, broad-spectrum preservative that helps protect the skin from harmful microbes while maintaining its natural balance. It supports the skin’s barrier function to retain moisture and prevent dryness, ensuring long-lasting comfort and hydration. By keeping the skin clean and protected, phenoxyethanol helps maintain a healthy, balanced appearance.",
     "bacteria": [
       "C. striatum",
       "C. tuberculostearicum",
@@ -273,6 +291,7 @@
     ]
   },
   "Levulinic Acid": {
+    "description": "Levulinic acid is a naturally derived preservative that helps protect the skin from harmful microbes while supporting its natural balance. It reinforces the skin’s barrier to lock in moisture and prevent dryness, promoting lasting hydration and comfort. By keeping the skin purified and resilient, levulinic acid helps preserve a calm, healthy-looking complexion.",
     "bacteria": [
       "C. granulosum",
       "C. striatum",
@@ -281,6 +300,7 @@
     ]
   },
   "Allantoin": {
+    "description": "Allantoin is a natural skin-conditioning agent that helps soothe irritation, calm redness, and promote healing. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness. By supporting the skin’s natural healing process, allantoin leaves the complexion calmer, smoother, and more resilient.",
     "bacteria": [
       "C. striatum",
       "C. tuberculostearicum",
@@ -289,58 +309,69 @@
     ]
   },
   "Disodium EDTA": {
+    "description": "Disodium EDTA is a stabilizing agent that enhances the effectiveness and longevity of skincare formulations. It works by binding to metal ions that can destabilize products, helping to preserve purity and protect the skin from potential irritants. By supporting the skin’s natural balance and barrier function, disodium EDTA helps maintain clean, well-protected, and comfortably hydrated skin.",
     "bacteria": [
       "S. haemolyticus"
     ]
   },
   "Vitamin C": {
+    "description": "Vitamin C is a powerful antioxidant that defends the skin against oxidative stress and environmental aggressors while brightening dull, uneven tone. It helps diminish the appearance of fine lines and wrinkles, improving texture and radiance for a more luminous complexion. By stimulating collagen synthesis and reinforcing the skin’s natural barrier, Vitamin C enhances firmness, hydration, and long-term resilience.",
     "bacteria": [
       "C. kroppenstedtii"
     ]
   },
   "Fatty Acids": {
+    "description": "Fatty acids are essential lipids that strengthen the skin’s natural barrier, locking in moisture and protecting against environmental stressors. They help restore smoothness, improve texture, and reduce redness by supporting the skin’s ability to retain hydration and defend against dryness.",
     "bacteria": [
       "C. acnes",
       "S. epidermidis"
     ]
   },
   "Urea": {
+    "description": "Urea is a naturally occurring moisturizer that attracts and retains water within the skin, enhancing hydration and softness. It gently exfoliates to remove dead skin cells, improving texture and promoting smoother, more supple skin. By strengthening the skin’s barrier and reducing moisture loss, urea helps maintain lasting hydration and comfort.",
     "bacteria": [
       "C. acnes"
     ]
   },
   "Jojoba Oil": {
+    "description": "Jojoba oil is a natural emollient that mimics the skin’s own sebum to strengthen the barrier and prevent moisture loss. Its lightweight, non-comedogenic texture absorbs easily without clogging pores, helping to balance hydration and support smooth, supple skin. By reinforcing the skin’s natural barrier and enhancing moisture retention, jojoba oil leaves the complexion soft, balanced, and resilient.",
     "bacteria": [
       "C. acnes",
       "S. hominis"
     ]
   },
   "Mineral SPF": {
+    "description": "Mineral SPF is a broad-spectrum, physical sunscreen that shields the skin from harmful UVA and UVB rays while defending against environmental stressors like pollution and free radicals. Formulated with naturally occurring minerals such as zinc oxide or titanium dioxide, it helps prevent sunburn, calm irritation, and support the skin’s protective barrier.",
     "bacteria": [
       "C. acnes"
     ]
   },
   "Inulin": {
+    "description": "Inulin is a natural prebiotic fiber that supports a balanced skin microbiome by nourishing beneficial bacteria. It helps reinforce the skin’s protective barrier, improve moisture retention, and calm irritation. By fostering a healthy microbial balance, inulin enhances the skin’s overall comfort, resilience, and ability to defend against environmental stressors.",
     "bacteria": [
       "S. epidermidis"
     ]
   },
   "Oat Extract": {
+    "description": "Oat extract is a soothing botanical known for its ability to protect against oxidative stress and environmental damage. It helps smooth fine lines, refine texture, and promote a more even, revitalized complexion. By reinforcing the skin’s natural barrier and enhancing hydration, oat extract improves elasticity and leaves the skin calm, supple, and resilient.",
     "bacteria": [
       "S. epidermidis"
     ]
   },
   "Oat Lipids": {
+    "description": "Oat lipids are rich in essential fatty acids and antioxidants that help protect skin cells from oxidative stress and environmental damage. They work to smooth fine lines, refine texture, and promote a more even, radiant complexion. By reinforcing the skin’s natural barrier and enhancing moisture retention, oat lipids restore suppleness and resilience, leaving the skin soft, hydrated, and healthy-looking.",
     "bacteria": [
       "S. epidermidis"
     ]
   },
   "Prebiotic Ferments": {
+    "description": "Prebiotic ferments are a synergistic blend of natural yeasts and beneficial bacteria that help nourish the skin’s microbiome and support a healthy microbial balance. They strengthen the skin’s barrier, enhance moisture retention, and calm irritation. By reinforcing the skin’s natural defenses, prebiotic ferments promote lasting hydration, comfort, and resilience against environmental stressors.",
     "bacteria": [
       "S. epidermidis"
     ]
   },
   "Shea Butter": {
+    "description": "Shea butter is a deeply nourishing emollient rich in vitamins and fatty acids that help strengthen the skin’s natural barrier and seal in moisture. It soothes irritation, supports the skin’s natural healing process, and alleviates dryness for improved texture and comfort. By restoring hydration and elasticity, shea butter leaves the skin soft, smooth, and well-balanced.",
     "bacteria": [
       "S. hominis"
     ]
