@@ -528,12 +528,21 @@ export default function ReportPage() {
                     // Define all bacteria types that should be included
                     const bacteriaKeys = ['C.Acne', 'C.Stri', 'S.Cap', 'S.Epi', 'C.Avi', 'C.Gran', 'S.Haem', 'S.Aur', 'C.Tub', 'S.Hom', 'C.Krop'];
                     
-                    return bacteriaKeys
-                      .sort((a, b) => a.localeCompare(b))
-                      .map(bacteria => {
-                        const value = report[bacteria as keyof typeof report];
-                        // Handle NaN values by setting them to 0 for bacteria calculations
-                        const safeValue = (value !== null && value !== undefined && !isNaN(value as number)) ? value as number : 0;
+                    // Create bacteria data with values for sorting
+                    const bacteriaData = bacteriaKeys.map(bacteria => {
+                      const value = report[bacteria as keyof typeof report];
+                      // Handle NaN values by setting them to 0 for bacteria calculations
+                      const safeValue = (value !== null && value !== undefined && !isNaN(value as number)) ? value as number : 0;
+                      return {
+                        bacteria,
+                        value: safeValue
+                      };
+                    });
+                    
+                    // Sort by percentage from largest to smallest
+                    return bacteriaData
+                      .sort((a, b) => b.value - a.value)
+                      .map(({ bacteria, value: safeValue }) => {
                         const status = getOptimalRangeStatus(bacteria, safeValue);
                       const getStatusColor = (status: string) => {
                         switch (status) {

@@ -1,0 +1,348 @@
+{
+  "Glycerin": {
+    "description": "Glycerin is a highly effective humectant that draws water into the outer layer of the skin to boost hydration and elasticity. It helps reinforce the skin’s protective barrier, reducing moisture loss. This keeps the skin balanced, smooth, and resilient.",
+    "bacteria": [
+      "C. acnes",
+      "S. aureus",
+      "S. epidermidis",
+      "S. haemolyticus",
+      "S. hominis"
+    ]
+  },
+  "Panthenol": {
+    "description": "Panthenol, also known as vitamin B5, is a humectant that attracts and binds water within the skin, improving hydration and surface smoothness. It reinforces the skin’s natural barrier, enhancing moisture retention and reducing dryness. Over time, it helps soothe irritation and supports a healthier, more resilient complexion.",
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. epidermidis",
+      "S. haemolyticus",
+      "S. hominis"
+    ]
+  },
+  "Squalane": {
+    "description": "Squalane is a naturally occurring lipid that helps maintain the skin’s barrier function, reducing moisture loss. It’s lightweight and non-comedogenic, making it suitable for all skin types.",
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. epidermidis",
+      "S. haemolyticus",
+      "S. hominis"
+    ]
+  },
+  "Niacinamide": {
+    "description": "Niacinamide is a form of vitamin B3 that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. epidermidis",
+      "S. haemolyticus",
+      "S. hominis"
+    ]
+  },
+  "Sodium PCA": {
+    "description": "Sodium PCA is a humectant that helps draw water into the skin to improve hydration and smoothness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "S. epidermidis"
+    ]
+  },
+  "Beta-Glucan": {
+    "description": "Beta-glucan is a polysaccharide that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. tuberculostearicum",
+      "S. epidermidis",
+      "S. hominis"
+    ]
+  },
+  "Ceramides": {
+    "description": "Ceramides are a type of lipid that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. epidermidis",
+      "S. haemolyticus",
+      "S. hominis"
+    ]
+  },
+  "Azelaic Acid": {
+    "description": "Azelaic acid is a naturally occurring acid that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Hyaluronic Acid": {
+    "description": "Hyaluronic acid is a naturally occurring acid that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes"
+    ]
+  },
+  "Zinc Oxide": {
+    "description": "Zinc oxide is a naturally occurring mineral that helps improve skin texture and reduce redness. It works by enhancing the skin’s natural barrier function, helping to retain moisture and reduce dryness.",
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Tocopherol": {
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. striatum",
+      "S. aureus",
+      "S. epidermidis",
+      "S. hominis"
+    ]
+  },
+  "Green Tea Extract": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. striatum",
+      "S. capitis"
+    ]
+  },
+  "Benzoyl Peroxide": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Tea Tree Oil": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Blackcurrant Extract": {
+    "bacteria": [
+      "S. aureus"
+    ]
+  },
+  "Ethylhexylglycerin": {
+    "bacteria": [
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis"
+    ]
+  },
+  "Sodium Anisate": {
+    "bacteria": [
+      "C. avidum",
+      "C. kroppenstedtii",
+      "S. aureus",
+      "S. haemolyticus"
+    ]
+  },
+  "Oregano Oil": {
+    "bacteria": [
+      "C. avidum",
+      "C. granulosum",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Colloidal Oatmeal": {
+    "bacteria": [
+      "C. kroppenstedtii",
+      "C. tuberculostearicum",
+      "S. aureus",
+      "S. haemolyticus"
+    ]
+  },
+  "Madecassoside": {
+    "bacteria": [
+      "C. kroppenstedtii",
+      "S. aureus",
+      "S. haemolyticus"
+    ]
+  },
+  "Salicylic Acid": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "C. kroppenstedtii",
+      "S. capitis"
+    ]
+  },
+  "Zinc PCA": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. striatum"
+    ]
+  },
+  "Witch Hazel Extract": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "S. capitis"
+    ]
+  },
+  "Sodium Benzoate": {
+    "bacteria": [
+      "C. acnes",
+      "C. granulosum",
+      "C. striatum"
+    ]
+  },
+  "Aloe Vera": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. striatum"
+    ]
+  },
+  "Resveratrol": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum"
+    ]
+  },
+  "Centella Asiatica": {
+    "bacteria": [
+      "C. acnes",
+      "C. avidum",
+      "C. granulosum",
+      "S. capitis"
+    ]
+  },
+  "Phenoxyethanol": {
+    "bacteria": [
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. capitis"
+    ]
+  },
+  "Levulinic Acid": {
+    "bacteria": [
+      "C. granulosum",
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. capitis"
+    ]
+  },
+  "Allantoin": {
+    "bacteria": [
+      "C. striatum",
+      "C. tuberculostearicum",
+      "S. capitis",
+      "S. haemolyticus"
+    ]
+  },
+  "Disodium EDTA": {
+    "bacteria": [
+      "S. haemolyticus"
+    ]
+  },
+  "Vitamin C": {
+    "bacteria": [
+      "C. kroppenstedtii"
+    ]
+  },
+  "Fatty Acids": {
+    "bacteria": [
+      "C. acnes",
+      "S. epidermidis"
+    ]
+  },
+  "Urea": {
+    "bacteria": [
+      "C. acnes"
+    ]
+  },
+  "Jojoba Oil": {
+    "bacteria": [
+      "C. acnes",
+      "S. hominis"
+    ]
+  },
+  "Mineral SPF": {
+    "bacteria": [
+      "C. acnes"
+    ]
+  },
+  "Inulin": {
+    "bacteria": [
+      "S. epidermidis"
+    ]
+  },
+  "Oat Extract": {
+    "bacteria": [
+      "S. epidermidis"
+    ]
+  },
+  "Oat Lipids": {
+    "bacteria": [
+      "S. epidermidis"
+    ]
+  },
+  "Prebiotic Ferments": {
+    "bacteria": [
+      "S. epidermidis"
+    ]
+  },
+  "Shea Butter": {
+    "bacteria": [
+      "S. hominis"
+    ]
+  }
+}
