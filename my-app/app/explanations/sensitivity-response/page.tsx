@@ -58,14 +58,14 @@ export default function SensitivityResponseExplanation() {
                 A higher score indicates:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Better tolerance to skincare products</li>
-                <li>Reduced likelihood of irritation</li>
-                <li>More resilient skin barrier</li>
-                <li>Better protection against environmental stressors</li>
+                <li>Higher likelihood of skin irritation</li>
+                <li>More reactive to skincare products</li>
+                <li>Weaker skin barrier function</li>
+                <li>Greater susceptibility to environmental stressors</li>
               </ul>
               <p>
-                The score is normalized to a 0-100 scale, where higher scores indicate better skin resilience 
-                and lower sensitivity. This score can help guide your skincare choices and help you understand 
+                The score is normalized to a 0-100 scale, where higher scores indicate greater skin sensitivity 
+                and lower resilience. This score can help guide your skincare choices and help you understand 
                 how your skin's microbiome composition affects its sensitivity to various factors.
               </p>
             </div>
