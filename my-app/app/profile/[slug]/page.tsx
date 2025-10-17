@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getReportByNumber, type Report } from '@/app/lib/supabase';
+import { getReportByNumber, getLastSurvey, type Report } from '@/app/lib/supabase';
 import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateSebumIndex, calculateSensitivityScore } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -133,6 +133,7 @@ export default function ReportPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
+  const [surveyAge, setSurveyAge] = useState<number | null>(null);
   const { setValues } = useBacteria();
   const [isMobile, setIsMobile] = useState(false);
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
@@ -148,8 +149,18 @@ export default function ReportPage() {
   useEffect(() => {
     async function fetchReport() {
       if (user?.email) {
-        const reportData = await getReportByNumber(user.email, Number(params.slug));
+        const [reportData, surveyData] = await Promise.all([
+          getReportByNumber(user.email, Number(params.slug)),
+          getLastSurvey(user.email)
+        ]);
+        
         setReport(reportData);
+        
+        // Set survey age for sensitivity calculation
+        if (surveyData?.age) {
+          setSurveyAge(parseInt(surveyData.age));
+        }
+        
         // Set bacteria values
         if (reportData) {
           setValues({
@@ -275,7 +286,10 @@ export default function ReportPage() {
   const antioxidantScoreResult = calculateAntioxidantScore(bacteriaPercentages, report.age);
   const antioxidantScore = antioxidantScoreResult.final_score;
   const sebumIndex = calculateSebumIndex(bacteriaPercentages, report.age);
-  const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, report.age < 40 ? 'young' : 'old');
+  // Use survey age for sensitivity calculation, fallback to report age if survey age is not available
+  const ageForSensitivity = surveyAge !== null ? surveyAge : report.age;
+  
+  const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, ageForSensitivity < 40 ? 'YOUNG' : 'OLD');
   const sensitivityScore = sensitivityScoreResult.final_score;
 
   return (

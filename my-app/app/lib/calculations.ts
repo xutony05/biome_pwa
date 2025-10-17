@@ -1018,212 +1018,290 @@ export function calculateFirmnessScore(bacteriaPercentages: BacteriaPercentages)
 
 // --- Sensitivity Score Configuration Constants ---
 
-// Weights for Pro-Inflammatory Species (Sensitivity Points)
-const SENSITIVITY_WEIGHTS = {
-    'S. aureus': 35,
-    'S. haemolyticus': 25,
-    'S. epidermidis': 0, // Ignored in sensitivity calc, handled in deduction
-    'C. acnes': 0, // Ignored in sensitivity calc, handled in deduction
-    'S. hominis': 0, // Ignored in sensitivity calc, handled in deduction
-    'C. kroppenstedtii': 10,
-    'C. striatum': 8,
-    'S. capitis': 7,
-    'C. avidum': 5,
-    'C. granulosum': 5,
-    'C. tuberculostearicum': 5,
-};
-
-// Maximum Abundance Thresholds for Pro-Inflammatory Species (age-dependent)
-const SENSITIVITY_THRESHOLDS = {
-    'young': { // Under 40
-        'S. aureus': { max: 1.0 },
-        'S. haemolyticus': { max: 1.0 },
-        'C. kroppenstedtii': { max: 5.0 },
-        'S. capitis': { max: 5.0 },
-        'C. striatum': { max: 5.0 },
-        'C. avidum': { max: 5.0 },
-        'C. granulosum': { max: 1.0 },
-        'C. tuberculostearicum': { max: 0.5 },
-    },
-    'old': { // 40 and older
-        'S. aureus': { max: 1.0 },
-        'S. haemolyticus': { max: 1.0 },
-        'C. kroppenstedtii': { max: 15.0 },
-        'S. capitis': { max: 5.0 },
-        'C. striatum': { max: 5.0 },
-        'C. avidum': { max: 5.0 },
-        'C. granulosum': { max: 1.0 },
-        'C. tuberculostearicum': { max: 0.5 },
-    },
-};
-
-// Rules for Protective Species (Deduction Points)
-const DEDUCTION_RULES = {
-    'young': {
-        'S. epidermidis': { weight: 35, optimal: 5.0, capBelow: 1.0, capAbove: 30.0 },
-        'C. acnes': { weight: 30, optimal: 74.0, capBelow: 40.0, capAbove: 90.0 },
-        'S. hominis': { weight: 5, optimal: 1.0, capBelow: 0.1, capAbove: 10.0 },
-    },
-    'old': {
-        'S. epidermidis': { weight: 35, optimal: 12.0, capBelow: 5.0, capAbove: 35.0 },
-        'C. acnes': { weight: 30, optimal: 40.0, capBelow: 20.0, capAbove: 70.0 },
-        'S. hominis': { weight: 5, optimal: 1.0, capBelow: 0.1, capAbove: 10.0 },
-    },
-};
-        
-// --- Scoring Constants ---
-const BASELINE_SCORE = 50;
+/**
+ * Helper class for bacteria with defined min/max range boundaries.
+ * This represents optimal ranges for bacterial concentrations.
+ */
+interface Range {
+    min: number;
+    max: number;
+}
 
 /**
- * Calculates the Skin Sensitivity Score using a complex algorithm that considers:
- * - Pro-inflammatory species that contribute sensitivity points when above thresholds
- * - Protective species that provide deduction points based on optimal ranges
- * - Age-dependent thresholds and optimal ranges
- * 
- * @param bacteriaPercentages - Object containing bacterial species percentages
- * @param ageGroup - The age group ('young' for under 40, 'old' for 40 and older)
- * @returns An object containing the final score and detailed breakdown
+ * Enumeration for Age Group (maps to range data)
+ * This determines which set of optimal ranges to use for calculations.
  */
-export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages, ageGroup: 'young' | 'old'): {
-    final_score: number;
-    sensitivity_points_earned: number;
-    total_deduction: number;
-    score_details: Record<string, { points: number; calculation: string }>;
-} {
-    // Validate age group input
-    if (ageGroup !== 'young' && ageGroup !== 'old') {
-        console.error("ageGroup must be 'young' or 'old'");
-        return { final_score: 0, sensitivity_points_earned: 0, total_deduction: 0, score_details: {} };
-    }
-        
-    let sensitivityPoints = 0; 
-    let totalDeduction = 0;    
-    const currentST = SENSITIVITY_THRESHOLDS[ageGroup];
-    const currentDR = DEDUCTION_RULES[ageGroup];
-    const scoreDetails: Record<string, { points: number; calculation: string }> = {};
+export type AgeGroup = 'YOUNG' | 'OLD';
 
+/**
+ * Map to hold all optimal ranges, indexed by AgeGroup.
+ * Contains the optimal bacterial concentrations for different age groups.
+ * All percentages are expected as double values (e.g., 1.6 for 1.6%).
+ */
+const SENSITIVITY_RANGES: Record<AgeGroup, Record<string, number | Range>> = {
+    // --- YOUNG (Under 40) Ranges ---
+    YOUNG: {
+        'S.Epi': 5.0,   // S. epidermidis (Optimal Center)
+        'C.Acne': 74.0,        // C. acnes (Optimal Center)
+        'C.Krop': { min: 2.0, max: 2.0 }, // C. kroppenstedtii
+        'S.Cap': { min: 0.0, max: 5.0 },        // S. capitis
+        'C.Stri': { min: 0.0, max: 5.0 },       // C. striatum
+        'C.Tub': { min: 0.0, max: 0.5 }, // C. tuberculostearicum
+        'C.Avi': { min: 0.0, max: 5.0 },         // C. avidum
+        'C.Gran': { min: 0.0, max: 1.0 },     // C. granulosum
+        'S.Haem': { min: 0.0, max: 1.0 },  // S. haemolyticus
+        'S.Hom': 1.0,       // S. hominis (Optimal Max)
+        'S.Aur': { min: 0.0, max: 1.0 },         // S. aureus
+    },
+    
+    // --- OLD (40 and Over) Ranges ---
+    OLD: {
+        'S.Epi': 12.0,
+        'C.Acne': 40.0,
+        'C.Krop': { min: 10.0, max: 16.0 },
+        'S.Cap': { min: 0.0, max: 5.0 },
+        'C.Stri': { min: 0.0, max: 5.0 },
+        'C.Tub': { min: 0.0, max: 0.5 },
+        'C.Avi': { min: 0.0, max: 5.0 },
+        'C.Gran': { min: 0.0, max: 1.0 },
+        'S.Haem': { min: 0.0, max: 1.0 },
+        'S.Hom': 1.0,
+        'S.Aur': { min: 0.0, max: 1.0 },
+    },
+};
+
+/**
+ * Helper function to convert age to AgeGroup enum.
+ * This function determines whether a person is considered 'YOUNG' (under 40) or 'OLD' (40 and older).
+ * 
+ * @param age - The person's age
+ * @returns The corresponding AgeGroup ('YOUNG' or 'OLD')
+ */
+export function getAgeGroup(age: number): AgeGroup {
+    return age < 40 ? 'YOUNG' : 'OLD';
+}
+
+/**
+ * Calculates the Sensitivity Score based on the provided bacterial data and age group.
+ * This function implements the specific scoring logic for skin sensitivity based on
+ * 11 bacterial concentration percentages and the user's age group.
+ * The final score is clamped between 0 (least sensitive) and 100 (most sensitive).
+ * All percentages are expected as double values (e.g., 1.6 for 1.6%).
+ *
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param ageGroup - The age group ('YOUNG' for under 40, 'OLD' for 40 and older)
+ * @returns The final sensitivity score as an integer (0 to 100)
+ */
+export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages, ageGroup: AgeGroup): { final_score: number };
+/**
+ * Calculates the Sensitivity Score based on the provided bacterial data and age.
+ * This is a convenience overload that automatically determines the age group.
+ *
+ * @param bacteriaPercentages - Object containing bacterial species percentages
+ * @param age - The person's age (used to determine age group)
+ * @returns An object containing the final sensitivity score as an integer (0 to 100)
+ */
+export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages, age: number): { final_score: number };
+export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentages, ageOrGroup: number | AgeGroup): { final_score: number } {
+    // Determine the age group - if a number is passed, convert it to AgeGroup
+  const ageGroup: AgeGroup = typeof ageOrGroup === 'number' ? getAgeGroup(ageOrGroup) : ageOrGroup;
+    
+    // Start with baseline score of 50
+    let score = 50.0;
+    
+    // Get the current ranges for the specified age group
+    const currentRanges = SENSITIVITY_RANGES[ageGroup];
+    
     // Normalize bacteria percentages to sum to 100, excluding "other" bacteria
     const normalizedBacteria = normalizeBacteriaPercentages(bacteriaPercentages);
+
+    // --- 1. Extract Data ---
+    const saur = normalizedBacteria['S.Aur'] || 0.0;
+    const shae = normalizedBacteria['S.Haem'] || 0.0;
+    const ckro = normalizedBacteria['C.Krop'] || 0.0;
+    const cstr = normalizedBacteria['C.Stri'] || 0.0;
+    const scap = normalizedBacteria['S.Cap'] || 0.0;
+    const cavi = normalizedBacteria['C.Avi'] || 0.0;
+    const cgra = normalizedBacteria['C.Gran'] || 0.0;
+    const ctub = normalizedBacteria['C.Tub'] || 0.0;
+    const sepi = normalizedBacteria['S.Epi'] || 0.0;
+    const shom = normalizedBacteria['S.Hom'] || 0.0;
+    const cacn = normalizedBacteria['C.Acne'] || 0.0;
     
-    // Convert bacteria names from existing format to new algorithm format
-    const abundances: Record<string, number> = {};
-    for (const [oldName, percentage] of Object.entries(normalizedBacteria)) {
-        const newName = BACTERIA_NAME_MAPPING[oldName as keyof typeof BACTERIA_NAME_MAPPING];
-        if (newName && percentage !== undefined && percentage !== null) {
-            abundances[newName] = parseFloat(percentage.toString()) || 0.0;
+
+    // --- 2. Calculate Penalties (Additions to Score) ---
+
+    // S. aureus penalties
+    const saurRange = currentRanges['S.Aur'] as Range;
+    if (saur > saurRange.max) { // > 1.0%
+        score += 25;
+        if (saur > 5) {
+            score += 10; // Cumulative: +10 if > 5.0%
+        }
+    }
+    // General Extreme Penalty (Excluding C. acnes, S. hominis, S. epidermidis, C. kroppenstedtii)
+    if (saur > saurRange.max + 10) {
+        score += 10;
+    }
+
+    // S. haemolyticus penalties
+    const shaeRange = currentRanges['S.Haem'] as Range;
+    if (shae > shaeRange.max) { // > 1.0%
+        score += 25;
+    }
+    if (shae > shaeRange.max + 10) {
+        score += 10;
+    }
+
+    // C. kroppenstedtii penalties (Uses specific tiered penalties ONLY)
+    const ckroRange = currentRanges['C.Krop'] as Range;
+    if (ckro > ckroRange.max) {
+        score += 15;
+        if (ckro > ckroRange.max + 5) {
+            score += 10; // Cumulative: +10 if > Max + 5
         }
     }
 
-    // --- SENSITIVITY POINTS (Pro-Inflammatory Species) ---
-    // Get all species that have positive weights (contribute to sensitivity)
-    const sensitivitySpecies = Object.keys(SENSITIVITY_WEIGHTS).filter(
-        name => SENSITIVITY_WEIGHTS[name as keyof typeof SENSITIVITY_WEIGHTS] > 0
-    );
-
-    for (const name of sensitivitySpecies) {
-        const weight = SENSITIVITY_WEIGHTS[name as keyof typeof SENSITIVITY_WEIGHTS];
-        const actual = abundances[name] || 0.0;
-        const maxThreshold = currentST[name as keyof typeof currentST].max;
-
-        let points = 0;
-        let calculation = "";
-
-        if (actual > maxThreshold) {
-            // Full points if above threshold
-            points = weight;
-            calculation = `Actual ${actual.toFixed(4)}% > Threshold ${maxThreshold}%. Full Points: ${points}`;
-        } else if (actual > 0) {
-            // Scaled points if below threshold
-            const scalingFactor = actual / maxThreshold;
-            points = weight * scalingFactor;
-            calculation = `Weight (${weight}) * (${actual.toFixed(4)} / ${maxThreshold}) = ${points.toFixed(4)} pts`;
-        } else {
-            calculation = `Actual ${actual.toFixed(4)}%. Points: 0`;
-        }
-        
-        sensitivityPoints += points;
-        scoreDetails[name] = { points: points, calculation: calculation };
+    // C. striatum penalties
+    const cstrRange = currentRanges['C.Stri'] as Range;
+    if (cstr > cstrRange.max) { // > 5.0%
+        score += 10;
+    }
+    if (cstr > cstrRange.max + 10) {
+        score += 10;
     }
 
-    // --- DEDUCTIONS (Anti-Inflammatory/Barrier-Protective Species) ---
-    const deductionSpecies = ['S. epidermidis', 'C. acnes', 'S. hominis'];
-
-    for (const name of deductionSpecies) {
-        const rules = currentDR[name as keyof typeof currentDR];
-        const actual = abundances[name] || 0.0;
-        const optimal = rules.optimal;
-        const weight = rules.weight;
-
-        let deduction = 0;
-        let hardCapExceeded = false;
-        let effectiveDenominator = 0;
-        const deviation = Math.abs(actual - optimal);
-        
-        let calculation = "";
-
-        // S. epidermidis and S. hominis: Optimal is low. Below optimal is worse (less deduction), above optimal is also worse.
-        if (name === 'S. epidermidis' || name === 'S. hominis') {
-            // Check hard caps
-            if (actual < rules.capBelow || actual > rules.capAbove) { 
-                hardCapExceeded = true;
-            } else if (actual < optimal) {
-                 // Denominator is optimal value (steeper penalty for being too low)
-                effectiveDenominator = optimal;
-            } else {
-                // Denominator is the capAbove value (flatter penalty for being too high)
-                effectiveDenominator = rules.capAbove;
-            }
-        
-        } 
-        
-        // C. acnes: Optimal is high. Below optimal is worse, but too high is also bad.
-        else if (name === 'C. acnes') {
-            // Check hard caps
-            if (actual < rules.capBelow || actual > rules.capAbove) {
-                hardCapExceeded = true;
-            } else if (actual < optimal) {
-                // Denominator is capBelow (steeper penalty for being too low)
-                effectiveDenominator = rules.capBelow;
-            } else {
-                // Denominator is optimal value (flatter penalty for being too high)
-                effectiveDenominator = optimal;
-            }
-        }
-
-        if (effectiveDenominator === 0 && !hardCapExceeded) {
-             deduction = 0; 
-        } else if (hardCapExceeded) {
-            // Loss of all deduction points if outside the hard cap range
-            deduction = 0; 
-            calculation = `Hard Cap exceeded (Actual: ${actual.toFixed(4)}%, Cap Range: ${rules.capBelow}-${rules.capAbove}%) -> Deduction: 0`;
-        } else {
-            // Calculate proportional deduction
-            const penaltyFactor = deviation / effectiveDenominator; 
-            deduction = Math.max(0, weight * (1 - penaltyFactor));
-            calculation = (
-                `Weight (${weight}) * Math.max(0, 1 - (|${actual.toFixed(4)} - ${optimal.toFixed(4)}| / ${effectiveDenominator.toFixed(4)})) `
-                + `= ${deduction.toFixed(4)} pts`
-            );
-        }
-
-        totalDeduction += deduction;
-        scoreDetails[name] = { 
-            points: -deduction, 
-            calculation: `Deduction: -${deduction.toFixed(4)} pts | ${calculation}` 
-        };
+    // S. capitis penalties
+    const scapRange = currentRanges['S.Cap'] as Range;
+    if (scap > scapRange.max) { // > 5.0%
+        score += 10;
+    }
+    if (scap > scapRange.max + 10) {
+        score += 10;
     }
 
-    // --- Final Score Calculation ---
-    // Start at 50, add sensitivity points, subtract deduction points.
-    const rawScore = BASELINE_SCORE + sensitivityPoints - totalDeduction;
-    
-    // Clamp the score between 0 and 100
-    const finalScore = Math.min(100, Math.max(0, rawScore)); 
+    // C. avidum penalties
+    const caviRange = currentRanges['C.Avi'] as Range;
+    if (cavi > caviRange.max) { // > 5.0%
+        score += 5;
+    }
+    if (cavi > caviRange.max + 10) {
+        score += 10;
+    }
 
-    return { 
-        final_score: parseFloat(finalScore.toFixed(4)),
-        sensitivity_points_earned: parseFloat(sensitivityPoints.toFixed(4)),
-        total_deduction: parseFloat(totalDeduction.toFixed(4)),
-        score_details: scoreDetails
-    };
+    // C. granulosum penalties
+    const cgraRange = currentRanges['C.Gran'] as Range;
+    if (cgra > cgraRange.max) { // > 1.0%
+        score += 5;
+    }
+    if (cgra > cgraRange.max + 10) {
+        score += 10;
+    }
+
+    // C. tuberculostearicum penalties
+    const ctubRange = currentRanges['C.Tub'] as Range;
+    if (ctub > ctubRange.max) { // > 0.5%
+        score += 5;
+    }
+    if (ctub > ctubRange.max + 10) {
+        score += 10;
+    }
+
+    // --- 3. Calculate Deductions (Subtractions from Score) ---
+
+    // A. S. epidermidis Deduction (SEpi)
+    let deductionSEpi = 0;
+    const optSEpi = currentRanges['S.Epi'] as number;
+
+    if (ageGroup === 'YOUNG') {
+        if (sepi >= 4 && sepi <= 6) deductionSEpi = -35;
+        else if (sepi > 6 || (sepi >= 2 && sepi <= 4)) deductionSEpi = -20;
+        else if (sepi > 1 && sepi < 2) deductionSEpi = -5;
+    } else { // OLD
+        if (sepi >= 10 && sepi <= 14) deductionSEpi = -35;
+        else if (sepi >= 5 && sepi < 10) deductionSEpi = -20;
+        else if (sepi >= 1 && sepi < 5) deductionSEpi = -5;
+    }
+    score += deductionSEpi;
+
+    // B. S. hominis Deduction (SHom)
+    let deductionSHom = 0;
+    const optSHom = currentRanges['S.Hom'] as number;
+    const weightSHom = 5.0;
+
+    if (shom <= 10.0) { // No deduction if > 10%
+        if (shom >= optSHom) {
+            deductionSHom = -weightSHom; // Full deduction (-5)
+        } else if (shom < optSHom) {
+            // Proportional deduction
+            deductionSHom = -(shom / optSHom) * weightSHom;
+        }
+    }
+    score += deductionSHom;
+
+    // C. C. acnes Deduction/Penalty (CAcn)
+    let deductionCAcn = 0;
+    const optCAcn = currentRanges['C.Acne'] as number;
+    const diff = cacn - optCAcn;
+
+    if (ageGroup === 'YOUNG') {
+        // Young Optimal: 74%. Full deduction range: 70% to 78% (diff: -4 to 4)
+        if (diff >= -4 && diff <= 4) { 
+            deductionCAcn = 30;
+        // Penalty threshold: > 82% (diff > 8)
+        } else if (diff > 8) { 
+            deductionCAcn = 15; // Penalty
+        }
+    } else { // OLD
+        // Old Optimal: 40%. Full deduction range: 35% to 60% (diff: -5 to 20)
+        if (diff >= -5 && diff <= 20) { 
+            deductionCAcn = 30;
+        // Penalty threshold: > 75% (diff > 35)
+        } else if (diff > 35) { 
+            deductionCAcn = 15; // Penalty
+        }
+    }
+    score += deductionCAcn;
+
+    // --- 4. Final Score Clamping (0 to 100) ---
+    const finalScore = Math.round(Math.max(0, Math.min(100, score)));
+    return { final_score: finalScore };
 }
+
+// --- Example Usage (for testing) ---
+/**
+ * Example usage of the sensitivity score calculation.
+ * This demonstrates how to use the function with sample data.
+ * 
+ * Uncomment the code below to test the implementation:
+ */
+/*
+// Example Data Set (from the Java implementation)
+const sampleData: BacteriaPercentages = {
+    'C.Acne': 66.0,
+    'S.Epi': 1.6,
+    'S.Hom': 0.8,
+    'S.Cap': 0.0,
+    'S.Haem': 0.0,
+    'C.Krop': 11.4,
+    'C.Stri': 0.2,
+    'C.Avi': 0.0,
+    'C.Gran': 16.6,
+    'C.Tub': 0.1,
+    'S.Aur': 0.0,
+};
+
+// Calculate for a Young user (Under 40)
+const youngScoreResult = calculateSensitivityScore(sampleData, 25); // Using age
+console.log("Sensitivity Score (Young): " + youngScoreResult.final_score + " / 100");
+
+// Calculate for an Old user (40 and Over)
+const oldScoreResult = calculateSensitivityScore(sampleData, 50); // Using age
+console.log("Sensitivity Score (Old): " + oldScoreResult.final_score + " / 100");
+
+// Alternative: Using AgeGroup directly
+const youngScoreDirect = calculateSensitivityScore(sampleData, 'YOUNG');
+const oldScoreDirect = calculateSensitivityScore(sampleData, 'OLD');
+console.log("Sensitivity Score (Young, direct): " + youngScoreDirect.final_score + " / 100");
+console.log("Sensitivity Score (Old, direct): " + oldScoreDirect.final_score + " / 100");
+*/
