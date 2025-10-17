@@ -110,6 +110,20 @@ const mapIngredientName = (ingredientName: string): string => {
   return nameMap[ingredientName] || ingredientName;
 };
 
+// Function to get bacteria color based on bacteria type (matching the image design)
+const getBacteriaColor = (bacteria: string): string => {
+  // Red dots for harmful/problematic bacteria
+  if (bacteria.includes('S. aureus') || bacteria.includes('C. acnes') || bacteria.includes('S. haemolyticus')) {
+    return 'bg-red-500';
+  }
+  // Green dots for beneficial bacteria
+  if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis')) {
+    return 'bg-green-500';
+  }
+  // Blue dots for neutral bacteria
+  return 'bg-blue-400';
+};
+
 export default function ReportPage() {
   const params = useParams();
   const router = useRouter();
@@ -828,15 +842,46 @@ export default function ReportPage() {
                           <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                           <h4 className="text-sm font-medium text-emerald-500">Recommended Ingredients</h4>
                         </div>
-                        <div className="grid gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {report.good_ingredients?.slice(0, 10).map((ingredient: string, index: number) => {
                             const mappedIngredient = mapIngredientName(ingredient);
+                            const ingredientData = goodIngredientCodex[mappedIngredient as keyof typeof goodIngredientCodex];
+                            const bacteriaList = ingredientData?.bacteria || [];
+                            
                             return (
                               <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
-                                <span className="font-medium text-emerald-500">{ingredient}</span>
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                  {goodIngredientCodex[mappedIngredient as keyof typeof goodIngredientCodex]?.description || 'No description available'}
+                                <div className="mb-2">
+                                  <span className="font-medium text-emerald-500">{ingredient}</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">
+                                  {ingredientData?.description || 'No description available'}
                                 </p>
+                                {bacteriaList.length > 0 && (
+                                  <div className={bacteriaList.length > 6 ? "grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1" : "space-y-1"}>
+                                    {bacteriaList
+                                      .sort((a, b) => {
+                                        // Sort by category: beneficial (1), neutral (2), disruptive (3)
+                                        const getCategoryOrder = (bacteria: string) => {
+                                          if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis')) {
+                                            return 1; // Beneficial
+                                          }
+                                          if (bacteria.includes('S. aureus') || bacteria.includes('C. acnes') || bacteria.includes('S. haemolyticus')) {
+                                            return 3; // Disruptive
+                                          }
+                                          return 2; // Neutral
+                                        };
+                                        return getCategoryOrder(a) - getCategoryOrder(b);
+                                      })
+                                      .map((bacteria, bacteriaIndex) => (
+                                        <div key={bacteriaIndex} className="flex items-center gap-2">
+                                          <div className={`w-2 h-2 rounded-full ${getBacteriaColor(bacteria)}`}></div>
+                                          <span className="text-sm font-medium text-gray-700">
+                                            {bacteria}
+                                          </span>
+                                        </div>
+                                      ))}
+                                  </div>
+                                )}
                               </div>
                             );
                           })}
