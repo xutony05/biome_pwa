@@ -110,18 +110,22 @@ const mapIngredientName = (ingredientName: string): string => {
   return nameMap[ingredientName] || ingredientName;
 };
 
-// Function to get bacteria color based on bacteria type (matching the image design)
+// Function to get bacteria color based on bacteria type (matching the Key Microbes classification)
 const getBacteriaColor = (bacteria: string): string => {
-  // Red dots for harmful/problematic bacteria
-  if (bacteria.includes('S. aureus') || bacteria.includes('C. acnes') || bacteria.includes('S. haemolyticus')) {
-    return 'bg-red-500';
-  }
-  // Green dots for beneficial bacteria
-  if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis')) {
+  // Beneficial bacteria (optimal) - Green dots
+  if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis') || bacteria.includes('C. granulosum')) {
     return 'bg-green-500';
   }
-  // Blue dots for neutral bacteria
-  return 'bg-blue-400';
+  // Harmful bacteria (above/disruptive) - Red dots
+  if (bacteria.includes('S. aureus') || bacteria.includes('S. haemolyticus') || bacteria.includes('C. tuberculostearicum')) {
+    return 'bg-red-500';
+  }
+  // Neutral bacteria (below) - Blue dots
+  if (bacteria.includes('C. acnes') || bacteria.includes('C. kroppenstedtii') || bacteria.includes('C. avidum') || bacteria.includes('S. capitis') || bacteria.includes('C. striatum')) {
+    return 'bg-blue-400';
+  }
+  // Default fallback
+  return 'bg-gray-400';
 };
 
 export default function ReportPage() {
@@ -857,18 +861,21 @@ export default function ReportPage() {
                                   {ingredientData?.description || 'No description available'}
                                 </p>
                                 {bacteriaList.length > 0 && (
-                                  <div className={bacteriaList.length > 6 ? "grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1" : "space-y-1"}>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
                                     {bacteriaList
                                       .sort((a, b) => {
-                                        // Sort by category: beneficial (1), neutral (2), disruptive (3)
+                                        // Sort by category using Key Microbes classification: beneficial (1), neutral (2), disruptive (3)
                                         const getCategoryOrder = (bacteria: string) => {
-                                          if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis')) {
-                                            return 1; // Beneficial
+                                          // Beneficial bacteria (optimal)
+                                          if (bacteria.includes('S. epidermidis') || bacteria.includes('S. hominis') || bacteria.includes('C. granulosum')) {
+                                            return 1;
                                           }
-                                          if (bacteria.includes('S. aureus') || bacteria.includes('C. acnes') || bacteria.includes('S. haemolyticus')) {
-                                            return 3; // Disruptive
+                                          // Harmful bacteria (above/disruptive)
+                                          if (bacteria.includes('S. aureus') || bacteria.includes('S. haemolyticus') || bacteria.includes('C. tuberculostearicum')) {
+                                            return 3;
                                           }
-                                          return 2; // Neutral
+                                          // Neutral bacteria (below)
+                                          return 2;
                                         };
                                         return getCategoryOrder(a) - getCategoryOrder(b);
                                       })
