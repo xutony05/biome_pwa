@@ -133,7 +133,7 @@ export default function ReportPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
-  const [surveyAge, setSurveyAge] = useState<number | null>(null);
+  const [surveyAge, setSurveyAge] = useState<number>(0);
   const { setValues } = useBacteria();
   const [isMobile, setIsMobile] = useState(false);
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
@@ -156,9 +156,12 @@ export default function ReportPage() {
         
         setReport(reportData);
         
-        // Set survey age for sensitivity calculation
+        // Set survey age for all calculations
         if (surveyData?.age) {
           setSurveyAge(parseInt(surveyData.age));
+        } else {
+          // If no survey data, we need to handle this case
+          console.error('No survey age data available');
         }
         
         // Set bacteria values
@@ -280,16 +283,17 @@ export default function ReportPage() {
     'C.Krop': report['C.Krop']
   };
 
-  const estimatedAge = estimateAge(bacteriaPercentages, report.age);
-  const score = calculateMicrobiomeScore(report.age, bacteriaPercentages);
-  const hydrationScore = calculateHydrationScore(report.age, bacteriaPercentages);
-  const antioxidantScoreResult = calculateAntioxidantScore(bacteriaPercentages, report.age);
-  const antioxidantScore = antioxidantScoreResult.final_score;
-  const sebumIndex = calculateSebumIndex(bacteriaPercentages, report.age);
-  // Use survey age for sensitivity calculation, fallback to report age if survey age is not available
-  const ageForSensitivity = surveyAge !== null ? surveyAge : report.age;
+  // Always use survey age for all calculations
+  const ageForCalculations = surveyAge;
   
-  const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, ageForSensitivity < 40 ? 'YOUNG' : 'OLD');
+  const estimatedAge = estimateAge(bacteriaPercentages, ageForCalculations);
+  const score = calculateMicrobiomeScore(ageForCalculations, bacteriaPercentages);
+  const hydrationScore = calculateHydrationScore(ageForCalculations, bacteriaPercentages);
+  const antioxidantScoreResult = calculateAntioxidantScore(bacteriaPercentages, ageForCalculations);
+  const antioxidantScore = antioxidantScoreResult.final_score;
+  const sebumIndex = calculateSebumIndex(bacteriaPercentages, ageForCalculations);
+  
+  const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, ageForCalculations < 40 ? 'YOUNG' : 'OLD');
   const sensitivityScore = sensitivityScoreResult.final_score;
 
   return (
