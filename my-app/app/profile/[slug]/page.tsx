@@ -853,7 +853,7 @@ export default function ReportPage() {
                             const allBacteriaList = ingredientData?.bacteria || [];
                             
                             // Filter bacteria to only show those that are out of optimal range for this report
-                            const bacteriaList = allBacteriaList.filter(bacteria => {
+                            const outOfRangeBacteria = allBacteriaList.filter(bacteria => {
                               // Map bacteria names from codex format to report keys
                               const reportKeyMap: { [key: string]: string } = {
                                 'C. acnes': 'C.Acne',
@@ -885,6 +885,11 @@ export default function ReportPage() {
                               // Check if bacteria value is outside optimal range
                               return bacteriaValue < minOptimal || bacteriaValue > maxOptimal;
                             });
+                            
+                            // If no out-of-range bacteria, show up to 4 from all bacteria, otherwise show out-of-range bacteria (max 4)
+                            const bacteriaList = outOfRangeBacteria.length > 0 
+                              ? outOfRangeBacteria.slice(0, 4)
+                              : allBacteriaList.slice(0, 4);
                             
                             return (
                               <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
