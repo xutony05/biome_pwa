@@ -850,7 +850,41 @@ export default function ReportPage() {
                           {report.good_ingredients?.slice(0, 10).map((ingredient: string, index: number) => {
                             const mappedIngredient = mapIngredientName(ingredient);
                             const ingredientData = goodIngredientCodex[mappedIngredient as keyof typeof goodIngredientCodex];
-                            const bacteriaList = ingredientData?.bacteria || [];
+                            const allBacteriaList = ingredientData?.bacteria || [];
+                            
+                            // Filter bacteria to only show those that are out of optimal range for this report
+                            const bacteriaList = allBacteriaList.filter(bacteria => {
+                              // Map bacteria names from codex format to report keys
+                              const reportKeyMap: { [key: string]: string } = {
+                                'C. acnes': 'C.Acne',
+                                'C. striatum': 'C.Stri',
+                                'S. capitis': 'S.Cap',
+                                'S. epidermidis': 'S.Epi',
+                                'C. avidum': 'C.Avi',
+                                'C. granulosum': 'C.Gran',
+                                'S. haemolyticus': 'S.Haem',
+                                'S. aureus': 'S.Aur',
+                                'C. tuberculostearicum': 'C.Tub',
+                                'S. hominis': 'S.Hom',
+                                'C. kroppenstedtii': 'C.Krop'
+                              };
+                              
+                              const reportKey = reportKeyMap[bacteria];
+                              if (!reportKey) return false;
+                              
+                              const bacteriaValue = report[reportKey as keyof typeof report] as number;
+                              
+                              // Get optimal range from optimal.json
+                              const optimalRange = optimalRanges[bacteria as keyof typeof optimalRanges];
+                              if (!optimalRange || !Array.isArray(optimalRange) || optimalRange.length !== 2) {
+                                return false;
+                              }
+                              
+                              const [minOptimal, maxOptimal] = optimalRange;
+                              
+                              // Check if bacteria value is outside optimal range
+                              return bacteriaValue < minOptimal || bacteriaValue > maxOptimal;
+                            });
                             
                             return (
                               <div key={index} className="bg-background/50 rounded-lg p-3 border border-emerald-500/20">
