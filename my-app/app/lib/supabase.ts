@@ -254,3 +254,32 @@ export async function getLastSurvey(email: string): Promise<SurveyAnswers | null
     return null;
   }
 }
+
+/**
+ * Gets the age from the surveys table using kit_id.
+ * This function queries the surveys table to find the age associated with a specific kit_id.
+ * 
+ * @param kit_id - The kit ID to search for in the surveys table
+ * @returns Promise<number | null> - The age as a number, or null if not found or error occurs
+ */
+export async function getAgeByKitId(kit_id: string): Promise<number | null> {
+  try {
+    // Query the surveys table to get the age for the specific kit_id
+    const { data, error } = await supabase
+      .from('surveys')
+      .select('age')
+      .eq('kit_id', kit_id)
+      .single(); // Use single() to get only one record
+
+    if (error) {
+      return null;
+    }
+
+    // Convert the age string to a number (age is stored as string in database)
+    const age = parseInt(data?.age, 10);
+    
+    return age;
+  } catch (e) {
+    return null;
+  }
+}

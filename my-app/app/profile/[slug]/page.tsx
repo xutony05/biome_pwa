@@ -4,8 +4,8 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getReportByNumber, getLastSurvey, type Report } from '@/app/lib/supabase';
-import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateSebumIndex, calculateSensitivityScore } from '@/app/lib/calculations';
+import { getReportByNumber, getLastSurvey, getAgeByKitId, type Report } from '@/app/lib/supabase';
+import { calculateMicrobiomeScore, calculateHydrationScore, estimateAge, calculateAntioxidantScore, calculateSebumIndex, calculateSensitivityScore, logSkinTraitValues } from '@/app/lib/calculations';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -134,6 +134,7 @@ export default function ReportPage() {
   const { user } = useAuth();
   const [report, setReport] = useState<Report | null>(null);
   const [surveyAge, setSurveyAge] = useState<number>(0);
+  const [databaseAge, setDatabaseAge] = useState<number | null>(null);
   const { setValues } = useBacteria();
   const [isMobile, setIsMobile] = useState(false);
   const [showEnvExplanation, setShowEnvExplanation] = useState(false);
@@ -159,9 +160,6 @@ export default function ReportPage() {
         // Set survey age for all calculations
         if (surveyData?.age) {
           setSurveyAge(parseInt(surveyData.age));
-        } else {
-          // If no survey data, we need to handle this case
-          console.error('No survey age data available');
         }
         
         // Set bacteria values
@@ -179,6 +177,14 @@ export default function ReportPage() {
             'S.Hom': reportData['S.Hom'],
             'C.Krop': reportData['C.Krop']
           });
+
+          // Fetch age from database using kit_id
+          if (reportData.kit_id) {
+            const dbAge = await getAgeByKitId(reportData.kit_id);
+            if (dbAge !== null) {
+              setDatabaseAge(dbAge);
+            }
+          }
         }
       }
     }
@@ -283,8 +289,8 @@ export default function ReportPage() {
     'C.Krop': report['C.Krop']
   };
 
-  // Always use survey age for all calculations
-  const ageForCalculations = surveyAge;
+  // Use database age for calculations, fallback to survey age if database age is not available
+  const ageForCalculations = databaseAge !== null ? databaseAge : surveyAge;
   
   const estimatedAge = estimateAge(bacteriaPercentages, ageForCalculations);
   const score = calculateMicrobiomeScore(ageForCalculations, bacteriaPercentages);
@@ -295,6 +301,9 @@ export default function ReportPage() {
   
   const sensitivityScoreResult = calculateSensitivityScore(bacteriaPercentages, ageForCalculations < 40 ? 'YOUNG' : 'OLD');
   const sensitivityScore = sensitivityScoreResult.final_score;
+
+  // Log all skin trait values to console for debugging
+  logSkinTraitValues(bacteriaPercentages, ageForCalculations, report?.kit_id || 'unknown');
 
   return (
     <div className="bg-gray-50">
