@@ -1278,10 +1278,6 @@ export function calculateSensitivityScore(bacteriaPercentages: BacteriaPercentag
  * @param kit_id - The kit ID for tracking
  */
 export function logSkinTraitValues(bacteriaPercentages: BacteriaPercentages, age: number, kit_id: string): void {
-    console.log('=== SKIN TRAIT VALUES ===');
-    console.log(`Kit ID: ${kit_id}`);
-    console.log(`Age: ${age}`);
-    
     // Calculate all skin traits
     const hydrationScore = calculateHydrationScore(age, bacteriaPercentages);
     const microbiomeScore = calculateMicrobiomeScore(age, bacteriaPercentages);
@@ -1291,15 +1287,8 @@ export function logSkinTraitValues(bacteriaPercentages: BacteriaPercentages, age
     const firmnessScore = calculateFirmnessScore(bacteriaPercentages);
     const sensitivityResult = calculateSensitivityScore(bacteriaPercentages, age);
     
-    // Log final values
-    console.log(`Hydration Score: ${hydrationScore}/100`);
-    console.log(`Microbiome Score: ${microbiomeScore}/100`);
-    console.log(`Skin Age: ${typeof ageEstimation.final_age === 'number' ? ageEstimation.final_age : 'Error'} years`);
-    console.log(`Antioxidant Score: ${antioxidantResult.final_score}/100`);
-    console.log(`Sebum Index: ${sebumIndex}/100`);
-    console.log(`Firmness Score: ${firmnessScore}/100`);
-    console.log(`Sensitivity Score: ${sensitivityResult.final_score}/100`);
-    console.log('========================');
+    // Note: Console logging has been removed as requested
+    // The function still calculates all skin traits but does not log them
 }
 
 // --- Example Usage (for testing) ---
@@ -1327,17 +1316,17 @@ const sampleData: BacteriaPercentages = {
 
 // Calculate for a Young user (Under 40)
 const youngScoreResult = calculateSensitivityScore(sampleData, 25); // Using age
-console.log("Sensitivity Score (Young): " + youngScoreResult.final_score + " / 100");
+// console.log("Sensitivity Score (Young): " + youngScoreResult.final_score + " / 100");
 
 // Calculate for an Old user (40 and Over)
 const oldScoreResult = calculateSensitivityScore(sampleData, 50); // Using age
-console.log("Sensitivity Score (Old): " + oldScoreResult.final_score + " / 100");
+// console.log("Sensitivity Score (Old): " + oldScoreResult.final_score + " / 100");
 
 // Alternative: Using AgeGroup directly
 const youngScoreDirect = calculateSensitivityScore(sampleData, 'YOUNG');
 const oldScoreDirect = calculateSensitivityScore(sampleData, 'OLD');
-console.log("Sensitivity Score (Young, direct): " + youngScoreDirect.final_score + " / 100");
-console.log("Sensitivity Score (Old, direct): " + oldScoreDirect.final_score + " / 100");
+// console.log("Sensitivity Score (Young, direct): " + youngScoreDirect.final_score + " / 100");
+// console.log("Sensitivity Score (Old, direct): " + oldScoreDirect.final_score + " / 100");
 
 // Test the skin trait logging function
 logSkinTraitValues(sampleData, 25, 'TEST-KIT-001');
